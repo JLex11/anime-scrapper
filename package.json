@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "tsc",
-    "start": "node build/index.js",
+    "start": "node public/index.js",
     "deploy": "vercel --prod"
   },
   "keywords": [],
