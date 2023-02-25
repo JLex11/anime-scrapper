@@ -9,10 +9,12 @@ export const getBase64Image = async (imageLink: string): Promise<string> => {
   const imageArrayBuffer = await requestBufferWithCache(imageLink, { ttl: 86400 })
   if (imageArrayBuffer == null) return imageLink
 
-  const cacheResource = requestCache.get<ResponseType>(imageArrayBuffer)
+  const cacheKey = imageLink
+
+  const cacheResource = requestCache.get<ResponseType>(cacheKey)
 
   if (cacheResource != null) {
-    console.log(`From cache: $${imageArrayBuffer}`)
+    console.log(`From cache: $${cacheKey}`)
     return cacheResource
   }
 
@@ -24,6 +26,6 @@ export const getBase64Image = async (imageLink: string): Promise<string> => {
   const base64Image = outputImageBuffer.toString('base64')
   const image = `data:image/webp;base64,${base64Image}`
 
-  requestCache.set(imageArrayBuffer, image, cacheDefaultConfig.stdTTL)
+  requestCache.set(cacheKey, image, cacheDefaultConfig.stdTTL)
   return image
 }
