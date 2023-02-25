@@ -34,7 +34,11 @@ const fetchAndCache = async (
   })
 
   const responsePromise = fetch(url, config).then(async response => {
-    const resource = responseType === ResponseType.JSON ? await response.json() : await response.text()
+    const resource = responseType === ResponseType.JSON
+      ? await response.json()
+      : responseType === ResponseType.TEXT
+        ? await response.text()
+        : await response.arrayBuffer()
     requestCache.set(cacheKey, resource, config?.ttl ?? cacheDefaultConfig.stdTTL)
     return { response, resource }
   })
@@ -49,5 +53,10 @@ export const requestJsonWithCache = async (url: string, config?: RequestCacheIni
 
 export const requestTextWithCache = async (url: string, config?: RequestCacheInit): Promise<string | undefined> => {
   const { resource } = await fetchAndCache(url, config, ResponseType.TEXT)
+  return resource
+}
+
+export const requestBufferWithCache = async (url: string, config?: RequestCacheInit): Promise<string | undefined> => {
+  const { resource } = await fetchAndCache(url, config, ResponseType.BUFFER)
   return resource
 }

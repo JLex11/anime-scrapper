@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import sharp from 'sharp'
+import { getBase64Image } from '../services/getBase64Image'
 import { requestTextWithCache } from '../services/requestWithCache'
 import { EpisodeSources, LastEpisode } from '../types'
 
@@ -18,7 +18,7 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
     const episode = episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '')
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
 
-    const imageResponse = await fetch(imageLink)
+    /* const imageResponse = await fetch(imageLink)
     const imageArrayBuffer = await imageResponse.arrayBuffer()
 
     const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
@@ -27,7 +27,9 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
       .toBuffer()
 
     const base64Image = outputImageBuffer.toString('base64')
-    const image = `data:image/webp;base64,${base64Image}`
+    const image = `data:image/webp;base64,${base64Image}` */
+
+    const image = await getBase64Image(imageLink)
 
     return {
       originalLink,

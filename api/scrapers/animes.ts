@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
-import sharp from 'sharp'
 import { animeStatus } from '../enums'
+import { getBase64Image } from '../services/getBase64Image'
 import { requestTextWithCache } from '../services/requestWithCache'
 import { EmisionAnime, ShortAnime } from '../types'
 
@@ -21,7 +21,7 @@ export async function scrapeLastAnimes (): Promise<ShortAnime[]> {
     const shortDescription = episodeItem.querySelector('.Description p:last-of-type')?.textContent?.trim()
     const rank = episodeItem.querySelector('.Vts')?.textContent?.trim()
 
-    const imageResponse = await fetch(imageLink)
+    /* const imageResponse = await fetch(imageLink)
     const imageArrayBuffer = await imageResponse.arrayBuffer()
 
     const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
@@ -30,7 +30,9 @@ export async function scrapeLastAnimes (): Promise<ShortAnime[]> {
       .toBuffer()
 
     const base64Image = outputImageBuffer.toString('base64')
-    const image = `data:image/webp;base64,${base64Image}`
+    const image = `data:image/webp;base64,${base64Image}` */
+
+    const image = await getBase64Image(imageLink)
 
     return {
       originalLink,
@@ -82,7 +84,7 @@ export async function scrapeRatingAnimes (status: animeStatus): Promise<ShortAni
     const shortDescription = episodeItem.querySelector('.Description p:last-of-type')?.textContent?.trim()
     const rank = episodeItem.querySelector('.Vts')?.textContent?.trim()
 
-    const imageResponse = await fetch(imageLink)
+    /* const imageResponse = await fetch(imageLink)
     const imageArrayBuffer = await imageResponse.arrayBuffer()
 
     const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
@@ -91,7 +93,9 @@ export async function scrapeRatingAnimes (status: animeStatus): Promise<ShortAni
       .toBuffer()
 
     const base64Image = outputImageBuffer.toString('base64')
-    const image = `data:image/webp;base64,${base64Image}`
+    const image = `data:image/webp;base64,${base64Image}` */
+
+    const image = await getBase64Image(imageLink)
 
     return {
       originalLink,

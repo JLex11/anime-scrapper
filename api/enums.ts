@@ -1,6 +1,7 @@
 export enum ResponseType {
   JSON = 'json',
-  TEXT = 'text'
+  TEXT = 'text',
+  BUFFER = 'buffer'
 }
 
 export enum animeStatus {
