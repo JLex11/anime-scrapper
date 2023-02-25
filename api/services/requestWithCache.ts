@@ -1,5 +1,5 @@
 import NodeCache from 'node-cache'
-import { ResponseType } from './../enums'
+import { ResponseType } from '../enums'
 
 const cacheDefaultConfig = { stdTTL: 10800, useClones: false }
 
@@ -25,6 +25,7 @@ const fetchAndCache = async (
     const cacheResource = requestCache.get<ResponseType>(cacheKey)
 
     if (cacheResource != null) {
+      console.log(`From cache: $${cacheKey}`)
       resolve({
         response: null,
         resource: cacheResource

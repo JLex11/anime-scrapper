@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom'
-import { animeStatus } from './../enums'
-import { requestTextWithCache } from './../services/requestWithCache'
-import { EmisionAnime, ShortAnime } from './../types.d'
+import { animeStatus } from '../enums'
+import { requestTextWithCache } from '../services/requestWithCache'
+import { EmisionAnime, ShortAnime } from '../types'
 
 const ANIMEFLV_BASE_URL = 'https://www3.animeflv.net'
 
