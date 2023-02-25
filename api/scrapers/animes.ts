@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom'
+import sharp from 'sharp'
 import { animeStatus } from '../enums'
 import { requestTextWithCache } from '../services/requestWithCache'
 import { EmisionAnime, ShortAnime } from '../types'
@@ -12,13 +13,24 @@ export async function scrapeLastAnimes (): Promise<ShortAnime[]> {
 
   const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
 
-  const mappedLastAnimes = animeList.map(episodeItem => {
+  const mappedLastAnimes = animeList.map(async episodeItem => {
     const originalLink = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('a')?.href ?? ''}`
     const type = episodeItem.querySelector('.Type')?.textContent?.trim()
-    const image = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
+    const imageLink = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
     const shortDescription = episodeItem.querySelector('.Description p:last-of-type')?.textContent?.trim()
     const rank = episodeItem.querySelector('.Vts')?.textContent?.trim()
+
+    const imageResponse = await fetch(imageLink)
+    const imageArrayBuffer = await imageResponse.arrayBuffer()
+
+    const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
+      .resize(200, 300)
+      .webp({ effort: 6, quality: 60 })
+      .toBuffer()
+
+    const base64Image = outputImageBuffer.toString('base64')
+    const image = `data:image/webp;base64,${base64Image}`
 
     return {
       originalLink,
@@ -30,7 +42,7 @@ export async function scrapeLastAnimes (): Promise<ShortAnime[]> {
     }
   })
 
-  return mappedLastAnimes
+  return await Promise.all(mappedLastAnimes)
 }
 
 export async function scrapeEmisionAnimes (): Promise<EmisionAnime[]> {
@@ -62,13 +74,24 @@ export async function scrapeRatingAnimes (status: animeStatus): Promise<ShortAni
 
   const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
 
-  const mappedRatingAnimes = animeList.map(episodeItem => {
+  const mappedRatingAnimes = animeList.map(async episodeItem => {
     const originalLink = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('a')?.href ?? ''}`
     const type = episodeItem.querySelector('.Type')?.textContent?.trim()
-    const image = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
+    const imageLink = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
     const shortDescription = episodeItem.querySelector('.Description p:last-of-type')?.textContent?.trim()
     const rank = episodeItem.querySelector('.Vts')?.textContent?.trim()
+
+    const imageResponse = await fetch(imageLink)
+    const imageArrayBuffer = await imageResponse.arrayBuffer()
+
+    const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
+      .resize(200, 300)
+      .webp({ effort: 6, quality: 60 })
+      .toBuffer()
+
+    const base64Image = outputImageBuffer.toString('base64')
+    const image = `data:image/webp;base64,${base64Image}`
 
     return {
       originalLink,
@@ -80,7 +103,7 @@ export async function scrapeRatingAnimes (status: animeStatus): Promise<ShortAni
     }
   })
 
-  return mappedRatingAnimes
+  return await Promise.all(mappedRatingAnimes)
 }
 
 export async function searchAnimes (query: string): Promise<ShortAnime[]> {
