@@ -17,7 +17,7 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
     const imageLink = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
     const episode = episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '')
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
-    const id = originalLink.split('ver/').shift()
+    const id = originalLink.split('ver/').pop()
 
     const image = await getBase64Image(imageLink)
 
