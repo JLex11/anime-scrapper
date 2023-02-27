@@ -21,17 +21,6 @@ export async function scrapeLastAnimes (): Promise<ShortAnime[]> {
     const shortDescription = episodeItem.querySelector('.Description p:last-of-type')?.textContent?.trim()
     const rank = episodeItem.querySelector('.Vts')?.textContent?.trim()
 
-    /* const imageResponse = await fetch(imageLink)
-    const imageArrayBuffer = await imageResponse.arrayBuffer()
-
-    const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
-      .resize(200, 300)
-      .webp({ effort: 6, quality: 60 })
-      .toBuffer()
-
-    const base64Image = outputImageBuffer.toString('base64')
-    const image = `data:image/webp;base64,${base64Image}` */
-
     const image = await getBase64Image(imageLink)
 
     return {
@@ -83,17 +72,6 @@ export async function scrapeRatingAnimes (status: animeStatus): Promise<ShortAni
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
     const shortDescription = episodeItem.querySelector('.Description p:last-of-type')?.textContent?.trim()
     const rank = episodeItem.querySelector('.Vts')?.textContent?.trim()
-
-    /* const imageResponse = await fetch(imageLink)
-    const imageArrayBuffer = await imageResponse.arrayBuffer()
-
-    const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
-      .resize(200, 300)
-      .webp({ effort: 6, quality: 60 })
-      .toBuffer()
-
-    const base64Image = outputImageBuffer.toString('base64')
-    const image = `data:image/webp;base64,${base64Image}` */
 
     const image = await getBase64Image(imageLink)
 

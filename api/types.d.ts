@@ -10,6 +10,7 @@ export interface Episode extends EpisodeBase {
 export interface LastEpisode extends EpisodeBase {
   image?: string
   episode?: string
+  id?: string
 }
 
 export interface EpisodeVideo {

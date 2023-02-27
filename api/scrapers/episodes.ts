@@ -17,17 +17,7 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
     const imageLink = `${ANIMEFLV_BASE_URL}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
     const episode = episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '')
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
-
-    /* const imageResponse = await fetch(imageLink)
-    const imageArrayBuffer = await imageResponse.arrayBuffer()
-
-    const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
-      .resize(200, 300)
-      .webp({ effort: 6, quality: 60 })
-      .toBuffer()
-
-    const base64Image = outputImageBuffer.toString('base64')
-    const image = `data:image/webp;base64,${base64Image}` */
+    const id = originalLink.split('ver/').shift()
 
     const image = await getBase64Image(imageLink)
 
@@ -35,7 +25,8 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
       originalLink,
       image,
       episode,
-      title
+      title,
+      id
     }
   })
 
