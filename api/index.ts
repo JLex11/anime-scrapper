@@ -7,4 +7,8 @@ app.use(express.json())
 app.use(express.static('public'))
 app.use(router)
 
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(3001, () => console.log('Server running on port 3001'))
+}
+
 export default app

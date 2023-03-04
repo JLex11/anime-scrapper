@@ -3,6 +3,7 @@ import { animeStatus } from '../enums'
 import { getBase64Image } from '../services/getBase64Image'
 import { requestTextWithCache } from '../services/requestWithCache'
 import { EmisionAnime, ShortAnime } from '../types'
+import { getFulfilledResults } from '../utils/getFulfilledResults'
 
 const ANIMEFLV_BASE_URL = 'https://www3.animeflv.net'
 
@@ -33,7 +34,9 @@ export async function scrapeLastAnimes (): Promise<ShortAnime[]> {
     }
   })
 
-  return await Promise.all(mappedLastAnimes)
+  const results = await Promise.allSettled(mappedLastAnimes)
+  const successfulResults = getFulfilledResults(results)
+  return await Promise.all(successfulResults)
 }
 
 export async function scrapeEmisionAnimes (): Promise<EmisionAnime[]> {
@@ -85,7 +88,9 @@ export async function scrapeRatingAnimes (status: animeStatus): Promise<ShortAni
     }
   })
 
-  return await Promise.all(mappedRatingAnimes)
+  const results = await Promise.allSettled(mappedRatingAnimes)
+  const successfulResults = getFulfilledResults(results)
+  return await Promise.all(successfulResults)
 }
 
 export async function searchAnimes (query: string): Promise<ShortAnime[]> {

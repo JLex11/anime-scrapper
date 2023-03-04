@@ -2,6 +2,7 @@ import { JSDOM } from 'jsdom'
 import { getBase64Image } from '../services/getBase64Image'
 import { requestTextWithCache } from '../services/requestWithCache'
 import { EpisodeSources, LastEpisode } from '../types'
+import { getFulfilledResults } from '../utils/getFulfilledResults'
 
 const ANIMEFLV_BASE_URL = 'https://www3.animeflv.net'
 
@@ -30,7 +31,9 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
     }
   })
 
-  return await Promise.all(mappedLastEpidodes)
+  const results = await Promise.allSettled(mappedLastEpidodes)
+  const successfulResults = getFulfilledResults(results)
+  return await Promise.all(successfulResults)
 }
 
 export async function scrapeEpisodeSources (id: string): Promise<EpisodeSources> {
