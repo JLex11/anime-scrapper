@@ -19,8 +19,8 @@ export const getBase64Image = async (imageLink: string): Promise<string> => {
   }
 
   const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
-    .resize(200, 300)
-    .webp({ effort: 2, quality: 90 })
+    .resize(250, 350)
+    .webp({ effort: 3, quality: 90 })
     .toBuffer()
 
   const base64Image = outputImageBuffer.toString('base64')
