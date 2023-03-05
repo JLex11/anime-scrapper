@@ -11,6 +11,7 @@ export interface LastEpisode extends EpisodeBase {
   image?: string
   episode?: string
   id?: string
+  animeId?: string
 }
 
 export interface EpisodeVideo {
@@ -28,8 +29,6 @@ export interface VideoList {
 }
 
 export interface EpisodeSources {
-  animeId: string
-  episodeId: string
   episode: string
   videos: VideoList
 }
@@ -39,6 +38,7 @@ interface AnimeBase {
   title?: string
   type?: string
   rank?: string
+  animeId?: string
 }
 
 export interface Anime extends AnimeBase {
