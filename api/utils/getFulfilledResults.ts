@@ -2,7 +2,9 @@ function isFulfilled<T> (result: PromiseSettledResult<T>): result is PromiseFulf
   return result.status === 'fulfilled'
 }
 
-export function getFulfilledResults<T> (results: Array<PromiseSettledResult<T>>): T[] {
+export function getFulfilledResults<T>(results: Array<PromiseSettledResult<T>>): T[] {
+  console.log({results})
+
   const successfulResults = results
     .filter(isFulfilled)
     .map(result => result.value)
