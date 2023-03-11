@@ -1,3 +1,6 @@
 {
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }],
+  "routes": [
+    { "src": "/images/(.*)", "dest": "/public/images/$1" }
+  ]
 }
