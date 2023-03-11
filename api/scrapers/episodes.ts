@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import { getBase64Image } from '../services/getBase64Image'
+import { getImageUrl } from '../services/getImageUrl'
 import { requestTextWithCache } from '../services/requestWithCache'
 import { EpisodeSources, LastEpisode } from '../types'
 import { getFulfilledResults } from '../utils/getFulfilledResults'
@@ -20,7 +20,7 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
     const id = originalLink.split('ver/').pop()
     const animeId = title?.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-').toLowerCase()
 
-    const image = await getBase64Image(imageLink)
+    const image = await getImageUrl(imageLink)
 
     return {
       originalLink,

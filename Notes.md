@@ -1,0 +1,2 @@
+- Guardar en un json los animes para realizar busquedas mas rapidas y mejores
+- scrapear informacion completa de los animes

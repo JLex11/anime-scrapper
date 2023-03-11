@@ -1,5 +1,5 @@
 interface EpisodeBase {
-  orgLink?: string
+  originalLink?: string
   title?: string
 }
 
@@ -42,19 +42,21 @@ interface AnimeBase {
 }
 
 export interface Anime extends AnimeBase {
+  title: string
   description?: string
-  genres: string[]
   related: string[]
+  originalLink?: string
+}
+
+export interface FullAnimeInfo extends AnimeBase {
+  genres: string[]
   episodes: Episode[]
 }
 
 export interface ShortAnime extends AnimeBase {
-  originalLink?: string
   shortDescription?: string
 }
 
 export interface EmisionAnime extends AnimeBase {
-  originalLink?: string
-  title?: string
   type?: string
 }
