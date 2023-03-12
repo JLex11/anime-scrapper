@@ -16,10 +16,10 @@ export enum animeFLVPages {
 
 export enum endPoints {
   LATEST_EPISODES = '/episodes/latest',
-  EPISODE_SOURCES = '/episodes/sources/',
-  ANIME_INFO = '/animes/',
+  EPISODE_SOURCES = '/episodes/sources/:id',
+  ANIME_INFO = '/animes/:animeId',
   LATEST_ANIMES = '/animes/latest',
   BROADCAST_ANIMES = '/animes/broadcast',
   RATING_ANIMES = '/animes/latest/rating',
-  SEARCH_ANIMES = '/animes/search/'
+  SEARCH_ANIMES = '/animes/search/:query'
 }
