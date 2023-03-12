@@ -10,7 +10,10 @@ import { Anime, Episode } from './../types.d'
 const getAnimeOriginalLink = (e: Element | Document) => `${animeFLVPages.BASE}${e.querySelector('a')?.href ?? ''}`
 const getAnimeType = (e: Element | Document) => e.querySelector('.Type')?.textContent?.trim()
 const getAnimeImgLink = (e: Element | Document) => `${animeFLVPages.BASE}${e.querySelector('.Image img')?.getAttribute('src') ?? ''}`
-const getAnimeTitle = (e: Element | Document) => e.querySelector('h1.Title')?.textContent?.trim()
+const getAnimeTitle = (e: Element | Document) => {
+  const titleElement = e.querySelector('h1.Title') || e.querySelector('h3.Title');
+  return titleElement?.textContent?.trim()
+}
 const getAnimeShortDescription = (e: Element | Document) => e.querySelector('.Description p:last-of-type')?.textContent?.trim()
 const getAnimeRank = (e: Element | Document) => e.querySelector('.Vts')?.textContent?.trim()
 const getAnimeIdFromLink = (link: string) => link.split('anime/').pop()
