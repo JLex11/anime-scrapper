@@ -1,5 +1,5 @@
-import fs from 'fs'
 import NodeCache from 'node-cache'
+import fs from 'node:fs/promises'
 import path from 'path'
 import sharp from 'sharp'
 import { requestBufferWithCache } from './requestWithCache'
@@ -20,11 +20,19 @@ export const getImageUrl = async (imageLink: string): Promise<string> => {
     .webp({ effort: 6 })
     .toBuffer()
 
+  const imagesPath = path.join(process.cwd(), 'public', 'images')
   const imageName = `${new URL(imageLink).pathname.split('/').join('-').replace(/\.[a-zA-Z]+/, '')}.webp`
-  const imagePath = path.join(process.cwd(), 'public', 'images', imageName)
+  const imagePath = path.join(imagesPath, imageName)
   const imageUrl = `/images/${imageName}`
 
-  await fs.promises.writeFile(imagePath, outputImageBuffer).catch(console.log)
+  try {
+    await fs.access(imagesPath)
+  } catch (error) {
+    console.error(error)
+    await fs.mkdir(imagesPath, { recursive: true })
+  }
+
+  await fs.writeFile(imagePath, outputImageBuffer).catch(console.error)
 
   requestCache.set(cacheKey, imageUrl, cacheDefaultConfig.stdTTL)
   return imageUrl
