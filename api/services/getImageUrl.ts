@@ -20,18 +20,17 @@ export const getImageUrl = async (imageLink: string): Promise<string> => {
     .webp({ effort: 6 })
     .toBuffer()
 
-  const imagesPath = path.join(process.cwd(), 'public', 'images')
   const imageName = `${new URL(imageLink).pathname.split('/').join('-').replace(/\.[a-zA-Z]+/, '')}.webp`
-  const imagePath = path.join(imagesPath, imageName)
+  const imagePath = path.join(process.cwd(), 'public', 'images', imageName)
   const imageUrl = `/images/${imageName}`
 
   try {
-    await fs.access(imagesPath)
+    await fs.access(path.join(process.cwd(), 'public', 'images'))
   } catch (error) {
     console.error(error)
-    await fs.mkdir(imagesPath, { recursive: true })
+    await fs.mkdir(path.join(process.cwd(), 'public', 'images'), { recursive: true })
   }
-
+  
   await fs.writeFile(imagePath, outputImageBuffer).catch(console.error)
 
   requestCache.set(cacheKey, imageUrl, cacheDefaultConfig.stdTTL)
