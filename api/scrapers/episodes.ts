@@ -37,8 +37,8 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
   return await Promise.all(successfulResults)
 }
 
-export async function scrapeEpisodeSources (id: string): Promise<EpisodeSources> {
-  const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${id}`, { ttl: 259200 })
+export async function scrapeEpisodeSources (episodeId: string): Promise<EpisodeSources> {
+  const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${episodeId}`, { ttl: 259200 })
 
   const { document } = new JSDOM(html).window
 

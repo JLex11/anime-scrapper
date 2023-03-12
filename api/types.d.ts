@@ -4,7 +4,8 @@ interface EpisodeBase {
 }
 
 export interface Episode extends EpisodeBase {
-  episode: number
+  episode?: number
+  image?: string
 }
 
 export interface LastEpisode extends EpisodeBase {
@@ -41,15 +42,14 @@ interface AnimeBase {
   animeId?: string
 }
 
-export interface Anime extends AnimeBase {
-  title: string
-  description?: string
-  related: string[]
-  originalLink?: string
-}
+export type otherTitle = string | undefined
+export type genre = string | undefined
 
-export interface FullAnimeInfo extends AnimeBase {
-  genres: string[]
+export interface Anime extends AnimeBase {
+  otherTitles?: otherTitle[]
+  description?: string
+  originalLink?: string
+  genres: genre[]
   episodes: Episode[]
 }
 

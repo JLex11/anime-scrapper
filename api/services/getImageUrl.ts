@@ -17,19 +17,14 @@ export const getImageUrl = async (imageLink: string): Promise<string> => {
   if (cacheResource != null) return cacheResource
 
   const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
-    .resize(250, 350)
     .webp({ effort: 6 })
     .toBuffer()
 
-  // Genera un nombre único para la imagen
-  const imageName = `${imageLink.split('/').pop()?.replace(/\.[a-zA-Z]+/, '')}.webp`
-
-  // Guarda la imagen en el servidor
+  const imageName = `${new URL(imageLink).pathname.split('/').join('-').replace(/\.[a-zA-Z]+/, '')}.webp`
   const imagePath = path.join(process.cwd(), 'public', 'images', imageName)
-  await fs.promises.writeFile(imagePath, outputImageBuffer).catch(console.log)
-
-  // Devuelve una URL que apunte a la ubicación de la imagen en el servidor
   const imageUrl = `/images/${imageName}`
+
+  await fs.promises.writeFile(imagePath, outputImageBuffer).catch(console.log)
 
   requestCache.set(cacheKey, imageUrl, cacheDefaultConfig.stdTTL)
   return imageUrl

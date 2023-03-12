@@ -1,22 +1,28 @@
+import { endPoints } from './../enums'
+
 export default [
   {
-    route: '/episodes/latest',
+    route: endPoints.LATEST_EPISODES,
     description: 'The latesd episodes'
   },
   {
-    route: '/episodes/sources/:id',
+    route: endPoints.EPISODE_SOURCES,
     description: 'Get episode videos/streamings'
   },
   {
-    route: '/animes/latest',
+    route: endPoints.LATEST_ANIMES,
     description: 'The latesd animes'
   },
   {
-    route: '/animes/broadcast',
+    route: endPoints.BROADCAST_ANIMES,
     description: 'In broadcast animes'
   },
   {
-    route: '/animes/latest/rating',
+    route: endPoints.RATING_ANIMES,
     description: 'The latesd rating animes'
+  },
+  {
+    route: endPoints.ANIME_INFO,
+    description: 'Full anime info'
   }
 ]
