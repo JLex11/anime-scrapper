@@ -2,6 +2,7 @@ import NodeCache from 'node-cache'
 import fs from 'node:fs/promises'
 import path from 'path'
 import sharp from 'sharp'
+import app from '../index'
 import { requestBufferWithCache } from './requestWithCache'
 
 const cacheDefaultConfig = { stdTTL: 604800, useClones: false }
@@ -17,18 +18,19 @@ export const getImageUrl = async (imageLink: string): Promise<string> => {
   if (cacheResource != null) return cacheResource
 
   const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
+    .resize(300, 450)
     .webp({ effort: 6 })
     .toBuffer()
 
   const imageName = `${new URL(imageLink).pathname.split('/').join('-').replace(/\.[a-zA-Z]+/, '')}.webp`
-  const imagePath = path.join(process.cwd(), 'public', 'images', imageName)
+  const imagePath = path.join(app.get('public'), 'images', imageName)
   const imageUrl = `/images/${imageName}`
 
   try {
-    await fs.access(path.join(process.cwd(), 'public', 'images'))
+    await fs.access(path.join(app.get('public'), 'images'))
   } catch (error) {
     console.error(error)
-    await fs.mkdir(path.join(process.cwd(), 'public', 'images'), { recursive: true })
+    await fs.mkdir(path.join(app.get('public'), 'images'), { recursive: true })
   }
   
   await fs.writeFile(imagePath, outputImageBuffer).catch(console.error)
