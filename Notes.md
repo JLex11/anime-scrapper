@@ -1,2 +1,4 @@
-- Guardar en un json los animes para realizar busquedas mas rapidas y mejores
-- scrapear informacion completa de los animes
+[x] Scrape full anime information
+[ ] Map banner images to animes (full anime info)
+[ ] Connect and store animes, episodes and img url's
+[ ] Implement intellij searches
