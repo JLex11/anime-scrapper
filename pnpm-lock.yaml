@@ -5,7 +5,6 @@ specifiers:
   '@types/jsdom': 21.1.0
   '@types/sharp': 0.31.1
   '@typescript-eslint/eslint-plugin': ^5.0.0
-  colors: 1.4.0
   eslint: ^8.0.1
   eslint-config-standard-with-typescript: ^34.0.0
   eslint-plugin-import: ^2.25.2
@@ -21,7 +20,6 @@ specifiers:
   vercel: 28.15.5
 
 dependencies:
-  colors: 1.4.0
   express: 4.18.2
   jsdom: 21.1.0
   node-cache: 5.1.2
@@ -2879,11 +2877,6 @@ packages:
     dependencies:
       color-convert: 2.0.1
       color-string: 1.9.1
-    dev: false
-
-  /colors/1.4.0:
-    resolution: {integrity: sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==}
-    engines: {node: '>=0.1.90'}
     dev: false
 
   /combined-stream/1.0.8:
