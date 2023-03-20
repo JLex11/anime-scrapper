@@ -34,8 +34,16 @@ export interface EpisodeSources {
   videos: VideoList
 }
 
+type BannerImage = {
+  link: string
+  position?: string
+  width?: number
+  height?: number
+}
+
 interface AnimeBase {
   image?: string
+  bannerImages?: BannerImage[]
   title?: string
   type?: string
   rank?: string
