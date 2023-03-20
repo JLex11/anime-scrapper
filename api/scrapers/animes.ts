@@ -1,24 +1,42 @@
 import { JSDOM } from 'jsdom'
 import { animeStatus } from '../enums'
-import { getImageUrl } from '../services/getImageUrl'
+import { getOptimizeImage } from '../services/getOptimizeImage'
 import { requestTextWithCache } from '../services/requestWithCache'
 import { EmisionAnime, ShortAnime } from '../types'
 import { getFulfilledResults } from '../utils/getFulfilledResults'
 import { animeFLVPages } from './../enums'
 import { Anime, Episode } from './../types.d'
 
-const getAnimeOriginalLink = (e: Element | Document) => `${animeFLVPages.BASE}${e.querySelector('a')?.href ?? ''}`
-const getAnimeType = (e: Element | Document) => e.querySelector('.Type')?.textContent?.trim()
-const getAnimeImgLink = (e: Element | Document) => `${animeFLVPages.BASE}${e.querySelector('.Image img')?.getAttribute('src') ?? ''}`
-const getAnimeTitle = (e: Element | Document) => {
-  const titleElement = e.querySelector('h1.Title') || e.querySelector('h3.Title');
+function getAnimeOriginalLink(e: Element | Document) {
+  return `${animeFLVPages.BASE}${e.querySelector('a')?.href ?? ''}`
+}
+
+function getAnimeType(e: Element | Document) {
+  return e.querySelector('.Type')?.textContent?.trim()
+}
+
+function getAnimeImgLink(e: Element | Document) {
+  return `${animeFLVPages.BASE}${e.querySelector('.Image img')?.getAttribute('src') ?? ''}`
+}
+
+function getAnimeTitle(e: Element | Document) {
+  const titleElement = e.querySelector('h1.Title') || e.querySelector('h3.Title')
   return titleElement?.textContent?.trim()
 }
-const getAnimeShortDescription = (e: Element | Document) => e.querySelector('.Description p:last-of-type')?.textContent?.trim()
-const getAnimeRank = (e: Element | Document) => e.querySelector('.Vts')?.textContent?.trim()
-const getAnimeIdFromLink = (link: string) => link.split('anime/').pop()
 
-export async function scrapeLastAnimes(): Promise<ShortAnime[]> {
+function getAnimeShortDescription(e: Element | Document) {
+  return e.querySelector('.Description p:last-of-type')?.textContent?.trim()
+}
+
+function getAnimeRank(e: Element | Document) {
+  return e.querySelector('.Vts')?.textContent?.trim()
+}
+
+function getAnimeIdFromLink(link: string) {
+  return link.split('anime/').pop()
+}
+
+export async function scrapeLastAnimes() {
   const html = await requestTextWithCache(animeFLVPages.BASE)
 
   const { document } = (new JSDOM(html)).window
@@ -34,7 +52,7 @@ export async function scrapeLastAnimes(): Promise<ShortAnime[]> {
     const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    const image = await getImageUrl(imageLink)
+    const image = await getOptimizeImage(imageLink)
 
     return {
       originalLink,
@@ -92,7 +110,7 @@ export async function scrapeRatingAnimes(status: animeStatus): Promise<ShortAnim
     const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    const image = await getImageUrl(imageLink)
+    const image = await getOptimizeImage(imageLink)
 
     return {
       originalLink,
@@ -126,7 +144,7 @@ export async function scrapeFoundAnimes(query: string): Promise<ShortAnime[]> {
     const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    const image = await getImageUrl(imageLink)
+    const image = await getOptimizeImage(imageLink)
 
     return {
       originalLink,
@@ -157,22 +175,22 @@ export async function scrapeFullAnimeInfo(animeId: string): Promise<Anime> {
   const description = getAnimeShortDescription(document)
   const rank = document.querySelector('.vtprmd')?.textContent?.trim()
   const genres = [...document.querySelectorAll('.Nvgnrs a')].map(genre => genre.textContent?.trim())
-  
+
   const scrapedScript = [...document.querySelectorAll('script')].map(s => s.textContent).join(' ')
-  
+
   const [internAnimeId] = JSON.parse(scrapedScript.split('var anime_info = ')[1].split(';')[0])
 
   const episodesInfo = JSON.parse(scrapedScript.split('var episodes = ')[1].split(';')[0])
   const episodesPromises = episodesInfo.map(async ([episodeNumber]: number[]): Promise<Episode> => ({
     episode: episodeNumber,
     originalLink: `${animeFLVPages.BASE}/ver/${animeId}-${episodeNumber}`,
-    image: await getImageUrl(`https://cdn.animeflv.net/screenshots/${internAnimeId}/${episodeNumber}/th_3.jpg`),
+    image: await getOptimizeImage(`https://cdn.animeflv.net/screenshots/${internAnimeId}/${episodeNumber}/th_3.jpg`),
     title
   }))
 
   const episodes = await Promise.all(episodesPromises)
 
-  const image = await getImageUrl(imageLink)
+  const image = await getOptimizeImage(imageLink)
 
   return {
     originalLink,
