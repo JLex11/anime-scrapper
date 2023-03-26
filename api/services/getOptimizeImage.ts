@@ -1,6 +1,6 @@
 import NodeCache from 'node-cache'
 import sharp from 'sharp'
-import { getFileFromS3, uploadFileToS3 } from './awsS3Service'
+import { s3Request } from './awsS3Service'
 import { requestBufferWithCache } from './requestWithCache'
 
 const cacheDefaultConfig = { stdTTL: 604800, useClones: false }
@@ -17,7 +17,7 @@ interface GetOptimizedImage {
     link: string,
     name: string,
     options?: OptimizeOptions
-  ): Promise<string>
+  ): Promise<string | undefined>
 }
 
 const dfOptions = {
@@ -36,7 +36,7 @@ export const getOptimizeImage: GetOptimizedImage = async (link, name, options = 
 
   const imageName = `${name}.webp`
 
-  const s3ImageUrl = await getImageUrlFromS3(imageName)
+  const s3ImageUrl = await s3Request({ operation: 'getObject', fileName: imageName })
   if (s3ImageUrl) {
     requestCache.set(cacheKey, s3ImageUrl, cacheDefaultConfig.stdTTL)
     return s3ImageUrl
@@ -45,7 +45,11 @@ export const getOptimizeImage: GetOptimizedImage = async (link, name, options = 
   const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
   if (!outputImageBuffer) return link
   
-  const uploadedUrl = await uploadFileToS3(outputImageBuffer, imageName)
+  const uploadedUrl = await s3Request({
+    operation: 'putObject',
+    fileName: imageName,
+    fileBuffer: outputImageBuffer
+  })
 
   requestCache.set(cacheKey, uploadedUrl, cacheDefaultConfig.stdTTL)
   return uploadedUrl
@@ -63,8 +67,8 @@ async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: Optimi
       return null
     })
 }
-
+/* 
 async function getImageUrlFromS3(imageName: string) {
   const s3Response = await getFileFromS3(imageName)
   return s3Response ? `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${imageName}` : null
-}
+} */
