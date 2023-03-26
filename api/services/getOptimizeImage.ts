@@ -1,46 +1,62 @@
 import NodeCache from 'node-cache'
 import sharp from 'sharp'
+import { getFileFromS3, uploadFileToS3 } from './awsS3Service'
 import { requestBufferWithCache } from './requestWithCache'
 
 const cacheDefaultConfig = { stdTTL: 604800, useClones: false }
 const requestCache = new NodeCache(cacheDefaultConfig)
 
+type OptimizeOptions = {
+  width?: number
+  height?: number
+  effort?: number
+}
+
 interface GetOptimizedImage {
   (
-    imageLink: string,
-    options?: {
-      width?: number
-      height?: number
-      effort?: number
-    }
+    link: string,
+    name: string,
+    options?: OptimizeOptions
   ): Promise<string>
 }
 
 const dfOptions = {
-  width: 300,
-  height: 450,
+  width: 350,
+  height: 500,
   effort: 6
 }
 
-export const getOptimizeImage: GetOptimizedImage = async (imageLink, options = dfOptions) => {
-  const { width, height, effort } = options
+export const getOptimizeImage: GetOptimizedImage = async (link, name, options = dfOptions) => {
+  const imageArrayBuffer = await requestBufferWithCache(link, { ttl: 86400 })
+  if (!imageArrayBuffer) return link
 
-  const imageArrayBuffer = await requestBufferWithCache(imageLink, { ttl: 86400 })
-  if (imageArrayBuffer == null) return imageLink
-
-  const cacheKey = imageLink
+  const cacheKey = link
   const cacheResource = requestCache.get<ResponseType>(cacheKey)
-
   if (cacheResource) return cacheResource
 
-  const outputImageBuffer = await sharp(Buffer.from(imageArrayBuffer))
+  const s3ImageUrl = await getImageUrlFromS3(`${name}.webp`)
+  if (s3ImageUrl) {
+    requestCache.set(cacheKey, s3ImageUrl, cacheDefaultConfig.stdTTL)
+    return s3ImageUrl
+  }
+
+  const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
+  const uploadedUrl = await uploadFileToS3(outputImageBuffer, `${name}.webp`)
+
+  requestCache.set(cacheKey, uploadedUrl, cacheDefaultConfig.stdTTL)
+  return uploadedUrl
+}
+
+async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: OptimizeOptions) {
+  const { width, height, effort } = options
+
+  return sharp(Buffer.from(imageArrayBuffer))
     .resize(width, height)
     .webp({ effort })
     .toBuffer()
+}
 
-  const base64Image = `data:image/webp;base64,${outputImageBuffer.toString('base64')}`
-  //const imageName = `${new URL(imageLink).pathname.split('/').join('-').replace(/\.[a-zA-Z]+/, '')}.webp`
-
-  requestCache.set(cacheKey, base64Image, cacheDefaultConfig.stdTTL)
-  return base64Image
+async function getImageUrlFromS3(imageName: string) {
+  const s3Response = await getFileFromS3(imageName)
+  return s3Response ? `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${imageName}` : null
 }
