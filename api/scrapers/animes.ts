@@ -1,40 +1,13 @@
 import { JSDOM } from 'jsdom'
 import { animeStatus } from '../enums'
+import { getAnimeBanners } from '../services/getAnimeBanners'
 import { getOptimizeImage } from '../services/getOptimizeImage'
 import { requestTextWithCache } from '../services/requestWithCache'
-import { EmisionAnime, ShortAnime } from '../types'
+import { AnimeImages, EmisionAnime, ShortAnime } from '../types'
 import { getFulfilledResults } from '../utils/getFulfilledResults'
 import { animeFLVPages } from './../enums'
 import { Anime, Episode } from './../types.d'
-
-function getAnimeOriginalLink(e: Element | Document) {
-  return `${animeFLVPages.BASE}${e.querySelector('a')?.href ?? ''}`
-}
-
-function getAnimeType(e: Element | Document) {
-  return e.querySelector('.Type')?.textContent?.trim()
-}
-
-function getAnimeImgLink(e: Element | Document) {
-  return `${animeFLVPages.BASE}${e.querySelector('.Image img')?.getAttribute('src') ?? ''}`
-}
-
-function getAnimeTitle(e: Element | Document) {
-  const titleElement = e.querySelector('h1.Title') || e.querySelector('h3.Title')
-  return titleElement?.textContent?.trim()
-}
-
-function getAnimeShortDescription(e: Element | Document) {
-  return e.querySelector('.Description p:last-of-type')?.textContent?.trim()
-}
-
-function getAnimeRank(e: Element | Document) {
-  return e.querySelector('.Vts')?.textContent?.trim()
-}
-
-function getAnimeIdFromLink(link: string) {
-  return link.split('anime/').pop()
-}
+import { getAnimeIdFromLink, getAnimeImgLink, getAnimeOriginalLink, getAnimeRank, getAnimeShortDescription, getAnimeTitle, getAnimeType } from './animeGetters'
 
 export async function scrapeLastAnimes() {
   const html = await requestTextWithCache(animeFLVPages.BASE)
@@ -52,7 +25,7 @@ export async function scrapeLastAnimes() {
     const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    const image = await getOptimizeImage(imageLink)
+    const image = await getOptimizeImage(imageLink, animeId ?? 'unknow')
 
     return {
       originalLink,
@@ -110,11 +83,13 @@ export async function scrapeRatingAnimes(status: animeStatus): Promise<ShortAnim
     const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    const image = await getOptimizeImage(imageLink)
+    const images: AnimeImages = {
+      coverImage: await getOptimizeImage(imageLink, animeId ?? 'unknow'),
+    }
 
     return {
       originalLink,
-      image,
+      images,
       title,
       type,
       shortDescription,
@@ -144,11 +119,13 @@ export async function scrapeFoundAnimes(query: string): Promise<ShortAnime[]> {
     const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    const image = await getOptimizeImage(imageLink)
+    const images: AnimeImages = {
+      coverImage: await getOptimizeImage(imageLink, animeId ?? 'unknow')
+    }
 
     return {
       originalLink,
-      image,
+      images,
       title,
       type,
       shortDescription,
@@ -163,6 +140,8 @@ export async function scrapeFoundAnimes(query: string): Promise<ShortAnime[]> {
 }
 
 export async function scrapeFullAnimeInfo(animeId: string): Promise<Anime> {
+  if (!animeId.match(/^[\w-]+(?:\d+[a-z]*)?(?:-[\w-]+)*$/)) return {} as Anime
+
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
   const html = await requestTextWithCache(`${animeFLVPages.BASE}/anime/${animeId}`, { ttl: 2592000 })
 
@@ -184,17 +163,28 @@ export async function scrapeFullAnimeInfo(animeId: string): Promise<Anime> {
   const episodesPromises = episodesInfo.map(async ([episodeNumber]: number[]): Promise<Episode> => ({
     episode: episodeNumber,
     originalLink: `${animeFLVPages.BASE}/ver/${animeId}-${episodeNumber}`,
-    image: await getOptimizeImage(`https://cdn.animeflv.net/screenshots/${internAnimeId}/${episodeNumber}/th_3.jpg`),
-    title
+    title,
+    image: await getOptimizeImage(
+      `https://cdn.animeflv.net/screenshots/${internAnimeId}/${episodeNumber}/th_3.jpg`,
+      `${animeId}-${episodeNumber}`,
+      {
+        width: 450,
+        height: 350,
+        effort: 6
+      }
+    ),
   }))
 
   const episodes = await Promise.all(episodesPromises)
 
-  const image = await getOptimizeImage(imageLink)
+  const images: AnimeImages = {
+    coverImage: await getOptimizeImage(imageLink, animeId ?? 'unknow'),
+    bannerImages: await getAnimeBanners(title)
+  }
 
   return {
     originalLink,
-    image,
+    images,
     title,
     otherTitles,
     type,

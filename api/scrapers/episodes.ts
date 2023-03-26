@@ -15,19 +15,19 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
   const mappedLastEpidodes = episodesList.map(async episodeItem => {
     const originalLink = `${animeFLVPages.BASE}${episodeItem.querySelector('a')?.href ?? ''}`
     const imageLink = `${animeFLVPages.BASE}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
-    const episode = episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '')
+    const episode = +(episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '') ?? 0)
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
-    const id = originalLink.split('ver/').pop()
+    const episodeId = originalLink.split('ver/').pop()
     const animeId = title?.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-').toLowerCase()
 
-    const image = await getOptimizeImage(imageLink)
+    const image = await getOptimizeImage(imageLink, episodeId ?? animeId ?? 'unknown')
 
     return {
       originalLink,
       image,
       episode,
       title,
-      id,
+      episodeId,
       animeId
     }
   })
@@ -37,7 +37,14 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
   return await Promise.all(successfulResults)
 }
 
-export async function scrapeEpisodeSources (episodeId: string): Promise<EpisodeSources> {
+export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSources> {
+  if (!episodeId) {
+    return {
+      episode: 0,
+      videos: []
+    }
+  }
+
   const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${episodeId}`, { ttl: 259200 })
 
   const { document } = new JSDOM(html).window
@@ -48,8 +55,8 @@ export async function scrapeEpisodeSources (episodeId: string): Promise<EpisodeS
 
   /* const animeId = scrapedScript.split('var anime_id = ')[1].split(';')[0].replace(/"/g, '')
   const episodeId = scrapedScript.split('var episode_id = ')[1].split(';')[0].replace(/"/g, '') */
-  const episode = scrapedScript.split('var episode_number = ')[1].split(';')[0].replace(/"/g, '')
-  const videos = JSON.parse(scrapedScript.split('var videos = ')[1].split(';')[0])
+  const episode = +(scrapedScript?.split('var episode_number = ')?.[1]?.split(';')?.[0]?.replace(/"/g, '') ?? 0)
+  const videos = JSON.parse(scrapedScript?.split('var videos = ')?.[1]?.split(';')?.[0] ?? '[]')
 
   return {
     episode,
