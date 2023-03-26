@@ -1,17 +1,12 @@
-interface EpisodeBase {
+interface Episode {
   originalLink?: string
   title?: string
-}
-
-export interface Episode extends EpisodeBase {
+  image?: string
   episode?: number
-  image?: string
 }
 
-export interface LastEpisode extends EpisodeBase {
-  image?: string
-  episode?: string
-  id?: string
+export interface LastEpisode extends Episode {
+  episodeId?: string
   animeId?: string
 }
 
@@ -22,6 +17,7 @@ export interface EpisodeVideo {
   url?: string
   allow_mobile: boolean
   code: string
+  episodeId: string
 }
 
 export interface VideoList {
@@ -30,8 +26,8 @@ export interface VideoList {
 }
 
 export interface EpisodeSources {
-  episode: string
-  videos: VideoList
+  episode: number
+  videos: VideoList | EpisodeVideo[] | []
 }
 
 type BannerImage = {
@@ -41,9 +37,13 @@ type BannerImage = {
   height?: number
 }
 
-interface AnimeBase {
-  image?: string
+type AnimeImages = {
+  coverImage?: string
   bannerImages?: BannerImage[]
+}
+
+interface AnimeBase {
+  images?: AnimeImages
   title?: string
   type?: string
   rank?: string
