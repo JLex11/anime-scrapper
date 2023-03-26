@@ -15,17 +15,19 @@ export async function scrapeLastAnimes() {
   const { document } = (new JSDOM(html)).window
 
   const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
+  animeList.length = 5
 
   const mappedLastAnimes = animeList.map<Promise<ShortAnime>>(async animeItem => {
     const originalLink = getAnimeOriginalLink(animeItem)
-    const type = getAnimeType(animeItem)
-    const imageLink = getAnimeImgLink(animeItem)
-    const title = getAnimeTitle(animeItem)
-    const shortDescription = getAnimeShortDescription(animeItem)
-    const rank = getAnimeRank(animeItem)
+    // const type = getAnimeType(animeItem)
+    // const imageLink = getAnimeImgLink(animeItem)
+    // const title = getAnimeTitle(animeItem)
+    // const shortDescription = getAnimeShortDescription(animeItem)
+    // const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
+    return await scrapeFullAnimeInfo(animeId ?? '')
 
-    const images: AnimeImages = {
+    /* const images: AnimeImages = {
       coverImage: await getOptimizeImage(imageLink, animeId ?? 'unknow'),
     }
 
@@ -36,8 +38,9 @@ export async function scrapeLastAnimes() {
       type,
       shortDescription,
       rank,
-      animeId
-    }
+      animeId,
+      ...(await scrapeFullAnimeInfo(animeId))
+    } */
   })
 
   const results = await Promise.allSettled(mappedLastAnimes)
