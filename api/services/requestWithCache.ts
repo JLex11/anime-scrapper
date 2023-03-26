@@ -22,7 +22,6 @@ interface FetchAndCache {
   ): Promise<FetchResponse>
 }
 
-
 const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
   const cacheKey = JSON.stringify({ url, config })
 
@@ -30,7 +29,7 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
     const cacheResource = requestCache.get<ResponseType>(cacheKey)
 
     if (cacheResource != null) {
-      console.log(`From cache: $${cacheKey}`)
+      //console.log(`From cache: ${cacheKey}`)
       resolve({
         response: null,
         resource: cacheResource
