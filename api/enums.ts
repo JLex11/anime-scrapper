@@ -23,3 +23,8 @@ export enum endPoints {
   RATING_ANIMES = '/animes/latest/rating',
   SEARCH_ANIMES = '/animes/search/:query'
 }
+
+export enum GoogleApi {
+  API_URL = 'https://www.googleapis.com/customsearch/v1?',
+  SEARCH_ENGINE_ID = 'd605fa7e0557f4774'
+}
