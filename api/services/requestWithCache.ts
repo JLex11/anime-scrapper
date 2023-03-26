@@ -7,7 +7,7 @@ const requestCache = new NodeCache(cacheDefaultConfig)
 
 interface FetchResponse {
   response: Response | null
-  resource: any
+  resource: any | null
 }
 
 interface RequestCacheInit extends RequestInit {
@@ -43,8 +43,13 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
       : responseType === ResponseType.TEXT
         ? await response.text()
         : await response.arrayBuffer()
+    
     requestCache.set(cacheKey, resource, config?.ttl ?? cacheDefaultConfig.stdTTL)
+
     return { response, resource }
+  }).catch(error => {
+    console.error(error)
+    return { response: null, resource: null }
   })
 
   return await Promise.race([cachePromise, responsePromise])

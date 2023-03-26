@@ -25,11 +25,13 @@ export async function scrapeLastAnimes() {
     const rank = getAnimeRank(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    const image = await getOptimizeImage(imageLink, animeId ?? 'unknow')
+    const images: AnimeImages = {
+      coverImage: await getOptimizeImage(imageLink, animeId ?? 'unknow'),
+    }
 
     return {
       originalLink,
-      image,
+      images,
       title,
       type,
       shortDescription,

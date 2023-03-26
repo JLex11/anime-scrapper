@@ -34,14 +34,18 @@ export const getOptimizeImage: GetOptimizedImage = async (link, name, options = 
   const cacheResource = requestCache.get<ResponseType>(cacheKey)
   if (cacheResource) return cacheResource
 
-  const s3ImageUrl = await getImageUrlFromS3(`${name}.webp`)
+  const imageName = `${name}.webp`
+
+  const s3ImageUrl = await getImageUrlFromS3(imageName)
   if (s3ImageUrl) {
     requestCache.set(cacheKey, s3ImageUrl, cacheDefaultConfig.stdTTL)
     return s3ImageUrl
   }
 
   const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
-  const uploadedUrl = await uploadFileToS3(outputImageBuffer, `${name}.webp`)
+  if (!outputImageBuffer) return link
+  
+  const uploadedUrl = await uploadFileToS3(outputImageBuffer, imageName)
 
   requestCache.set(cacheKey, uploadedUrl, cacheDefaultConfig.stdTTL)
   return uploadedUrl
@@ -54,6 +58,10 @@ async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: Optimi
     .resize(width, height)
     .webp({ effort })
     .toBuffer()
+    .catch(error => {
+      console.error(error)
+      return null
+    })
 }
 
 async function getImageUrlFromS3(imageName: string) {
