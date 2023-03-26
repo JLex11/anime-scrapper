@@ -51,7 +51,7 @@ export const getAnimeBanners: GetAnimeBanners = async (keywords) => {
         height: image.height,
         effort: 5
       }
-    )
+    ) ?? image.link
 
     return image
   }))
