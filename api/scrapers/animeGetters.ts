@@ -8,6 +8,10 @@ export const getAnimeOriginalLink: SelectorGetter = (e) => {
   return `${animeFLVPages.BASE}${e.querySelector('a')?.href ?? ''}`
 }
 
+export const getAnimeStatus: SelectorGetter = (e, selector = '.AnmStts span') => {
+  return e.querySelector(selector)?.textContent?.trim() ?? ''
+}
+
 export const getAnimeType: SelectorGetter = (e, selector = '.Type') => {
   return e.querySelector(selector)?.textContent?.trim() ?? ''
 }
