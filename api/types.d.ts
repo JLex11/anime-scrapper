@@ -57,6 +57,7 @@ export interface Anime extends AnimeBase {
   otherTitles?: otherTitle[]
   description?: string
   originalLink?: string
+  status?: string
   genres: genre[]
   episodes: Episode[]
 }
