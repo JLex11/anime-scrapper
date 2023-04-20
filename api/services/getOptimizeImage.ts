@@ -23,7 +23,7 @@ interface GetOptimizedImage {
 const dfOptions = {
   width: 350,
   height: 500,
-  effort: 6
+  effort: 4,
 }
 
 export const getOptimizeImage: GetOptimizedImage = async (link, name, options = dfOptions) => {
@@ -43,12 +43,12 @@ export const getOptimizeImage: GetOptimizedImage = async (link, name, options = 
   }
 
   const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
-  if (!outputImageBuffer) return link
-  
+  if (!outputImageBuffer) return '' //link
+
   const uploadedUrl = await s3Request({
     operation: 'putObject',
     fileName: imageName,
-    fileBuffer: outputImageBuffer
+    fileBuffer: outputImageBuffer,
   })
 
   requestCache.set(cacheKey, uploadedUrl, cacheDefaultConfig.stdTTL)
