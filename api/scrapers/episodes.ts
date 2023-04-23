@@ -20,7 +20,9 @@ export async function scrapeLastEpisodes (): Promise<LastEpisode[]> {
     const episodeId = originalLink.split('ver/').pop()
     const animeId = title?.replace(/[^a-zA-Z0-9 ]/g, '').replace(/ /g, '-').toLowerCase()
 
-    const image = await getOptimizeImage(imageLink, episodeId ?? animeId ?? 'unknown')
+    const imageName = episodeId ?? animeId ?? 'unknown'
+    const imageOptions = { width: 350, height: 250, effort: 4 }
+    const image = await getOptimizeImage(imageLink, imageName, imageOptions)
 
     return {
       originalLink,
