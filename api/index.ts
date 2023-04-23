@@ -7,6 +7,8 @@ import episodesRouter from './router/episodes'
 import routesDocumentation from './router/routesDocumentation'
 dotenv.config()
 
+const PORT = process.env.PORT ?? 3002
+
 const app = express()
 
 app.use(cors())
@@ -22,8 +24,4 @@ app.use('/api', routesDocumentation)
 app.use('/api', animesRouter)
 app.use('/api', episodesRouter)
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(3002, () => console.log('Server running on port 3002'))
-}
- 
-export default app
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
