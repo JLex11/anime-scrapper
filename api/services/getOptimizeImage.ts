@@ -67,8 +67,3 @@ async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: Optimi
       return null
     })
 }
-/* 
-async function getImageUrlFromS3(imageName: string) {
-  const s3Response = await getFileFromS3(imageName)
-  return s3Response ? `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_S3_REGION}.amazonaws.com/${imageName}` : null
-} */
