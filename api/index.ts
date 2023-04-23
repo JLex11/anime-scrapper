@@ -21,7 +21,7 @@ app.use((req, _, next) => {
 })
 
 app.use('/api', routesDocumentation)
-app.use('/api', animesRouter)
-app.use('/api', episodesRouter)
+app.use('/api/animes', animesRouter)
+app.use('/api/episodes', episodesRouter)
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))

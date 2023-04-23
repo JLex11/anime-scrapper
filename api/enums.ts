@@ -15,13 +15,13 @@ export enum animeFLVPages {
 }
 
 export enum endPoints {
-  LATEST_EPISODES = '/episodes/latest',
-  EPISODE_SOURCES = '/episodes/sources/:id',
-  ANIME_INFO = '/animes/:animeId',
-  LATEST_ANIMES = '/animes/latest',
-  BROADCAST_ANIMES = '/animes/broadcast',
-  RATING_ANIMES = '/animes/latest/rating',
-  SEARCH_ANIMES = '/animes/search/:query'
+  LATEST_EPISODES = '/latest',
+  EPISODE_SOURCES = '/sources/:id',
+  ANIME_INFO = '/:animeId',
+  LATEST_ANIMES = '/latest',
+  BROADCAST_ANIMES = '/broadcast',
+  RATING_ANIMES = '/latest/rating',
+  SEARCH_ANIMES = '/search/:query',
 }
 
 export enum GoogleApi {
