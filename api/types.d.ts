@@ -1,12 +1,14 @@
+import { Database } from './supabase'
+
 interface Episode {
   originalLink?: string
   title?: string
   image?: string
   episode?: number
+  episodeId?: string
 }
 
 export interface LastEpisode extends Episode {
-  episodeId?: string
   animeId?: string
 }
 
@@ -30,42 +32,39 @@ export interface EpisodeSources {
   videos: VideoList | EpisodeVideo[] | []
 }
 
-type BannerImage = {
+type CarouselImage = {
   link: string
-  position?: string
-  width?: number
-  height?: number
+  position: string
+  width: number
+  height: number
 }
 
 type AnimeImages = {
-  coverImage?: string
-  bannerImages?: BannerImage[]
+  coverImage: string
+  carouselImages: CarouselImage[]
 }
 
-interface AnimeBase {
-  images?: AnimeImages
-  title?: string
-  type?: string
-  rank?: string
-  animeId?: string
+export interface Anime {
+  images?: AnimeImages | null
+  title: string
+  type?: string | null
+  rank?: number | null
+  animeId: string
+  otherTitles?: string[] | null
+  description?: string | null
+  originalLink?: string | null
+  status?: string | null
+  genres?: string[] | null
 }
 
-export type otherTitle = string | undefined
-export type genre = string | undefined
+export type AnimeColumns = Omit<Database['public']['Tables']['animes']['Row'], 'images'>
 
-export interface Anime extends AnimeBase {
-  otherTitles?: otherTitle[]
-  description?: string
-  originalLink?: string
-  status?: string
-  genres: genre[]
-  episodes: Episode[]
-}
-
-export interface ShortAnime extends AnimeBase {
-  shortDescription?: string
-}
-
-export interface EmisionAnime extends AnimeBase {
-  type?: string
+export type ColumnType<T> = {
+  [K in keyof T]: T[K] extends string
+    ? string
+    : T[K] extends number | null
+    ? number
+    : T[K] extends (string | null)[]
+    ? (string | null)[]
+    : never
 }
