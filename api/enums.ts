@@ -10,6 +10,11 @@ export enum animeStatus {
   SOON = '3'
 }
 
+export enum IMG_POSITIONS {
+  CENTER = '50% 50%',
+  TOP = '50% 20%',
+}
+
 export enum animeFLVPages {
   BASE = 'https://www3.animeflv.net',
 }
@@ -18,10 +23,12 @@ export enum endPoints {
   LATEST_EPISODES = '/latest',
   EPISODE_SOURCES = '/sources/:id',
   ANIME_INFO = '/:animeId',
+  ANIME_EPISODES = '/:animeId/episodes',
   LATEST_ANIMES = '/latest',
-  BROADCAST_ANIMES = '/broadcast',
   RATING_ANIMES = '/latest/rating',
+  BROADCAST_ANIMES = '/broadcast',
   SEARCH_ANIMES = '/search/:query',
+  ANIME_DIRECTORY = '/directory',
 }
 
 export enum GoogleApi {
