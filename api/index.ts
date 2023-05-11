@@ -1,6 +1,7 @@
 import cors from 'cors'
 import * as dotenv from 'dotenv'
 import express from 'express'
+import morgan from 'morgan'
 import { setOriginPath } from './config'
 import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
@@ -14,6 +15,7 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 app.use(express.static('public'))
+app.use(morgan('dev'))
 
 app.use((req, _, next) => {
   setOriginPath(`${req.protocol}://${req.get('host')}`)
