@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import { scrapeEpisodeSources, scrapeLastEpisodes } from '../scrapers/episodes'
+import { scrapeEpisodeSources } from '../scrapers/episodes/scrapeEpisodeSources'
+import { scrapeLastEpisodes } from '../scrapers/episodes/scrapeLastEpisodes'
 import { endPoints } from './../enums'
 import { EpisodeSources } from './../types.d'
 
