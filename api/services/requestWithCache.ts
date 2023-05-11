@@ -29,10 +29,9 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
     const cacheResource = requestCache.get<ResponseType>(cacheKey)
 
     if (cacheResource != null) {
-      //console.log(`From cache: ${cacheKey}`)
       resolve({
         response: null,
-        resource: cacheResource
+        resource: cacheResource,
       })
     }
   })

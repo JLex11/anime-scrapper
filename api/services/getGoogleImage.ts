@@ -13,7 +13,7 @@ export const getGoogleImage = async (query: string, config?: GoogleRequestConfig
     imgSize: config?.imgSize ?? 'huge',
     key: GOOGLE_API_KEY,
     cx: GoogleApi.SEARCH_ENGINE_ID,
-    num: config?.num ?? '5'
+    num: config?.num ?? '5',
   }
 
   const fullConfig = {
