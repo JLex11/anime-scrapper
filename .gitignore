@@ -3,6 +3,7 @@ pnpm-lock.yaml
 dist
 dist/*
 .env
+Notes.md
 
 .vercel
 vercel.json
