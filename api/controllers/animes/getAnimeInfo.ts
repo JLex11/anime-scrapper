@@ -3,20 +3,20 @@ import { createAnime, getAnimeBy } from '../../services/database/animes'
 import { Database } from '../../supabase'
 
 export const getAnimeInfo = async (animeId: string) => {
-  const animeResponse = await getAnimeBy('animeId', animeId)
-  if (animeResponse.data && animeResponse.data.length > 0) {
-    return animeResponse.data[0]
+  const animeInfo = await getAnimeBy('animeId', animeId)
+  if (animeInfo.data && animeInfo.data.length > 0) {
+    return animeInfo.data[0]
   }
 
-  const scrapeAnime = await scrapeFullAnimeInfo(animeId)
-  if (scrapeAnime) {
+  const scrapedAnime = await scrapeFullAnimeInfo(animeId)
+  if (scrapedAnime) {
     type AnimeInsert = Database['public']['Tables']['animes']['Insert']
-    const animeToCreate: AnimeInsert = scrapeAnime
+    const animeToCreate: AnimeInsert = scrapedAnime
 
     createAnime(animeToCreate).then(response => {
       console.log(response)
     })
   }
 
-  return scrapeAnime
+  return scrapedAnime
 }
