@@ -1,11 +1,16 @@
 import { Router } from 'express'
 import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
-import { scrapeAllAnimes } from '../scrapers/animes/scrapeAllAnimes'
+/* import { scrapeAllAnimes } from '../scrapers/animes/scrapeAllAnimes'
 import { scrapeAnimeEpisodes } from '../scrapers/animes/scrapeAnimeEpisodes'
 import { scrapeEmisionAnimes } from '../scrapers/animes/scrapeEmisionAnimes'
 import { scrapeLastAnimes } from '../scrapers/animes/scrapeLastAnimes'
-import { scrapeRatingAnimes } from '../scrapers/animes/scrapeRatingAnimes'
+import { scrapeRatingAnimes } from '../scrapers/animes/scrapeRatingAnimes' */
+import { scrapeAllAnimes } from '../../src/scrapers/animes/scrapeAllAnimes'
+import { scrapeAnimeEpisodes } from '../../src/scrapers/animes/scrapeAnimeEpisodes'
+import { scrapeEmisionAnimes } from '../../src/scrapers/animes/scrapeEmisionAnimes'
+import { scrapeLastAnimes } from '../../src/scrapers/animes/scrapeLastAnimes'
+import { scrapeRatingAnimes } from '../../src/scrapers/animes/scrapeRatingAnimes'
 import { Episode } from '../types.d'
 import { animeStatus, endPoints } from './../enums'
 

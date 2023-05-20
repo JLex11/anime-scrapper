@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { getOriginPath } from '../config'
-import { mapOriginPath } from '../utils/mapOriginPath'
+/* import { mapOriginPath } from '../utils/mapOriginPath' */
+import { mapOriginPath } from '../../src/utils/mapOriginPath'
 import { endPoints } from './../enums'
 
 const router = Router()

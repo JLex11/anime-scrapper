@@ -1,4 +1,6 @@
-import { getAnimesByQuery } from '../../services/database/animes'
+/* import { getAnimesByQuery } from '../../services/database/animes' */
+
+import { getAnimesByQuery } from '../../../src/services/database/animes'
 
 export const searchAnimes = async (query: string, limit?: number) => {
   const animesResponse = await getAnimesByQuery(query, limit || 30)

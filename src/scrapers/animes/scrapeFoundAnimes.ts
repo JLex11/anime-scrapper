@@ -1,8 +1,11 @@
 import { JSDOM } from 'jsdom'
-import { getAnimeInfo } from '../../controllers/animes/getAnimeInfo'
-import { animeFLVPages } from '../../enums'
+/* import { getAnimeInfo } from '../../controllers/animes/getAnimeInfo'
+import { animeFLVPages } from '../../enums' */
 import { requestTextWithCache } from '../../services/requestWithCache'
-import { Anime } from '../../types.d'
+/* import { Anime } from '../../types.d' */
+import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
+import { animeFLVPages } from '../../../api/enums'
+import { Anime } from '../../../api/types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
 
@@ -15,11 +18,11 @@ export async function scrapeFoundAnimes(query: string): Promise<Anime[]> {
 
   const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
 
-  const mappedFoundAnimes = animeList.map<Promise<Anime>>(async animeItem => {
+  const mappedFoundAnimes = animeList.map<Promise<Anime>>(animeItem => {
     const originalLink = getAnimeOriginalLink(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    return await getAnimeInfo(animeId)
+    return getAnimeInfo(animeId)
   })
 
   const results = await Promise.allSettled(mappedFoundAnimes)

@@ -1,4 +1,6 @@
-import { animeFLVPages } from '../../enums'
+/* import { animeFLVPages } from '../../enums' */
+
+import { animeFLVPages } from '../../../api/enums'
 
 interface SelectorGetter<T> {
   (e: Element | Document, selector?: string): T
