@@ -3,7 +3,6 @@ import { animeFLVPages } from '../../enums'
 import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import { LastEpisode } from '../../types.d'
-import { getFulfilledResults } from '../../utils/getFulfilledResults'
 
 export async function scrapeLastEpisodes(): Promise<LastEpisode[]> {
   const html = await requestTextWithCache(animeFLVPages.BASE)
@@ -37,7 +36,7 @@ export async function scrapeLastEpisodes(): Promise<LastEpisode[]> {
     }
   })
 
-  const results = await Promise.allSettled(mappedLastEpidodes)
-  const successfulResults = getFulfilledResults(results)
-  return await Promise.all(successfulResults)
+  const results = await Promise.all(mappedLastEpidodes)
+  //const successfulResults = getFulfilledResults(results)
+  return results /* await Promise.all(successfulResults) */
 }
