@@ -15,6 +15,37 @@ const client = new S3Client({
   },
 })
 
+/*
+
+const authorization = MY_AWS_ACCESS_KEY_ID;
+
+async function fetchImage() {
+  const url = `https://${MY_AWS_S3_BUCKET}.s3.${MY_AWS_S3_REGION}.amazonaws.com/${fileName}`;
+  const headers = new Headers();
+  headers.append('Host', bucketName);
+  headers.append('Date', new Date().toUTCString());
+  headers.append('x-amz-date', new Date().toUTCString());
+  headers.append('Authorization', authorization);
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: headers,
+  });
+
+  if (response.status === 200) {
+    const imageData = await response.blob();
+
+    // Do something with the image data...
+  } else {
+    console.log('Error fetching image:', response.status);
+  }
+}
+
+fetchImage();
+
+
+*/
+
 interface S3Request {
   operation: 'putObject' | 'getObject'
   fileName: string
