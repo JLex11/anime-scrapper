@@ -15,7 +15,7 @@ export async function scrapeLastEpisodes(): Promise<LastEpisode[]> {
   const mappedLastEpidodes = episodesList.map(async episodeItem => {
     const originalLink = `${animeFLVPages.BASE}${episodeItem.querySelector('a')?.href ?? ''}`
     const imageLink = `${animeFLVPages.BASE}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
-    const episode = +(episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '') ?? 0)
+    const episode = Number(episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '') ?? 0)
     const title = episodeItem.querySelector('.Title')?.textContent?.trim()
     const episodeId = originalLink.split('ver/').pop()
     const animeId = title
