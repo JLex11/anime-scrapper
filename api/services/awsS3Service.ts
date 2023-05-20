@@ -2,10 +2,10 @@ import { HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-const MY_AWS_ACCESS_KEY_ID = process.env.MY_AWS_ACCESS_KEY_ID
-const MY_AWS_SECRET_ACCESS_KEY = process.env.MY_AWS_SECRET_ACCESS_KEY
-const MY_AWS_S3_REGION = process.env.MY_AWS_S3_REGION
-const MY_AWS_S3_BUCKET = process.env.MY_AWS_S3_BUCKET
+const MY_AWS_ACCESS_KEY_ID = 'AKIASXMGBSOAZQXCS3GM' //process.env.MY_AWS_ACCESS_KEY_ID
+const MY_AWS_SECRET_ACCESS_KEY = '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' //process.env.MY_AWS_SECRET_ACCESS_KEY
+const MY_AWS_S3_BUCKET = 'anime-app' //process.env.MY_AWS_S3_BUCKET
+const MY_AWS_S3_REGION = 'us-east-1' //process.env.MY_AWS_S3_REGION
 
 const client = new S3Client({
   region: MY_AWS_S3_REGION,
