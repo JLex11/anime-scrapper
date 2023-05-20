@@ -26,7 +26,7 @@ const dfOptions = {
   effort: 4,
 }
 
-export const getOptimizeImage: GetOptimizedImage = async (link, name, options = dfOptions) => {
+export const getOptimizeImage: GetOptimizedImage = async (link, name, options = dfOptions): Promise<string | undefined> => {
   const imageArrayBuffer = await requestBufferWithCache(link, { ttl: 86400 })
   if (!imageArrayBuffer) return link
 

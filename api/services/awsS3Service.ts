@@ -30,7 +30,7 @@ export async function s3Request({ operation, fileName, fileBuffer }: S3Request) 
     return s3GetOperation({ fileName })
   }
 
-  return
+  return undefined
 }
 
 interface S3PutOperation {
@@ -65,7 +65,7 @@ async function s3PutOperation({ fileName, fileBuffer }: S3PutOperation) {
   return `https://${MY_AWS_S3_BUCKET}.s3.${MY_AWS_S3_REGION}.amazonaws.com/${fileName}`
 }
 
-async function s3GetOperation({ fileName }: { fileName: string }) {
+async function s3GetOperation({ fileName }: { fileName: string }): Promise<string | undefined> {
   /* const command = new HeadObjectCommand({
     Bucket: MY_AWS_S3_BUCKET!,
     Key: fileName,
@@ -82,12 +82,12 @@ async function s3GetOperation({ fileName }: { fileName: string }) {
     method: 'HEAD',
   })
 
-  await fetch(request)
+  return fetch(request)
     .then(response => {
       console.log(response)
       return `https://${MY_AWS_S3_BUCKET}.s3.${MY_AWS_S3_REGION}.amazonaws.com/${fileName}`
     })
     .catch(error => {
-      return
+      return undefined
     })
 }
