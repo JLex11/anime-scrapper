@@ -1,7 +1,9 @@
 import { JSDOM } from 'jsdom'
-import { animeFLVPages } from '../../enums'
+/* import { animeFLVPages } from '../../enums' */
+import { animeFLVPages } from '../../../api/enums'
+import { EpisodeSources } from '../../../api/types'
 import { requestTextWithCache } from '../../services/requestWithCache'
-import { EpisodeSources } from '../../types.d'
+/* import { EpisodeSources } from '../../types.d' */
 
 export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSources> {
   if (!episodeId) {

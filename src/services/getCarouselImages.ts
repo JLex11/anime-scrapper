@@ -1,6 +1,9 @@
-import { IMG_POSITIONS } from '../enums'
+/* import { IMG_POSITIONS } from '../enums'
 import { GoogleImage } from '../googleTypes'
-import { CarouselImage } from '../types.d'
+import { CarouselImage } from '../types.d' */
+import { IMG_POSITIONS } from '../../api/enums'
+import { GoogleImage } from '../../api/googleTypes'
+import { CarouselImage } from '../../api/types'
 import { getGoogleImage } from './getGoogleImage'
 import { getOptimizeImage } from './getOptimizeImage'
 
@@ -29,8 +32,8 @@ export const getCarouselImages = async (keywords: string[] | string): Promise<Ca
 
   const carouselImages: CarouselImage[] = googleImageItems
     .filter(Boolean)
-    .map(item => buildImageObject(item.link, item.image))
-    .sort((a, b) => (b.position ?? 'b').localeCompare(a.position ?? 'a'))
+    .map((item: any) => buildImageObject(item.link, item.image))
+    .sort((a: any, b: any) => (b.position ?? 'b').localeCompare(a.position ?? 'a'))
 
   carouselImages.length = 2
 

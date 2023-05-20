@@ -1,8 +1,10 @@
 import { JSDOM } from 'jsdom'
-import { animeFLVPages } from '../../enums'
+/* import { animeFLVPages } from '../../enums' */
+import { animeFLVPages } from '../../../api/enums'
+import { LastEpisode } from '../../../api/types'
 import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
-import { LastEpisode } from '../../types.d'
+/* import { LastEpisode } from '../../types.d' */
 
 export async function scrapeLastEpisodes(): Promise<LastEpisode[]> {
   const html = await requestTextWithCache(animeFLVPages.BASE)

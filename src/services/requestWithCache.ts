@@ -1,5 +1,6 @@
 import NodeCache from 'node-cache'
-import { ResponseType } from '../enums'
+import { ResponseType } from '../../api/enums'
+/* import { ResponseType } from '../enums' */
 
 const cacheDefaultConfig = { stdTTL: 10800, useClones: false }
 
