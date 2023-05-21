@@ -49,6 +49,7 @@ export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit
 
     return {
       episodeId,
+      animeId,
       title,
       episode,
       originalLink,

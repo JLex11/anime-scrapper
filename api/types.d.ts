@@ -6,6 +6,7 @@ interface Episode {
   image?: string
   episode?: number
   episodeId?: string
+  animeId?: string
 }
 
 export interface LastEpisode extends Episode {
@@ -55,6 +56,7 @@ export interface Anime {
   originalLink?: string | null
   status?: string | null
   genres?: string[] | null
+  created_at: string
 }
 
 export type AnimeColumns = Omit<Database['public']['Tables']['animes']['Row'], 'images'>
