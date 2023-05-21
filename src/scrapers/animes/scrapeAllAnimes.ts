@@ -1,7 +1,4 @@
 import { JSDOM } from 'jsdom'
-/* import { getAnimeInfo } from '../../controllers/animes/getAnimeInfo'
-import { animeFLVPages } from '../../enums'
-import { Anime } from '../../types.d' */
 import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
 import { animeFLVPages } from '../../../api/enums'
 import { Anime } from '../../../api/types'

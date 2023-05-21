@@ -1,11 +1,8 @@
 import { JSDOM } from 'jsdom'
-/* import { getAnimeInfo } from '../../controllers/animes/getAnimeInfo'
-import { animeFLVPages, animeStatus } from '../../enums' */
-import { requestTextWithCache } from '../../services/requestWithCache'
-/* import { Anime } from '../../types.d' */
 import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
 import { animeFLVPages, animeStatus } from '../../../api/enums'
 import { Anime } from '../../../api/types'
+import { requestTextWithCache } from '../../services/requestWithCache'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
 

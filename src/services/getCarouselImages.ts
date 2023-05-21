@@ -1,6 +1,3 @@
-/* import { IMG_POSITIONS } from '../enums'
-import { GoogleImage } from '../googleTypes'
-import { CarouselImage } from '../types.d' */
 import { IMG_POSITIONS } from '../../api/enums'
 import { GoogleImage } from '../../api/googleTypes'
 import { CarouselImage } from '../../api/types'

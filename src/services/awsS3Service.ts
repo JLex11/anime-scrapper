@@ -1,4 +1,3 @@
-/* import { S3Client } from '@aws-sdk/client-s3' */
 import { HeadObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import * as dotenv from 'dotenv'
 dotenv.config()

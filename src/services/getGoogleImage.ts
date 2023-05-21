@@ -1,5 +1,3 @@
-/* import { GoogleApi } from '../enums'
-import { GoogleRequestConfig, GoogleSearchResponse } from './../googleTypes.d' */
 import { GoogleApi } from '../../api/enums'
 import { GoogleRequestConfig, GoogleSearchResponse } from '../../api/googleTypes'
 import { requestJsonWithCache } from './requestWithCache'

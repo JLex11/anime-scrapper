@@ -1,5 +1,3 @@
-/* import { scrapeFullAnimeInfo } from '../../scrapers/animes/scrapeFullAnimeInfo'
-import { createAnime, getAnimeBy } from '../../services/database/animes' */
 import { scrapeFullAnimeInfo } from '../../../src/scrapers/animes/scrapeFullAnimeInfo'
 import { createAnime, getAnimeBy } from '../../../src/services/database/animes'
 import { Database } from '../../supabase'

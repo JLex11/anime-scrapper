@@ -26,7 +26,7 @@ const dfOptions = {
   effort: 4,
 }
 
-export const getOptimizeImage: GetOptimizedImage = async (link, name, options = dfOptions): Promise<string | undefined> => {
+export const getOptimizeImage: GetOptimizedImage = async (link, name, options = dfOptions) => {
   const imageArrayBuffer = await requestBufferWithCache(link, { ttl: 86400 })
   if (!imageArrayBuffer) return link
 
@@ -43,7 +43,7 @@ export const getOptimizeImage: GetOptimizedImage = async (link, name, options = 
   }
 
   const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
-  if (!outputImageBuffer) return '' //link
+  if (!outputImageBuffer) return
 
   const uploadedUrl = await s3Request({
     operation: 'putObject',

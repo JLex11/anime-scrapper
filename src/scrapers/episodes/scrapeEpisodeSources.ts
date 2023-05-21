@@ -1,9 +1,7 @@
 import { JSDOM } from 'jsdom'
-/* import { animeFLVPages } from '../../enums' */
 import { animeFLVPages } from '../../../api/enums'
 import { EpisodeSources } from '../../../api/types'
 import { requestTextWithCache } from '../../services/requestWithCache'
-/* import { EpisodeSources } from '../../types.d' */
 
 export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSources> {
   if (!episodeId) {
@@ -17,9 +15,7 @@ export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSo
 
   const { document } = new JSDOM(html).window
 
-  const scrapedScript = [...document.querySelectorAll('script[type="text/javascript"]')]
-    .map(script => script.textContent)
-    .join(' ')
+  const scrapedScript = [...document.querySelectorAll('script[type="text/javascript"]')].map(script => script.textContent).join(' ')
 
   /* const animeId = scrapedScript.split('var anime_id = ')[1].split(';')[0].replace(/"/g, '')
   const episodeId = scrapedScript.split('var episode_id = ')[1].split(';')[0].replace(/"/g, '') */

@@ -1,7 +1,6 @@
 import { Router } from 'express'
-import { getOriginPath } from '../config'
-/* import { mapOriginPath } from '../utils/mapOriginPath' */
 import { mapOriginPath } from '../../src/utils/mapOriginPath'
+import { getOriginPath } from '../config'
 import { endPoints } from './../enums'
 
 const router = Router()
@@ -48,10 +47,12 @@ const routesDocumentation = [
 router.get('/', async (_, res) => {
   const originPath = getOriginPath()
 
-  return res.send(routesDocumentation.map(docRoute => ({
-    ...docRoute,
-    route: mapOriginPath(originPath, `api${docRoute.route}`)
-  })))
+  return res.send(
+    routesDocumentation.map(docRoute => ({
+      ...docRoute,
+      route: mapOriginPath(originPath, `api${docRoute.route}`),
+    }))
+  )
 })
 
 export default router

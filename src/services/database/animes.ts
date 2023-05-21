@@ -1,8 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { Database } from '../../../api/supabase'
 import { AnimeColumns, ColumnType } from '../../../api/types'
-/* import { Database } from '../../supabase'
-import { AnimeColumns, ColumnType } from '../../types.d' */
 
 const supabase = createClient<Database>(
   'https://qyuxymbzzxwnrgqxjloe.supabase.co',
