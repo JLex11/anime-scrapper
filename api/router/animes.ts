@@ -1,13 +1,12 @@
 import { Router } from 'express'
+import { animeStatus, endPoints } from '../../src/enums'
 import { scrapeAllAnimes } from '../../src/scrapers/animes/scrapeAllAnimes'
-import { scrapeAnimeEpisodes } from '../../src/scrapers/animes/scrapeAnimeEpisodes'
 import { scrapeEmisionAnimes } from '../../src/scrapers/animes/scrapeEmisionAnimes'
 import { scrapeLastAnimes } from '../../src/scrapers/animes/scrapeLastAnimes'
 import { scrapeRatingAnimes } from '../../src/scrapers/animes/scrapeRatingAnimes'
 import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
-import { Episode } from '../types.d'
-import { animeStatus, endPoints } from './../enums'
+import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
 
 const router = Router()
 
@@ -58,7 +57,7 @@ router.get(endPoints.ANIME_EPISODES, async (req, res) => {
   const { animeId } = req.params
   const { offset, limit } = req.query
 
-  const animeEpisodes: Episode[] = await scrapeAnimeEpisodes(animeId, Number(offset), Number(limit))
+  const animeEpisodes = await getEpisodesByAnimeId(animeId, Number(offset), Number(limit))
   return res.send(animeEpisodes)
 })
 
