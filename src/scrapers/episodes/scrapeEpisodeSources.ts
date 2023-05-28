@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom'
-import { animeFLVPages } from '../../../api/enums'
-import { EpisodeSources } from '../../../api/types'
+import { animeFLVPages } from '../../enums'
 import { requestTextWithCache } from '../../services/requestWithCache'
+import { EpisodeSources } from '../../types'
 
 export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSources> {
   if (!episodeId) {
@@ -11,7 +11,7 @@ export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSo
     }
   }
 
-  const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${episodeId}`, { ttl: 259200 })
+  const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${episodeId}`, { ttl: 86400 })
 
   const { document } = new JSDOM(html).window
 

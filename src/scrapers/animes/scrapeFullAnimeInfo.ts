@@ -1,9 +1,9 @@
 import { JSDOM } from 'jsdom'
-import { animeFLVPages } from '../../../api/enums'
-import { Anime, AnimeImages } from '../../../api/types'
+import { animeFLVPages } from '../../enums'
 import { getCarouselImages } from '../../services/getCarouselImages'
 import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
+import { Anime, AnimeImages } from '../../types'
 import { getAnimeDescription, getAnimeImgLink, getAnimeRank, getAnimeStatus, getAnimeTitle, getAnimeType } from './animeGetters'
 
 export async function scrapeFullAnimeInfo(animeId: string): Promise<Anime> {

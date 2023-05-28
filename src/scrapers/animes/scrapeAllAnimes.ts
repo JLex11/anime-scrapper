@@ -1,7 +1,7 @@
 import { JSDOM } from 'jsdom'
 import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
-import { animeFLVPages } from '../../../api/enums'
-import { Anime } from '../../../api/types'
+import { animeFLVPages } from '../../enums'
+import { Anime } from '../../types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
 

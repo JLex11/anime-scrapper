@@ -1,6 +1,6 @@
-import { IMG_POSITIONS } from '../../api/enums'
-import { GoogleImage } from '../../api/googleTypes'
-import { CarouselImage } from '../../api/types'
+import { IMG_POSITIONS } from '../enums'
+import { GoogleImage } from '../googleTypes'
+import { CarouselImage } from '../types'
 import { getGoogleImage } from './getGoogleImage'
 import { getOptimizeImage } from './getOptimizeImage'
 

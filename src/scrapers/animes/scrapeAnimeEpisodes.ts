@@ -1,13 +1,13 @@
 import { JSDOM } from 'jsdom'
-import { animeFLVPages } from '../../../api/enums'
-import { Episode } from '../../../api/types'
+import { animeFLVPages } from '../../enums'
 import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
+import { Episode } from '../../types'
 import { getAnimeTitle } from './animeGetters'
 
 export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit: number): Promise<Episode[]> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
-  const html = await requestTextWithCache(originalLink, { ttl: 2592000 })
+  const html = await requestTextWithCache(originalLink, { ttl: 345600 })
 
   const { document } = new JSDOM(html).window
 

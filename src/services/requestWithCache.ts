@@ -1,7 +1,7 @@
 import NodeCache from 'node-cache'
-import { ResponseType } from '../../api/enums'
+import { ResponseType } from '../enums'
 
-const cacheDefaultConfig = { stdTTL: 10800, useClones: false }
+const cacheDefaultConfig = { stdTTL: 3600, useClones: false }
 
 const requestCache = new NodeCache(cacheDefaultConfig)
 
@@ -15,11 +15,7 @@ interface RequestCacheInit extends RequestInit {
 }
 
 interface FetchAndCache {
-  (
-    url: string,
-    config?: RequestCacheInit,
-    responseType?: ResponseType
-  ): Promise<FetchResponse>
+  (url: string, config?: RequestCacheInit, responseType?: ResponseType): Promise<FetchResponse>
 }
 
 const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
@@ -36,20 +32,23 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
     }
   })
 
-  const responsePromise = fetch(url, config).then(async response => {
-    const resource = responseType === ResponseType.JSON
-      ? await response.json()
-      : responseType === ResponseType.TEXT
-        ? await response.text()
-        : await response.arrayBuffer()
-    
-    requestCache.set(cacheKey, resource, config?.ttl ?? cacheDefaultConfig.stdTTL)
+  const responsePromise = fetch(url, config)
+    .then(async response => {
+      const resource =
+        responseType === ResponseType.JSON
+          ? await response.json()
+          : responseType === ResponseType.TEXT
+          ? await response.text()
+          : await response.arrayBuffer()
 
-    return { response, resource }
-  }).catch(error => {
-    console.error(error)
-    return { response: null, resource: null }
-  })
+      requestCache.set(cacheKey, resource, config?.ttl ?? cacheDefaultConfig.stdTTL)
+
+      return { response, resource }
+    })
+    .catch(error => {
+      console.error(error)
+      return { response: null, resource: null }
+    })
 
   return await Promise.race([cachePromise, responsePromise])
 }

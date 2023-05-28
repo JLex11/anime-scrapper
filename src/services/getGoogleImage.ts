@@ -1,5 +1,5 @@
-import { GoogleApi } from '../../api/enums'
-import { GoogleRequestConfig, GoogleSearchResponse } from '../../api/googleTypes'
+import { GoogleApi } from '../enums'
+import { GoogleRequestConfig, GoogleSearchResponse } from '../googleTypes'
 import { requestJsonWithCache } from './requestWithCache'
 
 export const getGoogleImage = async (query: string, config?: GoogleRequestConfig) => {

@@ -1,22 +1,22 @@
 import { JSDOM } from 'jsdom'
-import { animeFLVPages } from '../../../api/enums'
-import { LastEpisode } from '../../../api/types'
+import { animeFLVPages } from '../../enums'
 import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
+import { Episode } from '../../types'
 
-export async function scrapeLastEpisodes(): Promise<LastEpisode[]> {
+export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
   const html = await requestTextWithCache(animeFLVPages.BASE)
 
   const { document } = new JSDOM(html).window
 
-  const episodesList = [...document.querySelectorAll('ul.ListEpisodios li')]
+  const episodesList = [...document.querySelectorAll('ul.ListEpisodios li')].slice(0, limit)
 
   const mappedLastEpidodes = episodesList.map(async episodeItem => {
     const originalLink = `${animeFLVPages.BASE}${episodeItem.querySelector('a')?.href ?? ''}`
     const imageLink = `${animeFLVPages.BASE}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
     const episode = Number(episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '') ?? 0)
-    const title = episodeItem.querySelector('.Title')?.textContent?.trim()
-    const episodeId = originalLink.split('ver/').pop()
+    const title = episodeItem.querySelector('.Title')?.textContent?.trim() ?? ''
+    const episodeId = originalLink.split('ver/').pop()!
     const animeId = title
       ?.replace(/[^a-zA-Z0-9 ]/g, '')
       .replace(/ /g, '-')
