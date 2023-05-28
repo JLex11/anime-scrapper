@@ -1,14 +1,22 @@
 import { Router } from 'express'
+import { endPoints } from '../../src/enums'
 import { scrapeEpisodeSources } from '../../src/scrapers/episodes/scrapeEpisodeSources'
-import { scrapeLastEpisodes } from '../../src/scrapers/episodes/scrapeLastEpisodes'
-import { endPoints } from './../enums'
-import { EpisodeSources } from './../types.d'
+import { EpisodeSources } from '../../src/types'
+import { getEpisodeByEpisodeId } from '../controllers/episodes/getEpisodesBy'
+import { getLatestEpisodes } from '../controllers/episodes/getLatestEpisodes'
 
 const router = Router()
 
-router.get(endPoints.LATEST_EPISODES, async (req, res) => {
-  const latestEpisodes = await scrapeLastEpisodes()
+router.get(endPoints.LATEST_EPISODES, async (_, res) => {
+  const latestEpisodes = await getLatestEpisodes()
   return res.send(latestEpisodes)
+})
+
+router.get(endPoints.EPISODE_BY_ID, async (req, res) => {
+  const { episodeId } = req.params
+
+  const episodes = await getEpisodeByEpisodeId(episodeId)
+  return res.send(episodes)
 })
 
 router.get(endPoints.EPISODE_SOURCES, async (req, res) => {
