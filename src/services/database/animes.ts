@@ -1,11 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
-import { Database } from '../../../api/supabase'
-import { AnimeColumns, ColumnType } from '../../../api/types'
-
-const supabase = createClient<Database>(
-  'https://qyuxymbzzxwnrgqxjloe.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5dXh5bWJ6enh3bnJncXhqbG9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzkzMjUwNTMsImV4cCI6MTk5NDkwMTA1M30.-CWwL2b6hVFoD9g5JgFJVYUMGds9ucc28pUaxABHIRA'
-)
+import { Database } from '../../supabase'
+import { AnimeColumns, ColumnType } from '../../types'
+import { supabase } from './supabaseClient'
 
 /* Get Animes */
 export const getAnimes = async () => {
@@ -27,7 +22,11 @@ export const getAnimesByQuery = async (query: string, limit?: number) => {
   const columnsToSearch: (keyof AnimeColumns)[] = ['title', 'description', /* 'genres', 'otherTitles', */ 'type']
   const orQuery = columnsToSearch.map(column => `${column}.ilike.%${query}%`).join(',')
 
-  const animes = await supabase.from('animes').select().or(orQuery).limit(limit || 30)
+  const animes = await supabase
+    .from('animes')
+    .select()
+    .or(orQuery)
+    .limit(limit || 30)
 
   return animes
 }
