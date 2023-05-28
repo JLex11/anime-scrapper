@@ -17,10 +17,7 @@ export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
     const episode = Number(episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '') ?? 0)
     const title = episodeItem.querySelector('.Title')?.textContent?.trim() ?? ''
     const episodeId = originalLink.split('ver/').pop()!
-    const animeId = title
-      ?.replace(/[^a-zA-Z0-9 ]/g, '')
-      .replace(/ /g, '-')
-      .toLowerCase()
+    const animeId = episodeId.replace(`-${episode.toString()}`, '')
 
     const imageName = episodeId ?? animeId ?? 'unknown'
     const imageOptions = { width: 350, height: 250, effort: 4 }
