@@ -1,7 +1,7 @@
 import { Router } from 'express'
+import { getOriginPath } from '../../src/config'
+import { endPoints } from '../../src/enums'
 import { mapOriginPath } from '../../src/utils/mapOriginPath'
-import { getOriginPath } from '../config'
-import { endPoints } from './../enums'
 
 const router = Router()
 
@@ -9,6 +9,10 @@ const routesDocumentation = [
   {
     route: `/episodes${endPoints.LATEST_EPISODES}`,
     description: 'The latesd episodes',
+  },
+  {
+    route: `/episodes${endPoints.EPISODE_BY_ID}`,
+    description: 'Full episode info, receives episodeId as param',
   },
   {
     route: `/episodes${endPoints.EPISODE_SOURCES}`,
