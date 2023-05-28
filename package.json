@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev api/index.ts",
+    "dev": "ts-node-dev --project ./tsconfig.json api/index.ts",
     "build": "tsc",
-    "start": "node public/index.js"
+    "start": "node public/api/index.js"
   },
   "keywords": [],
   "author": "",
