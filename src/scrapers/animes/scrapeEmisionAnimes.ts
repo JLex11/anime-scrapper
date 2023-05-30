@@ -12,9 +12,8 @@ export async function scrapeEmisionAnimes(limit?: number): Promise<Anime[]> {
   const { document } = new JSDOM(html).window
 
   const emisionList = [...document.querySelectorAll('.Emision .ListSdbr li')]
-  emisionList.length = limit || 20
 
-  const mappedEmisionAnimes = emisionList.map<Promise<Anime>>(async animeItem => {
+  const mappedEmisionAnimes = emisionList.slice(0, limit || 20).map<Promise<Anime>>(async animeItem => {
     const originalLink = getAnimeOriginalLink(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
