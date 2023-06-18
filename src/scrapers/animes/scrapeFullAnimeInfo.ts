@@ -6,9 +6,11 @@ import { requestTextWithCache } from '../../services/requestWithCache'
 import { Anime, AnimeImages } from '../../types'
 import { getAnimeDescription, getAnimeImgLink, getAnimeRank, getAnimeStatus, getAnimeTitle, getAnimeType } from './animeGetters'
 
+const CACHE_DAYS = 30
+
 export async function scrapeFullAnimeInfo(animeId: string): Promise<Anime> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
-  const html = await requestTextWithCache(originalLink, { ttl: 2592000 })
+  const html = await requestTextWithCache(originalLink, { ttl: CACHE_DAYS * 24 * 60 * 60 })
 
   const { document } = new JSDOM(html).window
 

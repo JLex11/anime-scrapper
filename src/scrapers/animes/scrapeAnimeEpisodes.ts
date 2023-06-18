@@ -5,9 +5,11 @@ import { requestTextWithCache } from '../../services/requestWithCache'
 import { Episode } from '../../types'
 import { getAnimeTitle } from './animeGetters'
 
+const CACHE_HOURS = 3
+
 export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit: number): Promise<Episode[]> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
-  const html = await requestTextWithCache(originalLink, { ttl: 345600 })
+  const html = await requestTextWithCache(originalLink, { ttl: CACHE_HOURS * 60 * 60 })
 
   const { document } = new JSDOM(html).window
 
