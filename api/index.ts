@@ -27,5 +27,4 @@ app.use('/api/animes', animesRouter)
 app.use('/api/episodes', episodesRouter)
 
 //app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
-
 export default app
