@@ -3,12 +3,12 @@ import { animeFLVPages } from '../../enums'
 import { getCarouselImages } from '../../services/getCarouselImages'
 import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
-import { Anime, AnimeImages } from '../../types'
+import { AnimeImages, AnimeWithoutDates } from '../../types'
 import { getAnimeDescription, getAnimeImgLink, getAnimeRank, getAnimeStatus, getAnimeTitle, getAnimeType } from './animeGetters'
 
 const CACHE_DAYS = 30
 
-export async function scrapeFullAnimeInfo(animeId: string): Promise<Anime> {
+export async function scrapeFullAnimeInfo(animeId: string): Promise<AnimeWithoutDates> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
   const html = await requestTextWithCache(originalLink, { ttl: CACHE_DAYS * 24 * 60 * 60 })
 

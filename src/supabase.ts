@@ -17,6 +17,8 @@ export interface Database {
           status: string | null
           title: string
           type: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           animeId: string
@@ -29,6 +31,8 @@ export interface Database {
           status?: string | null
           title?: string
           type?: string | null
+          created_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           animeId?: string
@@ -41,6 +45,8 @@ export interface Database {
           status?: string | null
           title?: string
           type?: string | null
+          created_at?: string | null
+          updated_at?: string | null
         }
       }
       episodes: {

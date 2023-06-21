@@ -53,8 +53,11 @@ export interface Anime {
   originalLink?: string | null
   status?: string | null
   genres?: string[] | null
-  created_at?: string
+  created_at: string
+  updated_at: string
 }
+
+export type AnimeWithoutDates = Omit<Anime, 'created_at' | 'updated_at'>
 
 export type AnimeColumns = Omit<Database['public']['Tables']['animes']['Row'], 'images'>
 export type EpisodeColumns = Omit<Database['public']['Tables']['episodes']['Row'], 'image'>
