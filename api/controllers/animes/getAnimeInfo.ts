@@ -1,22 +1,39 @@
 import { scrapeFullAnimeInfo } from '../../../src/scrapers/animes/scrapeFullAnimeInfo'
-import { createAnime, getAnimeBy } from '../../../src/services/database/animes'
+import { UpsertAnimes, getAnimeBy } from '../../../src/services/database/animes'
 import { Database } from '../../../src/supabase'
 import { Anime } from '../../../src/types'
+
+type AnimeInsert = Database['public']['Tables']['animes']['Insert']
 
 export const getAnimeInfo = async (animeId: string) => {
   const animeInfo = await getAnimeBy('animeId', animeId)
   if (animeInfo.data && animeInfo.data.length > 0) {
-    return animeInfo.data[0] as Anime
+    const anime: Anime = animeInfo.data[0]
+
+    const lastUpdate = new Date(anime.updated_at)
+    const now = new Date()
+    const oneDay = 1000 * 60 * 60 * 24
+    const oneDayAgo = new Date(now.getTime() - oneDay)
+
+    if (lastUpdate > oneDayAgo) {
+      console.log('Anime info is up to date')
+      return anime
+    }
   }
 
+  const nowTimestamp = new Date().getTime().toString()
+
   const scrapedAnime = await scrapeFullAnimeInfo(animeId)
+  const animeToUpsert: AnimeInsert = {
+    ...scrapedAnime,
+    updated_at: nowTimestamp,
+  }
+  const updatedAnime = await UpsertAnimes(animeToUpsert)
+  if (updatedAnime.data?.[0]) return updatedAnime.data?.[0]
 
-  type AnimeInsert = Database['public']['Tables']['animes']['Insert']
-  const animeToCreate: AnimeInsert = scrapedAnime
-
-  createAnime(animeToCreate).then(response => {
-    /* console.log(response) */
-  })
-
-  return scrapedAnime
+  return {
+    ...scrapedAnime,
+    created_at: nowTimestamp,
+    updated_at: nowTimestamp,
+  }
 }

@@ -39,6 +39,12 @@ export const createAnime = async (anime: AnimeInsert) => {
   return newAnime
 }
 
+/* Upsert Animes */
+export const UpsertAnimes = async (animes: AnimeInsert[] | AnimeInsert) => {
+  const newAnimes = await supabase.from('animes').upsert(animes).select()
+  return newAnimes
+}
+
 /* Update Anime */
 type AnimeUpdate = Database['public']['Tables']['animes']['Update']
 
