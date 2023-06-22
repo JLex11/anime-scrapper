@@ -53,32 +53,35 @@ export interface Database {
         Row: {
           _id: number
           animeId: string | null
-          created_at: string | null
           episode: number | null
           episodeId: string
           image: string | null
           originalLink: string | null
           title: string | null
+          created_at: string
+          updated_at: string
         }
         Insert: {
           _id?: number
           animeId?: string | null
-          created_at?: string | null
           episode?: number | null
           episodeId: string
           image?: string | null
           originalLink?: string | null
           title?: string | null
+          created_at?: string | null
+          updated_at?: string | null
         }
         Update: {
           _id?: number
           animeId?: string | null
-          created_at?: string | null
           episode?: number | null
           episodeId?: string
           image?: string | null
           originalLink?: string | null
           title?: string | null
+          created_at?: string | null
+          updated_at?: string | null
         }
       }
     }
