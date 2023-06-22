@@ -2,6 +2,7 @@ import { scrapeFullAnimeInfo } from '../../../src/scrapers/animes/scrapeFullAnim
 import { UpsertAnimes, getAnimeBy } from '../../../src/services/database/animes'
 import { Database } from '../../../src/supabase'
 import { Anime } from '../../../src/types'
+import { isUpToDate } from '../../../src/utils/isUpToDate'
 
 type AnimeInsert = Database['public']['Tables']['animes']['Insert']
 
@@ -10,12 +11,12 @@ export const getAnimeInfo = async (animeId: string) => {
   if (animeInfo.data && animeInfo.data.length > 0) {
     const anime: Anime = animeInfo.data[0]
 
-    const lastUpdate = new Date(anime.updated_at)
+    /* const lastUpdate = new Date(anime.updated_at)
     const now = new Date()
     const oneDay = 1000 * 60 * 60 * 24
-    const oneDayAgo = new Date(now.getTime() - oneDay)
+    const oneDayAgo = new Date(now.getTime() - oneDay) */
 
-    if (lastUpdate > oneDayAgo) {
+    if (isUpToDate(anime.updated_at)) {
       console.log('Anime info is up to date')
       return anime
     }

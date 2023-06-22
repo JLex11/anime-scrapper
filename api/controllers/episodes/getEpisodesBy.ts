@@ -2,21 +2,23 @@ import { scrapeAnimeEpisodes } from '../../../src/scrapers/animes/scrapeAnimeEpi
 import { UpsertEpisodes, getEpisodeBy } from '../../../src/services/database/episodes'
 import { Database } from '../../../src/supabase'
 import { Episode } from '../../../src/types'
+import { isUpToDate } from '../../../src/utils/isUpToDate'
 
 type EpisodeInsert = Database['public']['Tables']['episodes']['Insert']
 
 export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, limit: number = 10) => {
   const episodesResponse = await getEpisodeBy('animeId', animeId)
   if (episodesResponse.data && episodesResponse.data.length > 0 && episodesResponse.data.length == episodesResponse.data[0].episode) {
-    return episodesResponse.data as Episode[]
+    const episode = episodesResponse.data[0]
+    
+    if (isUpToDate(episode.updated_at)) {
+      console.log('Episodes are up to date')
+      return episodesResponse.data as Episode[]
+    }
   }
 
   const scrapedEpisodes: EpisodeInsert[] = await scrapeAnimeEpisodes(animeId, offset, limit)
-
-  UpsertEpisodes(scrapedEpisodes as EpisodeInsert[]).then(response => {
-    console.log(response)
-  })
-
+  UpsertEpisodes(scrapedEpisodes as EpisodeInsert[])
   return scrapedEpisodes
 }
 
