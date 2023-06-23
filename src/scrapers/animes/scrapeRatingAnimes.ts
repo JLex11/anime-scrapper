@@ -7,7 +7,7 @@ import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
 
 export async function scrapeRatingAnimes(status: animeStatus, limit?: number): Promise<Anime[]> {
-  const html = await requestTextWithCache(`${animeFLVPages.BASE}/?status=${status}&order=rating`, {
+  const html = await requestTextWithCache(`${animeFLVPages.BASE}/browse?status=${status}&order=rating`, {
     ttl: 86400,
   })
 
