@@ -6,7 +6,7 @@ import { requestTextWithCache } from '../../services/requestWithCache'
 import { AnimeImages, AnimeWithoutDates } from '../../types'
 import { getAnimeDescription, getAnimeImgLink, getAnimeRank, getAnimeStatus, getAnimeTitle, getAnimeType } from './animeGetters'
 
-const CACHE_DAYS = 30
+const CACHE_DAYS = 1
 
 export async function scrapeFullAnimeInfo(animeId: string): Promise<AnimeWithoutDates> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
