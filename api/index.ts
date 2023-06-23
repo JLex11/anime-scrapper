@@ -8,7 +8,7 @@ import episodesRouter from './router/episodes'
 import routesDocumentation from './router/routesDocumentation'
 dotenv.config()
 
-const PORT = process.env.PORT ?? 3002
+//const PORT = process.env.PORT ?? 3002
 
 const app = express()
 
