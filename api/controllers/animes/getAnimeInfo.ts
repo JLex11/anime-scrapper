@@ -10,12 +10,7 @@ export const getAnimeInfo = async (animeId: string) => {
   const animeInfo = await getAnimeBy('animeId', animeId)
   if (animeInfo.data && animeInfo.data.length > 0) {
     const anime: Anime = animeInfo.data[0]
-
-    /* const lastUpdate = new Date(anime.updated_at)
-    const now = new Date()
-    const oneDay = 1000 * 60 * 60 * 24
-    const oneDayAgo = new Date(now.getTime() - oneDay) */
-
+    
     if (isUpToDate(anime.updated_at)) {
       console.log('Anime info is up to date')
       return anime
