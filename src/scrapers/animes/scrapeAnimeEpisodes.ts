@@ -5,7 +5,7 @@ import { requestTextWithCache } from '../../services/requestWithCache'
 import { Episode } from '../../types'
 import { getAnimeTitle } from './animeGetters'
 
-const CACHE_HOURS = 3
+const CACHE_HOURS = 0.5
 
 export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit: number): Promise<Episode[]> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`

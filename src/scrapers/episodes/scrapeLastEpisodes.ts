@@ -4,7 +4,7 @@ import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import { Episode } from '../../types'
 
-const CACHE_MINUTES = 30
+const CACHE_MINUTES = 10
 
 export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
   const html = await requestTextWithCache(animeFLVPages.BASE, { ttl: CACHE_MINUTES * 60 })

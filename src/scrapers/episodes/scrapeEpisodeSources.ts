@@ -3,6 +3,8 @@ import { animeFLVPages } from '../../enums'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import { EpisodeSources } from '../../types'
 
+const CACHE_DAYS = 30
+
 export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSources> {
   if (!episodeId) {
     return {
@@ -11,7 +13,7 @@ export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSo
     }
   }
 
-  const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${episodeId}`, { ttl: 86400 })
+  const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${episodeId}`, { ttl: CACHE_DAYS * 24 * 60 * 60 })
 
   const { document } = new JSDOM(html).window
 

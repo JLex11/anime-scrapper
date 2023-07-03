@@ -6,7 +6,7 @@ import { Anime } from '../../types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
 
-const CACHE_HOURS = 6
+const CACHE_HOURS = 1
 
 export async function scrapeEmisionAnimes(limit?: number): Promise<Anime[]> {
   const html = await requestTextWithCache(animeFLVPages.BASE, { ttl: CACHE_HOURS * 60 * 60 })

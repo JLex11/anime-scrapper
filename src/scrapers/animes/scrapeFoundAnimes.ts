@@ -6,9 +6,11 @@ import { Anime } from '../../types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
 
+const CACHE_HOURS = 0.5
+
 export async function scrapeFoundAnimes(query: string): Promise<Anime[]> {
   const html = await requestTextWithCache(`${animeFLVPages.BASE}/browse?q=${query}`, {
-    ttl: 86400,
+    ttl: CACHE_HOURS * 60 * 60,
   })
 
   const { document } = new JSDOM(html).window
