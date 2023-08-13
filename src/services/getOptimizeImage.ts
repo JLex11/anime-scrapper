@@ -1,6 +1,6 @@
 import NodeCache from 'node-cache'
 import sharp from 'sharp'
-import { s3Request } from './awsS3Service'
+import { s3HeadOperation, s3PutOperation } from './clouflareR2'
 import { requestBufferWithCache } from './requestWithCache'
 
 const cacheDefaultConfig = { stdTTL: 604800, useClones: false }
@@ -12,13 +12,7 @@ type OptimizeOptions = {
   effort?: number
 }
 
-interface GetOptimizedImage {
-  (
-    link: string,
-    name: string,
-    options?: OptimizeOptions
-  ): Promise<string | undefined>
-}
+type GetOptimizedImage = (link: string, name: string, options?: OptimizeOptions) => Promise<string | null>
 
 const dfOptions = {
   width: 350,
@@ -26,33 +20,35 @@ const dfOptions = {
   effort: 4,
 }
 
-export const getOptimizeImage: GetOptimizedImage = async (link, name, options = dfOptions) => {
-  const imageArrayBuffer = await requestBufferWithCache(link, { ttl: 86400 })
-  if (!imageArrayBuffer) return link
-
-  const cacheKey = link
-  const cacheResource = requestCache.get<ResponseType>(cacheKey)
-  if (cacheResource) return cacheResource
+export const getOptimizeImage: GetOptimizedImage = async (url, name, options = dfOptions) => {
+  const cacheUrl = requestCache.get<string>(url)
+  if (cacheUrl) return cacheUrl
 
   const imageName = `${name}.webp`
 
-  const s3ImageUrl = await s3Request({ operation: 'getObject', fileName: imageName })
-  if (s3ImageUrl) {
-    requestCache.set(cacheKey, s3ImageUrl, cacheDefaultConfig.stdTTL)
-    return s3ImageUrl
+  try {
+    const s3ImageResponse = await s3HeadOperation({ filename: imageName })
+    if (!s3ImageResponse.$response?.error) {
+      requestCache.set(url, s3ImageResponse.url, cacheDefaultConfig.stdTTL)
+      return s3ImageResponse.url
+    }
+  } catch (error) {
+    console.error(error)
   }
 
+  const imageArrayBuffer = await requestBufferWithCache(url, { ttl: 86400 })
+  if (!imageArrayBuffer) return null
+
   const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
-  if (!outputImageBuffer) return
+  if (!outputImageBuffer) return null
 
-  const uploadedUrl = await s3Request({
-    operation: 'putObject',
-    fileName: imageName,
-    fileBuffer: outputImageBuffer,
-  })
-
-  requestCache.set(cacheKey, uploadedUrl, cacheDefaultConfig.stdTTL)
-  return uploadedUrl
+  try {
+    const s3PutImageResponse = await s3PutOperation({ filename: imageName, fileBuffer: outputImageBuffer })
+    return s3PutImageResponse.url
+  } catch (error) {
+    console.error(error)
+    return null
+  }
 }
 
 async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: OptimizeOptions) {
