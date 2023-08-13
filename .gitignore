@@ -5,6 +5,7 @@ dist/*
 public
 public/*
 .env
+.env.*
 Notes.md
 
 .vercel
