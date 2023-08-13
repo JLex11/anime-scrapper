@@ -41,7 +41,10 @@ export const createAnime = async (anime: AnimeInsert) => {
 
 /* Upsert Animes */
 export const UpsertAnimes = async (animes: AnimeInsert[] | AnimeInsert) => {
-  const newAnimes = await supabase.from('animes').upsert(animes).select()
+  const newAnimes = await supabase
+    .from('animes')
+    .upsert(Array.isArray(animes) ? animes : [animes])
+    .select()
   return newAnimes
 }
 
