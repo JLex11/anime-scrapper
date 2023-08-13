@@ -3,7 +3,7 @@ import { Database } from './supabase'
 interface Episode {
   originalLink: string
   title: string
-  image?: string
+  image?: string | null
   episode: number
   episodeId: string
   animeId: string
@@ -32,14 +32,14 @@ export interface EpisodeSources {
 }
 
 type CarouselImage = {
-  link: string
+  link: string | null
   position: string
   width: number
   height: number
 }
 
 type AnimeImages = {
-  coverImage: string
+  coverImage: string | null
   carouselImages: CarouselImage[]
 }
 
