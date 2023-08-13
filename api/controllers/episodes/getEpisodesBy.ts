@@ -8,9 +8,13 @@ type EpisodeInsert = Database['public']['Tables']['episodes']['Insert']
 
 export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, limit: number = 10) => {
   const episodesResponse = await getEpisodeBy('animeId', animeId)
-  if (episodesResponse.data && episodesResponse.data.length > 0 && episodesResponse.data.length == episodesResponse.data[0].episode) {
-    const episode = episodesResponse.data[0]
-    
+  if (
+    episodesResponse.data &&
+    episodesResponse.data.length > 0 &&
+    episodesResponse.data.length == episodesResponse.data[0].episode
+  ) {
+    const [episode] = episodesResponse.data
+
     if (isUpToDate(episode.updated_at)) {
       console.log('Episodes are up to date')
       return episodesResponse.data as Episode[]
