@@ -48,6 +48,7 @@ export interface Database {
           created_at?: string | null
           updated_at?: string | null
         }
+        Relationships: []
       }
       episodes: {
         Row: {
@@ -83,6 +84,14 @@ export interface Database {
           created_at?: string | null
           updated_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: 'episodes_animeId_fkey'
+            columns: ['animeId']
+            referencedRelation: 'animes'
+            referencedColumns: ['animeId']
+          }
+        ]
       }
     }
     Views: {
