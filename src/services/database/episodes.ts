@@ -35,12 +35,15 @@ export const getEpisodesByQuery = async (query: string, limit?: number) => {
 type EpisodeInsert = Database['public']['Tables']['episodes']['Insert']
 
 export const createEpisode = async (episodes: EpisodeInsert | EpisodeInsert[]) => {
-  const newEpisode = await supabase.from('episodes').insert(episodes)
+  const newEpisode = await supabase.from('episodes').insert(Array.isArray(episodes) ? episodes : [episodes])
   return newEpisode
 }
 
 export const UpsertEpisodes = async (episodes: EpisodeInsert[] | EpisodeInsert) => {
-  const newEpisodes = await supabase.from('episodes').upsert(episodes).select()
+  const newEpisodes = await supabase
+    .from('episodes')
+    .upsert(Array.isArray(episodes) ? episodes : [episodes])
+    .select()
   return newEpisodes
 }
 
