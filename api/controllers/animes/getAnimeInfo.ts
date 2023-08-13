@@ -18,19 +18,19 @@ export const getAnimeInfo = async (animeId: string) => {
     }
   }
 
-  const nowTimestamp = new Date().getTime().toString()
+  const currentTime = new Date().toISOString()
 
   const scrapedAnime = await scrapeFullAnimeInfo(animeId)
   const animeToUpsert: AnimeInsert = {
     ...scrapedAnime,
-    updated_at: nowTimestamp,
+    updated_at: currentTime,
   }
-  const updatedAnime = await UpsertAnimes(animeToUpsert)
-  if (updatedAnime.data?.[0]) return updatedAnime.data?.[0]
+  const { data: updatedAnime } = await UpsertAnimes(animeToUpsert)
+  if (updatedAnime?.at(0)) return updatedAnime[0]
 
   return {
     ...scrapedAnime,
-    created_at: nowTimestamp,
-    updated_at: nowTimestamp,
+    created_at: currentTime,
+    updated_at: currentTime,
   }
 }
