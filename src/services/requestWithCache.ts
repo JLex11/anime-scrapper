@@ -15,7 +15,7 @@ interface RequestCacheInit extends RequestInit {
 }
 
 interface FetchAndCache {
-  (url: string, config?: RequestCacheInit, responseType?: ResponseType): Promise<FetchResponse>
+  (url: string, config?: RequestCacheInit, responseType?: ResponseType): Promise<FetchResponse | null>
 }
 
 const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
@@ -47,27 +47,25 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
     })
     .catch(error => {
       console.error(error)
-      return { response: null, resource: null }
+      return null
     })
 
   return await Promise.race([cachePromise, responsePromise])
 }
 
-interface RequestWithCache {
-  (url: string, config?: RequestCacheInit): Promise<any>
-}
+type RequestWithCache = (url: string, config?: RequestCacheInit) => Promise<any | null>
 
 export const requestJsonWithCache: RequestWithCache = async (url, config): Promise<Object | undefined> => {
-  const { resource } = await fetchAndCache(url, config, ResponseType.JSON)
-  return resource
+  const response = await fetchAndCache(url, config, ResponseType.JSON)
+  return response?.resource
 }
 
 export const requestTextWithCache: RequestWithCache = async (url, config): Promise<string | undefined> => {
-  const { resource } = await fetchAndCache(url, config, ResponseType.TEXT)
-  return resource
+  const response = await fetchAndCache(url, config, ResponseType.TEXT)
+  return response?.resource
 }
 
 export const requestBufferWithCache: RequestWithCache = async (url, config): Promise<string | undefined> => {
-  const { resource } = await fetchAndCache(url, config, ResponseType.BUFFER)
-  return resource
+  const response = await fetchAndCache(url, config, ResponseType.BUFFER)
+  return response?.resource
 }
