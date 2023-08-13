@@ -36,6 +36,5 @@ export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
   })
 
   const results = await Promise.all(mappedLastEpidodes)
-  //const successfulResults = getFulfilledResults(results)
-  return results /* await Promise.all(successfulResults) */
+  return results
 }
