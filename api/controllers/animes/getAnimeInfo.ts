@@ -8,9 +8,10 @@ type AnimeInsert = Database['public']['Tables']['animes']['Insert']
 
 export const getAnimeInfo = async (animeId: string) => {
   const animeInfo = await getAnimeBy('animeId', animeId)
+
   if (animeInfo.data && animeInfo.data.length > 0) {
     const anime: Anime = animeInfo.data[0]
-    
+
     if (isUpToDate(anime.updated_at)) {
       console.log('Anime info is up to date')
       return anime
