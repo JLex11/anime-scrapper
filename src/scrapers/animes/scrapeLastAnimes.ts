@@ -19,8 +19,7 @@ export async function scrapeLastAnimes(limit?: number) {
   const mappedLastAnimes = animeList.map<Promise<Anime>>(async animeItem => {
     const originalLink = getAnimeOriginalLink(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
-
-    return await getAnimeInfo(animeId)
+    return getAnimeInfo(animeId)
   })
 
   const results = await Promise.allSettled(mappedLastAnimes)
