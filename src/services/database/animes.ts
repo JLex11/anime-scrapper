@@ -1,10 +1,10 @@
 import { Database } from '../../supabase'
-import { AnimeColumns, ColumnType } from '../../types'
+import { Anime, AnimeColumns, ColumnType } from '../../types'
 import { supabase } from './supabaseClient'
 
 /* Get Animes */
-export const getAnimes = async () => {
-  const animesResponse = await supabase.from('animes').select()
+export const getAnimesById = async (animeIds: Anime['animeId'][]) => {
+  const animesResponse = await supabase.from('animes').select().in('animeId', animeIds)
   return animesResponse
 }
 
@@ -41,10 +41,8 @@ export const createAnime = async (anime: AnimeInsert) => {
 
 /* Upsert Animes */
 export const UpsertAnimes = async (animes: AnimeInsert[] | AnimeInsert) => {
-  const newAnimes = await supabase
-    .from('animes')
-    .upsert(Array.isArray(animes) ? animes : [animes])
-    .select()
+  const animesToUpsert = Array.isArray(animes) ? animes : [animes]
+  const newAnimes = await supabase.from('animes').upsert(animesToUpsert).select()
   return newAnimes
 }
 
