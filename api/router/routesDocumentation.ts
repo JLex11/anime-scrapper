@@ -46,6 +46,10 @@ const routesDocumentation = [
     route: `/animes${endPoints.ANIME_EPISODES}`,
     description: 'Episodes of an anime, can be paginated using offset and limit query params',
   },
+  {
+    route: endPoints.IMAGES,
+    description: 'Get image of anime receives imgFilename as param',
+  },
 ]
 
 router.get('/', async (_, res) => {
