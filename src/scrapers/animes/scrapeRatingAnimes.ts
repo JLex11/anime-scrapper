@@ -6,7 +6,7 @@ import { Anime } from '../../types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
 
-const CACHE_HOURS = 12
+const CACHE_HOURS = 6
 
 export async function scrapeRatingAnimes(status: animeStatus, limit?: number): Promise<Anime[]> {
   const html = await requestTextWithCache(`${animeFLVPages.BASE}/browse?status=${status}&order=rating`, {
