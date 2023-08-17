@@ -19,13 +19,16 @@ export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(
 
 /* Get Animes by matches */
 export const getAnimesByQuery = async (query: string, limit?: number) => {
-  const columnsToSearch: (keyof AnimeColumns)[] = ['title', 'description', /* 'genres', 'otherTitles', */ 'type']
+  const columnsToSearch: (keyof AnimeColumns)[] = ['title', 'description', 'type']
+  const arrayColumnsToSearch: (keyof AnimeColumns)[] = ['genres', 'otherTitles']
+
   const orQuery = columnsToSearch.map(column => `${column}.ilike.%${query}%`).join(',')
+  const arrayOrQuery = arrayColumnsToSearch.map(column => `${column}.cs.{${query}}`).join(',')
 
   const animes = await supabase
     .from('animes')
     .select()
-    .or(orQuery)
+    .or(`${orQuery},${arrayOrQuery}`)
     .limit(limit || 30)
 
   return animes
