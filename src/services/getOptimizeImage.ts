@@ -40,10 +40,12 @@ export const getOptimizeImage: GetOptimizedImage = async (url, name, options = d
   if (!imageArrayBuffer) return null
 
   const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
-  if (!outputImageBuffer) return null
 
   try {
-    const s3PutImageResponse = await s3PutOperation({ filename: imageName, fileBuffer: outputImageBuffer })
+    const s3PutImageResponse = await s3PutOperation({
+      filename: imageName,
+      fileBuffer: outputImageBuffer ?? Buffer.from(imageArrayBuffer),
+    })
     return s3PutImageResponse.url
   } catch (error) {
     console.error('error uploading image')
