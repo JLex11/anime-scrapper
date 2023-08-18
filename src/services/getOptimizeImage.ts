@@ -33,10 +33,10 @@ export const getOptimizeImage: GetOptimizedImage = async (url, name, options = d
       return s3ImageResponse.url
     }
   } catch (error) {
-    console.error('image not found')
+    console.log('image not found')
   }
 
-  const imageArrayBuffer = await requestBufferWithCache(url, { ttl: 86400 })
+  const imageArrayBuffer = await requestBufferWithCache(url, { ttl: 86400 }).catch(() => null)
   if (!imageArrayBuffer) return null
 
   const outputImageBuffer = await getOptimizedImageBuffer(imageArrayBuffer, options)
@@ -48,7 +48,7 @@ export const getOptimizeImage: GetOptimizedImage = async (url, name, options = d
     })
     return s3PutImageResponse.url
   } catch (error) {
-    console.error('error uploading image')
+    console.log('error uploading image')
     return null
   }
 }
@@ -61,7 +61,7 @@ async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: Optimi
     .webp({ effort })
     .toBuffer()
     .catch(error => {
-      console.error('error optimizing image')
+      console.log('error optimizing image')
       return null
     })
 }
