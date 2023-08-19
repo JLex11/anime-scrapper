@@ -8,7 +8,7 @@ import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
 import routesDocumentation from './router/routesDocumentation'
 
-const PORT = process.env.PORT ?? 3002
+//const PORT = process.env.PORT ?? 3002
 
 const app = express()
 
@@ -28,17 +28,16 @@ app.use('/episodes', episodesRouter)
 
 app.get(endPoints.IMAGES, async (req, res) => {
   const { imgFilename } = req.params
-  const s3Response = await s3GetOperation({ filename: imgFilename })
-
-  if (s3Response.$response?.error) {
-    return res.status(404).send('Image not found')
+  try {
+    const s3Response = await s3GetOperation({ filename: imgFilename })
+    const imgBuffer = s3Response?.Body
+    res.setHeader('Content-Type', 'image/*')
+    return res.send(imgBuffer)
+  } catch (error) {
+    return res.status(404).send({ error: 'Image not found' })
   }
-
-  const imgBuffer = s3Response?.Body
-  res.setHeader('Content-Type', 'image/*')
-  res.send(imgBuffer)
 })
 
 app.use('*', (_, res) => res.status(404).send('Not found'))
 
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
+//app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`))

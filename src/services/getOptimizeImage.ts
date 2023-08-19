@@ -17,7 +17,7 @@ type GetOptimizedImage = (link: string, name: string, options?: OptimizeOptions)
 const dfOptions = {
   width: 350,
   height: 500,
-  effort: 4,
+  effort: 6,
 }
 
 export const getOptimizeImage: GetOptimizedImage = async (url, name, options = dfOptions) => {

@@ -15,6 +15,11 @@ export enum IMG_POSITIONS {
   TOP = '50% 20%',
 }
 
+export enum LANDSCAPE_DIMENSIONS {
+  WIDTH = 1536,
+  HEIGHT = 768,
+}
+
 export enum animeFLVPages {
   BASE = 'https://www3.animeflv.net',
 }

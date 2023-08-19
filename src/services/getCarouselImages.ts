@@ -1,4 +1,4 @@
-import { IMG_POSITIONS } from '../enums'
+import { IMG_POSITIONS, LANDSCAPE_DIMENSIONS } from '../enums'
 import { GoogleImage } from '../googleTypes'
 import { CarouselImage } from '../types'
 import { getGoogleImage } from './getGoogleImage'
@@ -30,14 +30,14 @@ export const getCarouselImages = async (keywords: string[] | string): Promise<Ca
     .map((item: any) => buildImageObject(item.link, item.image))
     .sort((a, b) => b.width - a.width)
 
-  return Promise.all(
-    carouselImages
-      .filter(({ link }) => link !== null)
-      .flatMap(async (image, index) => {
-        const imageName = `${keywordsArr.join('-')}-carouselImage-${index}`
-        const options = { width: image.width, height: image.height, effort: 3 }
-        image.link = image.link && (await getOptimizeImage(image.link, imageName, options))
-        return image
-      })
-  )
+  const optimizedImages = carouselImages
+    .filter(({ link }) => link !== null)
+    .map(async (image, index) => {
+      const imageName = `${keywordsArr.join('-')}-carouselImage-${index}`
+      const options = { width: LANDSCAPE_DIMENSIONS.WIDTH, height: LANDSCAPE_DIMENSIONS.HEIGHT, effort: 6 }
+      image.link = image.link && (await getOptimizeImage(image.link, imageName, options))
+      return image
+    })
+
+  return Promise.all(optimizedImages)
 }

@@ -1,6 +1,4 @@
 import { S3 } from 'aws-sdk'
-import { getOriginPath } from '../config'
-import { mapOriginPath } from '../utils/mapOriginPath'
 
 const MY_R2_ACCOUNT_ID = 'b3baa81851cc15c684c831bc1f0571ea'
 const MY_R2_ACCESS_KEY_ID = 'fc881d2852c2125b949daaa1210cc912'
@@ -27,21 +25,19 @@ interface S3HeadOrGetOperation {
 }
 
 export async function s3PutOperation({ filename, fileBuffer }: S3PutOperation) {
-  const originPath = getOriginPath()
   const putObjectRequest = await client.putObject({ Bucket: MY_R2_BUCKET, Key: filename, Body: fileBuffer }).promise()
   return {
     ...putObjectRequest,
-    url: mapOriginPath(originPath, `image/${filename}`),
+    url: `image/${filename}`,
   }
 }
 
 export async function s3HeadOperation({ filename }: S3HeadOrGetOperation) {
-  const originPath = getOriginPath()
   const headObjectRequest = await client.headObject({ Bucket: MY_R2_BUCKET, Key: filename }).promise()
 
   return {
     ...headObjectRequest,
-    url: mapOriginPath(originPath, `image/${filename}`),
+    url: `image/${filename}`,
   }
 }
 
