@@ -22,9 +22,9 @@ app.use(async (req, _, next) => {
   next()
 })
 
-app.use('/api', routesDocumentation)
-app.use('/api/animes', animesRouter)
-app.use('/api/episodes', episodesRouter)
+app.use('/', routesDocumentation)
+app.use('/animes', animesRouter)
+app.use('/episodes', episodesRouter)
 
 app.get(endPoints.IMAGES, async (req, res) => {
   const { imgFilename } = req.params
@@ -42,4 +42,3 @@ app.get(endPoints.IMAGES, async (req, res) => {
 app.use('*', (_, res) => res.status(404).send('Not found'))
 
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
-//export default app
