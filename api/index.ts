@@ -22,11 +22,11 @@ app.use(async (req, _, next) => {
   next()
 })
 
-app.use('/', routesDocumentation)
-app.use('/animes', animesRouter)
-app.use('/episodes', episodesRouter)
+app.use('/api/', routesDocumentation)
+app.use('/api/animes', animesRouter)
+app.use('/api/episodes', episodesRouter)
 
-app.get(endPoints.IMAGES, async (req, res) => {
+app.get(`/api${endPoints.IMAGES}`, async (req, res) => {
   const { imgFilename } = req.params
   try {
     const s3Response = await s3GetOperation({ filename: imgFilename })
