@@ -10,7 +10,7 @@ import episodesRouter from './router/episodes'
 import routesDocumentation from './router/routesDocumentation'
 dotenv.config()
 
-//const PORT = process.env.PORT ?? 3002
+const PORT = process.env.PORT ?? 3002
 
 const app = express()
 
@@ -43,5 +43,5 @@ app.get(endPoints.IMAGES, async (req, res) => {
 
 app.use('*', (_, res) => res.status(404).send('Not found'))
 
-//app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
-export default app
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`))
+//export default app
