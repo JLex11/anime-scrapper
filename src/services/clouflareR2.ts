@@ -31,7 +31,7 @@ export async function s3PutOperation({ filename, fileBuffer }: S3PutOperation) {
   const putObjectRequest = await client.putObject({ Bucket: MY_R2_BUCKET, Key: filename, Body: fileBuffer }).promise()
   return {
     ...putObjectRequest,
-    url: mapOriginPath(originPath, `api/image/${filename}`),
+    url: mapOriginPath(originPath, `image/${filename}`),
   }
 }
 
@@ -41,7 +41,7 @@ export async function s3HeadOperation({ filename }: S3HeadOrGetOperation) {
 
   return {
     ...headObjectRequest,
-    url: mapOriginPath(originPath, `api/image/${filename}`),
+    url: mapOriginPath(originPath, `image/${filename}`),
   }
 }
 
