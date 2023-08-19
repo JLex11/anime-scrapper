@@ -7,7 +7,7 @@
     "dev": "ts-node-dev --project ./tsconfig.json api/index.ts",
     "dev:file": "ts-node-dev",
     "build": "tsc",
-    "start": "node public/api/index.js"
+    "start": "tsc && node public/api/index.js"
   },
   "keywords": [],
   "author": "",
