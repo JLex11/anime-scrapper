@@ -1,8 +1,6 @@
 import { S3 } from 'aws-sdk'
-import * as dotenv from 'dotenv'
 import { getOriginPath } from '../config'
 import { mapOriginPath } from '../utils/mapOriginPath'
-dotenv.config()
 
 const MY_R2_ACCOUNT_ID = 'b3baa81851cc15c684c831bc1f0571ea'
 const MY_R2_ACCESS_KEY_ID = 'fc881d2852c2125b949daaa1210cc912'

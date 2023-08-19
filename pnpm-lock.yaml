@@ -67,9 +67,6 @@ devDependencies:
   '@typescript-eslint/parser':
     specifier: 5.56.0
     version: 5.56.0(eslint@8.0.1)(typescript@5.2.0-beta)
-  dotenv:
-    specifier: 16.3.1
-    version: 16.3.1
   eslint:
     specifier: 8.0.1
     version: 8.0.1
@@ -2261,11 +2258,6 @@ packages:
     dependencies:
       webidl-conversions: 7.0.0
     dev: false
-
-  /dotenv@16.3.1:
-    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
-    engines: {node: '>=12'}
-    dev: true
 
   /dynamic-dedupe@0.3.0:
     resolution: {integrity: sha512-ssuANeD+z97meYOqd50e04Ze5qp4bPqo8cCkI4TRjZkzAUgIDTrXV1R8QCdINpiI+hw14+rYazvTRdQrz0/rFQ==}

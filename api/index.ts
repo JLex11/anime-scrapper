@@ -1,5 +1,4 @@
 import cors from 'cors'
-import * as dotenv from 'dotenv'
 import express from 'express'
 import morgan from 'morgan'
 import { setOriginPath } from '../src/config'
@@ -8,7 +7,6 @@ import { s3GetOperation } from '../src/services/clouflareR2'
 import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
 import routesDocumentation from './router/routesDocumentation'
-dotenv.config()
 
 const PORT = process.env.PORT ?? 3002
 
