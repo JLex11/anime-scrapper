@@ -16,7 +16,7 @@ export async function scrapeAllAnimes(page: number = 1): Promise<Anime[]> {
     const originalLink = getAnimeOriginalLink(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    return await getAnimeInfo(animeId)
+    return getAnimeInfo(animeId)
   })
 
   const results = await Promise.allSettled(mappedFoundAnimes)
