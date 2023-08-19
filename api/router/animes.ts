@@ -10,6 +10,13 @@ import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
 
 const router = Router()
 
+router.get('/', async (req, res) => {
+  const { page } = req.query
+
+  const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
+  return res.send(foundAnimes)
+})
+
 router.get(endPoints.LATEST_ANIMES, async (req, res) => {
   const { limit } = req.query
 
@@ -36,13 +43,6 @@ router.get(endPoints.SEARCH_ANIMES, async (req, res) => {
   const { limit } = req.query
 
   const foundAnimes = await searchAnimes(query, Number(limit))
-  return res.send(foundAnimes)
-})
-
-router.get(endPoints.ANIME_DIRECTORY, async (req, res) => {
-  const { page } = req.query
-
-  const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
   return res.send(foundAnimes)
 })
 

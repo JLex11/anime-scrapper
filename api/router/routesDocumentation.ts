@@ -19,6 +19,10 @@ const routesDocumentation = [
     description: 'Get episode videos/streamings, receives episodeId as param',
   },
   {
+    route: `/animes`,
+    description: 'Get all animes, can be paginated using :page query param',
+  },
+  {
     route: `/animes${endPoints.LATEST_ANIMES}`,
     description: 'The latesd animes',
   },
@@ -33,10 +37,6 @@ const routesDocumentation = [
   {
     route: `/animes${endPoints.SEARCH_ANIMES}`,
     description: 'Search animes, receives :query as param',
-  },
-  {
-    route: `/animes${endPoints.ANIME_DIRECTORY}`,
-    description: 'Get all animes, can be paginated using :page query param',
   },
   {
     route: `/animes${endPoints.ANIME_INFO}`,
@@ -55,12 +55,12 @@ const routesDocumentation = [
 router.get('/', async (_, res) => {
   const originPath = getOriginPath()
 
-  return res.send(
-    routesDocumentation.map(docRoute => ({
-      ...docRoute,
-      route: mapOriginPath(originPath, `api${docRoute.route}`),
-    }))
-  )
+  const mappedRoutesDocumentations = routesDocumentation.map(docRoute => ({
+    ...docRoute,
+    route: mapOriginPath(originPath, docRoute.route),
+  }))
+
+  return res.send(mappedRoutesDocumentations)
 })
 
 export default router
