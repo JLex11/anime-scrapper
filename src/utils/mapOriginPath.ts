@@ -1,8 +1,12 @@
-export const mapOriginPath = (originPath: string, relativePath: string = '') => {
+import { getOriginPath } from '../config'
+
+export const mapOriginPath = (relativePath: string) => {
+  const orPath = getOriginPath()
+
   try {
-    return new URL(relativePath, originPath).toString()
+    return new URL(relativePath, orPath).toString()
   } catch (e) {
     console.error(e)
-    return originPath
+    return orPath
   }
 }
