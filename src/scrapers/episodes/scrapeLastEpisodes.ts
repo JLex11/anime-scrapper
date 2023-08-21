@@ -22,7 +22,7 @@ export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
     const animeId = episodeId.replace(`-${episode.toString()}`, '')
 
     const imageName = episodeId ?? animeId ?? 'unknown'
-    const imageOptions = { width: 350, height: 250, effort: 4 }
+    const imageOptions = { width: 350, height: 250, effort: 6 }
     const image = await getOptimizeImage(imageLink, imageName, imageOptions)
 
     return {
