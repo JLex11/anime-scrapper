@@ -4,7 +4,7 @@ import { Anime } from '../../../src/types'
 import { isUpToDate } from '../../../src/utils/isUpToDate'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
-const mapAnimeImagesURLs = (animeImages: Anime['images']) => {
+export const mapAnimeImagesURLs = (animeImages: Anime['images']) => {
   return {
     coverImage: mapOriginPath(`api/${animeImages?.coverImage}`),
     carouselImages:
