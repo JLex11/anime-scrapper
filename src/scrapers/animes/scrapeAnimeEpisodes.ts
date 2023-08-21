@@ -39,25 +39,27 @@ export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit
     return []
   }
 
-  const animeEpisodes = episodesIds.slice(offset || 0, limit || 20).map(async ([episodeNumber]: number[]): Promise<Episode> => {
-    const episode = episodeNumber
-    const episodeId = `${animeId}-${episodeNumber}`
-    const originalLink = `${animeFLVPages.BASE}/ver/${episodeId}`
-    const image = `https://cdn.animeflv.net/screenshots/${animeInfo?.[0] ?? 0}/${episodeNumber}/th_3.jpg`
-    const optimizeImage = await getOptimizeImage(image, `episode-image-${animeId}-${episodeNumber}`, {
-      width: 150,
-      height: 80,
-    })
+  const animeEpisodes = episodesIds
+    .slice(offset || 0, limit || 20)
+    .map(async ([episodeNumber]: number[]): Promise<Episode> => {
+      const episode = episodeNumber
+      const episodeId = `${animeId}-${episodeNumber}`
+      const originalLink = `${animeFLVPages.BASE}/ver/${episodeId}`
+      const image = `https://cdn.animeflv.net/screenshots/${animeInfo?.[0] ?? 0}/${episodeNumber}/th_3.jpg`
+      const optimizeImage = await getOptimizeImage(image, `episode-image-${animeId}-${episodeNumber}`, {
+        width: 150,
+        height: 80,
+      })
 
-    return {
-      episodeId,
-      animeId,
-      title,
-      episode,
-      originalLink,
-      image: optimizeImage || image,
-    }
-  })
+      return {
+        episodeId,
+        animeId,
+        title,
+        episode,
+        originalLink,
+        image: optimizeImage || image,
+      }
+    })
 
   const episodesResults = await Promise.all(animeEpisodes)
   return episodesResults
