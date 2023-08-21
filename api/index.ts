@@ -41,3 +41,4 @@ app.get(`/api${endPoints.IMAGES}`, async (req, res) => {
 app.use('*', (_, res) => res.status(404).send('Not found'))
 
 //app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`))
+export default app
