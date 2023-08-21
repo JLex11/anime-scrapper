@@ -57,7 +57,7 @@ router.get('/', async (_, res) => {
 
   const mappedRoutesDocumentations = routesDocumentation.map(docRoute => ({
     ...docRoute,
-    route: mapOriginPath(originPath, docRoute.route),
+    route: mapOriginPath(originPath, `api${docRoute.route}`),
   }))
 
   return res.send(mappedRoutesDocumentations)
