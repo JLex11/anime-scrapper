@@ -44,7 +44,7 @@ type AnimeImages = {
 }
 
 export interface Anime {
-  images?: AnimeImages | null
+  images?: AnimeImages
   title: string
   type?: string | null
   rank?: number | null
