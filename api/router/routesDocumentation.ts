@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import { getOriginPath } from '../../src/config'
 import { endPoints } from '../../src/enums'
 import { mapOriginPath } from '../../src/utils/mapOriginPath'
 
@@ -53,11 +52,9 @@ const routesDocumentation = [
 ]
 
 router.get('/', async (_, res) => {
-  const originPath = getOriginPath()
-
   const mappedRoutesDocumentations = routesDocumentation.map(docRoute => ({
     ...docRoute,
-    route: mapOriginPath(originPath, `api${docRoute.route}`),
+    route: mapOriginPath(`api${docRoute.route}`),
   }))
 
   return res.send(mappedRoutesDocumentations)
