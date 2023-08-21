@@ -15,13 +15,13 @@ export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, 
   ) {
     return episodesResponse.data.map(episode => ({
       ...episode,
-      image: episode.image && mapOriginPath(episode.image),
+      image: episode.image && mapOriginPath(`api/${episode.image}`),
     })) as Episode[]
   }
 
   const scrapedEpisodes: EpisodeInsert[] = await scrapeAnimeEpisodes(animeId, offset, limit)
   UpsertEpisodes(scrapedEpisodes as EpisodeInsert[])
-  return scrapedEpisodes.map(episode => ({ ...episode, image: episode.image && mapOriginPath(episode.image) }))
+  return scrapedEpisodes.map(episode => ({ ...episode, image: episode.image && mapOriginPath(`api/${episode.image}`) }))
 }
 
 export const getEpisodeByEpisodeId = async (episodeId: string) => {
@@ -35,7 +35,7 @@ export const getEpisodeByEpisodeId = async (episodeId: string) => {
 
   const episodes = episodesResponse.data?.map(episode => ({
     ...episode,
-    image: episode.image && mapOriginPath(episode.image),
+    image: episode.image && mapOriginPath(`api/${episode.image}`),
   }))
   return episodes
 }

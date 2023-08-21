@@ -6,5 +6,8 @@ export const getLatestEpisodes = async (limit = Infinity) => {
   const scrapedLatestEpisodes = await scrapeLastEpisodes(limit)
   UpsertEpisodes(scrapedLatestEpisodes)
 
-  return scrapedLatestEpisodes.map(episode => ({ ...episode, image: episode.image && mapOriginPath(episode.image) }))
+  return scrapedLatestEpisodes.map(episode => ({
+    ...episode,
+    image: episode.image && mapOriginPath(`api/${episode.image}`),
+  }))
 }
