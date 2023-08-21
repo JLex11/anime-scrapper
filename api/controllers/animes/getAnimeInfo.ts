@@ -2,16 +2,32 @@ import { scrapeFullAnimeInfo } from '../../../src/scrapers/animes/scrapeFullAnim
 import { UpsertAnimes, getAnimeBy } from '../../../src/services/database/animes'
 import { Anime } from '../../../src/types'
 import { isUpToDate } from '../../../src/utils/isUpToDate'
+import { mapOriginPath } from '../../../src/utils/mapOriginPath'
+
+const mapAnimeImagesURLs = (animeImages: Anime['images']) => {
+  return {
+    coverImage: mapOriginPath(`api/${animeImages?.coverImage}`),
+    carouselImages:
+      animeImages?.carouselImages?.map(image => ({
+        ...image,
+        link: mapOriginPath(`api/${image.link}`),
+      })) ?? [],
+  }
+}
 
 export const getAnimeInfo = async (animeId: string): Promise<Anime> => {
   const animeInfo = await getAnimeBy('animeId', animeId)
 
   if (animeInfo.data && animeInfo.data.length > 0) {
-    const anime: Anime = animeInfo.data[0]
+    const anime = animeInfo.data[0]
 
     if (isUpToDate(anime.updated_at)) {
       console.log('Anime info is up to date')
-      return anime
+
+      return {
+        ...anime,
+        images: mapAnimeImagesURLs(anime.images ?? undefined),
+      }
     }
   }
 
@@ -23,8 +39,11 @@ export const getAnimeInfo = async (animeId: string): Promise<Anime> => {
     created_at: currentTime,
     updated_at: currentTime,
   }
-  const { data: updatedAnime } = await UpsertAnimes(animeToUpsert)
-  if (updatedAnime?.[0]) return updatedAnime[0]
 
-  return animeToUpsert
+  UpsertAnimes(animeToUpsert)
+
+  return {
+    ...animeToUpsert,
+    images: mapAnimeImagesURLs(animeToUpsert.images),
+  }
 }
