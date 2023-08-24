@@ -15,7 +15,7 @@ import {
 
 const CACHE_DAYS = 1
 
-export async function scrapeFullAnimeInfo(animeId: string): Promise<AnimeWithoutDates> {
+export async function scrapeFullAnimeInfo(animeId: string, extractImages = true): Promise<AnimeWithoutDates> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
   const html = await requestTextWithCache(originalLink, { ttl: CACHE_DAYS * 24 * 60 * 60 })
 
@@ -35,12 +35,7 @@ export async function scrapeFullAnimeInfo(animeId: string): Promise<AnimeWithout
     .map(genre => genre.textContent?.trim())
     .filter(Boolean) as string[]
 
-  const images: AnimeImages = {
-    coverImage: (await getOptimizeImage(imageLink, animeId ?? 'unknow')) ?? imageLink,
-    carouselImages: await getCarouselImages(title),
-  }
-
-  return {
+  const anime: AnimeWithoutDates = {
     animeId,
     title,
     type,
@@ -50,6 +45,17 @@ export async function scrapeFullAnimeInfo(animeId: string): Promise<AnimeWithout
     originalLink,
     status,
     genres,
-    images,
+    images: null,
   }
+
+  if (extractImages) {
+    const images: AnimeImages = {
+      coverImage: (await getOptimizeImage(imageLink, animeId ?? 'unknow')) ?? imageLink,
+      carouselImages: await getCarouselImages(title),
+    }
+
+    anime.images = images
+  }
+
+  return anime
 }
