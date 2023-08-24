@@ -16,25 +16,23 @@ export const mapAnimeImagesURLs = (animeImages: Anime['images']) => {
 }
 
 export const getAnimeInfo = async (animeId: string): Promise<Anime> => {
-  const animeInfo = await getAnimeBy('animeId', animeId)
+  const { data } = await getAnimeBy('animeId', animeId)
+  const dbAnime = data?.at(0)
 
-  if (animeInfo.data && animeInfo.data.length > 0) {
-    const anime = animeInfo.data[0]
-
-    if (isUpToDate(anime.updated_at)) {
-      console.log('Anime info is up to date')
-
-      return {
-        ...anime,
-        images: mapAnimeImagesURLs(anime.images ?? undefined),
-      }
+  if (dbAnime && isUpToDate(dbAnime.updated_at) && (dbAnime.images?.carouselImages?.length || 0) > 0) {
+    return {
+      ...dbAnime,
+      images: mapAnimeImagesURLs(dbAnime.images ?? undefined),
     }
   }
 
+  const extractImages = !((data?.at(0)?.images?.carouselImages?.length || 0) > 0)
+
   const currentTime = new Date().toISOString()
 
-  const scrapedAnime = await scrapeFullAnimeInfo(animeId)
+  const scrapedAnime = await scrapeFullAnimeInfo(animeId, extractImages)
   const animeToUpsert: Anime = {
+    ...(dbAnime ?? {}),
     ...scrapedAnime,
     created_at: currentTime,
     updated_at: currentTime,
