@@ -1,3 +1,4 @@
+import { domainsToFilter } from '../../../src/constants'
 import { scrapeAnimeEpisodes } from '../../../src/scrapers/animes/scrapeAnimeEpisodes'
 import { UpsertEpisodes, getEpisodeBy } from '../../../src/services/database/episodes'
 import { Database } from '../../../src/supabase'
@@ -15,13 +16,16 @@ export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, 
   ) {
     return episodesResponse.data.map(episode => ({
       ...episode,
-      image: episode.image && mapOriginPath(`api/${episode.image}`),
+      image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
     })) as Episode[]
   }
 
   const scrapedEpisodes: EpisodeInsert[] = await scrapeAnimeEpisodes(animeId, offset, limit)
   UpsertEpisodes(scrapedEpisodes as EpisodeInsert[])
-  return scrapedEpisodes.map(episode => ({ ...episode, image: episode.image && mapOriginPath(`api/${episode.image}`) }))
+  return scrapedEpisodes.map(episode => ({
+    ...episode,
+    image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
+  }))
 }
 
 export const getEpisodeByEpisodeId = async (episodeId: string) => {
@@ -35,7 +39,7 @@ export const getEpisodeByEpisodeId = async (episodeId: string) => {
 
   const episodes = episodesResponse.data?.map(episode => ({
     ...episode,
-    image: episode.image && mapOriginPath(`api/${episode.image}`),
+    image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
   }))
   return episodes
 }
