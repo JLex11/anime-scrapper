@@ -31,7 +31,7 @@ export const getCarouselImages = async (keywords: string[] | string): Promise<Ca
     .sort((a, b) => b.width - a.width)
 
   const optimizedImages = carouselImages
-    .filter(({ link }) => link !== null)
+    .filter(({ link }) => link)
     .map(async (image, index) => {
       const imageName = `${keywordsArr.join('-')}-carouselImage-${index}`
       const options = { width: LANDSCAPE_DIMENSIONS.WIDTH, height: LANDSCAPE_DIMENSIONS.HEIGHT, effort: 6 }
