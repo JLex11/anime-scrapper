@@ -19,7 +19,7 @@ export async function scrapeEmisionAnimes(limit?: number): Promise<Anime[]> {
     const originalLink = getAnimeOriginalLink(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
 
-    return await getAnimeInfo(animeId)
+    return getAnimeInfo(animeId)
   })
 
   const results = await Promise.allSettled(mappedEmisionAnimes)
