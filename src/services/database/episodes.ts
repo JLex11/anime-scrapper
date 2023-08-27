@@ -11,9 +11,15 @@ export const getEpisodes = async () => {
 /* Get Episode */
 export const getEpisodeBy = async <Column extends keyof ColumnType<EpisodeColumns>>(
   column: Column,
-  value: ColumnType<EpisodeColumns>[Column]
+  value: ColumnType<EpisodeColumns>[Column],
+  offset?: number,
+  limit?: number
 ) => {
-  const episode = await supabase.from('episodes').select().eq(column, value)
+  const episode = await supabase
+    .from('episodes')
+    .select()
+    .eq(column, value)
+    .range(offset || 0, limit || 10)
   return episode
 }
 
