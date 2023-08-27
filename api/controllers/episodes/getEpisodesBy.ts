@@ -3,26 +3,37 @@ import { scrapeAnimeEpisodes } from '../../../src/scrapers/animes/scrapeAnimeEpi
 import { UpsertEpisodes, getEpisodeBy } from '../../../src/services/database/episodes'
 import { Database } from '../../../src/supabase'
 import { Episode } from '../../../src/types'
+import { isUpToDate } from '../../../src/utils/isUpToDate'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
 type EpisodeInsert = Database['public']['Tables']['episodes']['Insert']
 
 export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, limit: number = 10) => {
-  const episodesResponse = await getEpisodeBy('animeId', animeId)
-  if (
-    episodesResponse.data &&
-    episodesResponse.data.length > 0 &&
-    episodesResponse.data.length == episodesResponse.data[0].episode
-  ) {
-    return episodesResponse.data.map(episode => ({
+  const { data: episodesData } = await getEpisodeBy('animeId', animeId, offset, limit)
+
+  if (episodesData && episodesData[0] && isUpToDate(episodesData[0]?.updated_at)) {
+    return episodesData.map(episode => ({
       ...episode,
       image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
     })) as Episode[]
   }
 
-  const scrapedEpisodes: EpisodeInsert[] = await scrapeAnimeEpisodes(animeId, offset, limit)
-  UpsertEpisodes(scrapedEpisodes as EpisodeInsert[])
-  return scrapedEpisodes.map(episode => ({
+  const extractImage = !(
+    episodesData &&
+    episodesData[0]?.image &&
+    !episodesData[0]?.image.includes('https://cdn.animeflv.net')
+  )
+
+  const scrapedEpisodes: EpisodeInsert[] = await scrapeAnimeEpisodes(animeId, offset, limit, extractImage)
+
+  const mappedEpisodes = scrapedEpisodes.map(scrapeEpisode => {
+    const dbEpisode = episodesData?.find(episode => episode.episodeId === scrapeEpisode.episodeId)
+    return { ...(dbEpisode ?? {}), ...scrapeEpisode }
+  })
+
+  UpsertEpisodes(mappedEpisodes as EpisodeInsert[])
+
+  return mappedEpisodes.map(episode => ({
     ...episode,
     image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
   }))
@@ -30,16 +41,11 @@ export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, 
 
 export const getEpisodeByEpisodeId = async (episodeId: string) => {
   const episodesResponse = await getEpisodeBy('episodeId', episodeId)
-  /* if (episodesResponse.data && episodesResponse.data.length > 0) {
-    return episodesResponse.data[0] as Episode
-  }
-
-  type EpisodeInsert = Database['public']['Tables']['episodes']['Insert']
-  const scrapedEpisode: EpisodeInsert = await scrapeEpisode(episodeId) */
 
   const episodes = episodesResponse.data?.map(episode => ({
     ...episode,
     image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
   }))
+
   return episodes
 }
