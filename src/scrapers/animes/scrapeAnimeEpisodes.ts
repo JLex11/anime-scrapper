@@ -7,7 +7,12 @@ import { getAnimeTitle } from './animeGetters'
 
 const CACHE_HOURS = 0.5
 
-export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit: number): Promise<Episode[]> {
+export async function scrapeAnimeEpisodes(
+  animeId: string,
+  offset: number,
+  limit: number,
+  extractImage: boolean = true
+): Promise<Episode[]> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
   const html = await requestTextWithCache(originalLink, { ttl: CACHE_HOURS * 60 * 60 })
 
@@ -45,11 +50,12 @@ export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit
       const episode = episodeNumber
       const episodeId = `${animeId}-${episodeNumber}`
       const originalLink = `${animeFLVPages.BASE}/ver/${episodeId}`
-      const image = `https://cdn.animeflv.net/screenshots/${animeInfo?.[0] ?? 0}/${episodeNumber}/th_3.jpg`
-      const optimizeImage = await getOptimizeImage(image, `episode-image-${animeId}-${episodeNumber}`, {
-        width: 150,
-        height: 80,
-      })
+
+      const imageLink = `https://cdn.animeflv.net/screenshots/${animeInfo?.[0] ?? 0}/${episodeNumber}/th_3.jpg`
+      const imageName = `episode-image-${animeId}-${episodeNumber}`
+      const optimizeImage = extractImage
+        ? await getOptimizeImage(imageLink, imageName, { width: 150, height: 80 })
+        : null
 
       return {
         episodeId,
@@ -57,7 +63,7 @@ export async function scrapeAnimeEpisodes(animeId: string, offset: number, limit
         title,
         episode,
         originalLink,
-        image: optimizeImage || image,
+        image: optimizeImage
       }
     })
 
