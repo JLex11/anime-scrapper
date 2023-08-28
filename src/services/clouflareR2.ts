@@ -25,11 +25,7 @@ interface S3HeadOrGetOperation {
 }
 
 export async function s3PutOperation({ filename, fileBuffer }: S3PutOperation) {
-  const encodeFilename = encodeURI(filename)
-
-  const putObjectRequest = await client
-    .putObject({ Bucket: MY_R2_BUCKET, Key: encodeFilename, Body: fileBuffer })
-    .promise()
+  const putObjectRequest = await client.putObject({ Bucket: MY_R2_BUCKET, Key: filename, Body: fileBuffer }).promise()
 
   return {
     ...putObjectRequest,
@@ -38,9 +34,7 @@ export async function s3PutOperation({ filename, fileBuffer }: S3PutOperation) {
 }
 
 export async function s3HeadOperation({ filename }: S3HeadOrGetOperation) {
-  const decodeFilename = decodeURI(filename)
-
-  const headObjectRequest = await client.headObject({ Bucket: MY_R2_BUCKET, Key: decodeFilename }).promise()
+  const headObjectRequest = await client.headObject({ Bucket: MY_R2_BUCKET, Key: filename }).promise()
 
   return {
     ...headObjectRequest,
@@ -49,8 +43,6 @@ export async function s3HeadOperation({ filename }: S3HeadOrGetOperation) {
 }
 
 export async function s3GetOperation({ filename }: S3HeadOrGetOperation) {
-  const decodeFilename = decodeURI(filename)
-
-  const getObjectRequest = await client.getObject({ Bucket: MY_R2_BUCKET, Key: decodeFilename }).promise()
+  const getObjectRequest = await client.getObject({ Bucket: MY_R2_BUCKET, Key: filename }).promise()
   return getObjectRequest
 }
