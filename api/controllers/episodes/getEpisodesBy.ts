@@ -6,16 +6,21 @@ import { Episode } from '../../../src/types'
 import { isUpToDate } from '../../../src/utils/isUpToDate'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
+type EpisodeRow = Database['public']['Tables']['episodes']['Row']
 type EpisodeInsert = Database['public']['Tables']['episodes']['Insert']
 
+const mapEpisodeImage = (episode: EpisodeRow | EpisodeInsert) => {
+  return {
+    ...episode,
+    image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
+  } as Episode
+}
+
 export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, limit: number = 10) => {
-  const { data: episodesData } = await getEpisodeBy('animeId', animeId, offset, limit)
+  const { data: episodesData }: { data: EpisodeRow[] | null } = await getEpisodeBy('animeId', animeId, offset, limit)
 
   if (episodesData && episodesData[0] && isUpToDate(episodesData[0]?.updated_at)) {
-    return episodesData.map(episode => ({
-      ...episode,
-      image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
-    })) as Episode[]
+    return episodesData.map(mapEpisodeImage)
   }
 
   const extractImage = !(
@@ -31,21 +36,14 @@ export const getEpisodesByAnimeId = async (animeId: string, offset: number = 0, 
     return { ...(dbEpisode ?? {}), ...scrapeEpisode }
   })
 
-  UpsertEpisodes(mappedEpisodes as EpisodeInsert[])
-
-  return mappedEpisodes.map(episode => ({
-    ...episode,
-    image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
-  }))
+  UpsertEpisodes(mappedEpisodes)
+  return mappedEpisodes.map(mapEpisodeImage)
 }
 
 export const getEpisodeByEpisodeId = async (episodeId: string) => {
   const episodesResponse = await getEpisodeBy('episodeId', episodeId)
 
-  const episodes = episodesResponse.data?.map(episode => ({
-    ...episode,
-    image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`)
-  }))
+  const episodes = episodesResponse.data?.map(mapEpisodeImage)
 
   return episodes
 }
