@@ -2,12 +2,6 @@ import { Database } from '../../supabase'
 import { ColumnType, EpisodeColumns } from '../../types'
 import { supabase } from './supabaseClient'
 
-/* Get Episodes */
-export const getEpisodes = async () => {
-  const episodesResponse = await supabase.from('episodes').select()
-  return episodesResponse
-}
-
 /* Get Episode */
 export const getEpisodeBy = async <Column extends keyof ColumnType<EpisodeColumns>>(
   column: Column,
@@ -20,6 +14,7 @@ export const getEpisodeBy = async <Column extends keyof ColumnType<EpisodeColumn
     .select()
     .eq(column, value)
     .range(offset || 0, limit || 10)
+    .order('episode', { ascending: false })
   return episode
 }
 
