@@ -4,14 +4,7 @@ import { getCarouselImages } from '../../services/getCarouselImages'
 import { getOptimizeImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import { AnimeImages, AnimeWithoutDates } from '../../types'
-import {
-  getAnimeDescription,
-  getAnimeImgLink,
-  getAnimeRank,
-  getAnimeStatus,
-  getAnimeTitle,
-  getAnimeType,
-} from './animeGetters'
+import { animeGetter } from './animeGetters'
 
 const CACHE_DAYS = 1
 
@@ -21,19 +14,16 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 
   const { document } = new JSDOM(html).window
 
-  const type = getAnimeType(document)
-  const imageLink = getAnimeImgLink(document)
-  const title = getAnimeTitle(document)
-  const status = getAnimeStatus(document)
-  const otherTitles = [...document.querySelectorAll('.TxtAlt')]
-    .map(t => t.textContent?.trim())
-    .filter(Boolean) as string[]
+  const getOfAnime = animeGetter(document)
 
-  const description = getAnimeDescription(document)
-  const rank = getAnimeRank(document, '.vtprmd')
-  const genres = [...document.querySelectorAll('.Nvgnrs a')]
-    .map(genre => genre.textContent?.trim())
-    .filter(Boolean) as string[]
+  const type = getOfAnime.type()
+  const imageLink = getOfAnime.imgLink()
+  const title = getOfAnime.title()
+  const status = getOfAnime.status()
+  const otherTitles = getOfAnime.otherTitles()
+  const description = getOfAnime.description()
+  const rank = getOfAnime.rank('.vtprmd')
+  const genres = getOfAnime.genres()
 
   const anime: AnimeWithoutDates = {
     animeId,
@@ -45,13 +35,13 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
     originalLink,
     status,
     genres,
-    images: null,
+    images: null
   }
 
   if (extractImages) {
     const images: AnimeImages = {
-      coverImage: (await getOptimizeImage(imageLink, animeId ?? 'unknow')) ?? imageLink,
-      carouselImages: await getCarouselImages(title),
+      coverImage: await getOptimizeImage(imageLink, animeId),
+      carouselImages: await getCarouselImages(title)
     }
 
     anime.images = images

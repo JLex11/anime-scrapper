@@ -14,9 +14,8 @@ export async function scrapeLastAnimes(limit?: number) {
   const { document } = new JSDOM(html).window
 
   const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
-  animeList.length = limit || 10
 
-  const mappedLastAnimes = animeList.map<Promise<Anime>>(async animeItem => {
+  const mappedLastAnimes = animeList.slice(0, limit || 15).map<Promise<Anime>>(async animeItem => {
     const originalLink = getAnimeOriginalLink(animeItem)
     const animeId = getAnimeIdFromLink(originalLink)
     return getAnimeInfo(animeId)

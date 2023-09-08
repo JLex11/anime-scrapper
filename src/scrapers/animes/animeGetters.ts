@@ -36,3 +36,26 @@ export const getAnimeRank: SelectorGetter<number> = (e, selector = '.Vts') => {
 export const getAnimeIdFromLink = (link: string): string => {
   return link.split('anime/').pop()!
 }
+
+export const getAnimeOtherTitles: SelectorGetter<string[]> = (e, selector = '.TxtAlt') => {
+  return [...e.querySelectorAll(selector)].map(t => t.textContent?.trim()).filter(Boolean) as string[]
+}
+
+export const getAnimeGenres: SelectorGetter<string[]> = (e, selector = '.Nvgnrs a') => {
+  return [...e.querySelectorAll(selector)].map(genre => genre.textContent?.trim()).filter(Boolean) as string[]
+}
+
+export const animeGetter = (e: Element | Document) => {
+  return {
+    originalLink: () => getAnimeOriginalLink(e),
+    status: (selector = '.AnmStts span') => getAnimeStatus(e, selector),
+    type: (selector = '.Type') => getAnimeType(e, selector),
+    imgLink: (selector = '.Image img') => getAnimeImgLink(e, selector),
+    title: (selector = 'h1.Title') => getAnimeTitle(e, selector),
+    description: (selector = '.Description p:last-of-type') => getAnimeDescription(e, selector),
+    rank: (selector = '.Vts') => getAnimeRank(e, selector),
+    idFromLink: (link: string) => getAnimeIdFromLink(link),
+    otherTitles: (selector = '.TxtAlt') => getAnimeOtherTitles(e, selector),
+    genres: (selector = '.Nvgnrs a') => getAnimeGenres(e, selector)
+  }
+}
