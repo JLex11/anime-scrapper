@@ -12,8 +12,8 @@ export const getGoogleImage = async (query: string, config?: GoogleRequestConfig
     cx: GoogleApi.SEARCH_ENGINE_ID,
     imgOrientation: config?.imgOrientation || 'horizontal',
     searchType: config?.searchType || 'image',
-    imgSize: config?.imgSize || 'huge',
-    num: config?.num || '3',
+    imgSize: config?.imgSize || 'xxlarge',
+    num: config?.num || '3'
   }
 
   const fullConfig = {
