@@ -1,7 +1,7 @@
 interface GoogleRequestConfig {
   imgOrientation?: 'horizontal' | 'vertical'
   searchType?: string
-  imgSize?: 'huge' | 'icon' | 'large' | 'medium' | 'small' | 'xlarge' | 'xxlarge'
+  imgSize?: 'icon' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'huge'
   key?: string
   cx?: string
   num?: string
