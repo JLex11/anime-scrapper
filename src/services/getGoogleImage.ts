@@ -18,13 +18,12 @@ export const getGoogleImage = async (query: string, config?: GoogleRequestConfig
 
   const fullConfig = {
     ...DEFAULT_CONFIG,
-    q: query,
+    q: query
   }
 
   const parameters = new URLSearchParams(fullConfig)
-  const searchResponse = (await requestJsonWithCache(
-    `${GoogleApi.API_URL}${parameters.toString()}`
-  )) as GoogleSearchResponse
+
+  const searchResponse = (await requestJsonWithCache(`${GoogleApi.API_URL}${parameters.toString()}`)) as GoogleSearchResponse
 
   return searchResponse?.items ?? []
 }
