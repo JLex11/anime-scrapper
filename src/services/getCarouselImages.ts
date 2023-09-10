@@ -1,5 +1,5 @@
 import { IMG_POSITIONS, LANDSCAPE_DIMENSIONS } from '../enums'
-import { GoogleImage } from '../googleTypes'
+import { GoogleImage, GoogleImageSearchItem } from '../googleTypes'
 import { CarouselImage } from '../types'
 import { getGoogleImage } from './getGoogleImage'
 import { getOptimizeImage } from './getOptimizeImage'
@@ -14,7 +14,7 @@ export function buildImageObject(link: string, image?: GoogleImage): CarouselIma
     link,
     position: image ? determinateImgPosition(image) : IMG_POSITIONS.CENTER,
     width: image?.width || 1080,
-    height: image?.height || 1920,
+    height: image?.height || 1920
   }
 }
 
@@ -27,7 +27,7 @@ export const getCarouselImages = async (keywords: string[] | string): Promise<Ca
   const googleImageItems = await getGoogleImage(query)
 
   const carouselImages: CarouselImage[] = googleImageItems
-    .map((item: any) => buildImageObject(item.link, item.image))
+    .map((item: GoogleImageSearchItem) => buildImageObject(item.link, item.image))
     .sort((a, b) => b.width - a.width)
 
   const optimizedImages = carouselImages
