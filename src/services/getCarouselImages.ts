@@ -18,12 +18,12 @@ export function buildImageObject(link: string, image?: GoogleImage): CarouselIma
   }
 }
 
-const dfKeywords = ['anime', 'wallpaper']
+const predefinedWords = ['anime']
 
 export const getCarouselImages = async (keywords: string[] | string): Promise<CarouselImage[]> => {
   const keywordsArr = Array.isArray(keywords) ? keywords : [keywords]
 
-  const query = [...keywordsArr, ...dfKeywords].join(' ')
+  const query = [...keywordsArr, ...predefinedWords].join(' ')
   const googleImageItems = await getGoogleImage(query)
 
   const carouselImages: CarouselImage[] = googleImageItems
