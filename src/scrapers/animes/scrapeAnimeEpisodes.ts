@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { animeFLVPages } from '../../enums'
-import { getOptimizeImage } from '../../services/getOptimizeImage'
+import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import { Episode } from '../../types'
 import { getAnimeTitle } from './animeGetters'
@@ -51,10 +51,12 @@ export async function scrapeAnimeEpisodes(
       const episodeId = `${animeId}-${episodeNumber}`
       const originalLink = `${animeFLVPages.BASE}/ver/${episodeId}`
 
-      const imageLink = `https://cdn.animeflv.net/screenshots/${animeInfo?.[0] ?? 0}/${episodeNumber}/th_3.jpg`
+      const imageLink = `https://cdn.animeflv.net/screenshots/${
+        animeInfo?.[0] ?? 0
+      }/${episodeNumber}/th_3.jpg`
       const imageName = `episode-image-${animeId}-${episodeNumber}`
       const optimizeImage = extractImage
-        ? await getOptimizeImage(imageLink, imageName, { width: 150, height: 80 })
+        ? await getOptimizedImage(imageLink, imageName, { width: 150, height: 80 })
         : null
 
       return {
