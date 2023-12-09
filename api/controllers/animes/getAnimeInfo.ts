@@ -9,11 +9,12 @@ export const mapAnimeImagesURLs = (animeImages: Anime['images']) => {
   if (!animeImages) return null
 
   return {
-    coverImage: mapOriginPath(`api/${animeImages?.coverImage?.replace(domainsToFilter, '')}`),
+    coverImage:
+      animeImages.coverImage && mapOriginPath(`api/${animeImages.coverImage.replace(domainsToFilter, '')}`),
     carouselImages:
-      animeImages?.carouselImages?.map(image => ({
+      animeImages.carouselImages.map(image => ({
         ...image,
-        link: mapOriginPath(`api/${image.link?.replace(domainsToFilter, '')}`)
+        link: image.link && mapOriginPath(`api/${image.link.replace(domainsToFilter, '')}`)
       })) ?? []
   }
 }
