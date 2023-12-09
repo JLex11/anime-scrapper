@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { animeFLVPages } from '../../enums'
-import { getOptimizeImage } from '../../services/getOptimizeImage'
+import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import { Episode } from '../../types'
 
@@ -15,7 +15,9 @@ export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
 
   const mappedLastEpidodes = episodesList.map(async episodeItem => {
     const originalLink = `${animeFLVPages.BASE}${episodeItem.querySelector('a')?.href ?? ''}`
-    const imageLink = `${animeFLVPages.BASE}${episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''}`
+    const imageLink = `${animeFLVPages.BASE}${
+      episodeItem.querySelector('.Image img')?.getAttribute('src') ?? ''
+    }`
     const episode = Number(episodeItem.querySelector('.Capi')?.textContent?.replace(/[^0-9]/g, '') ?? 0)
     const title = episodeItem.querySelector('.Title')?.textContent?.trim() ?? ''
     const episodeId = originalLink.split('ver/').pop()!
@@ -23,7 +25,7 @@ export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
 
     const imageName = episodeId ?? animeId ?? 'unknown'
     const imageOptions = { width: 350, height: 250, effort: 6 }
-    const image = await getOptimizeImage(imageLink, imageName, imageOptions)
+    const image = await getOptimizedImage(imageLink, imageName, imageOptions)
 
     return {
       originalLink,
@@ -31,7 +33,7 @@ export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
       episode,
       title,
       episodeId,
-      animeId,
+      animeId
     }
   })
 
