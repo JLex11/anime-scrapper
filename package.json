@@ -15,7 +15,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.299.0",
     "@aws-sdk/credential-provider-ini": "3.299.0",
-    "@img/sharp-linux-x64": "^0.33.0",
     "@supabase/supabase-js": "2.39.0",
     "aws-sdk": "2.1343.0",
     "cors": "2.8.5",
@@ -23,7 +22,7 @@
     "jsdom": "23.0.1",
     "morgan": "1.10.0",
     "node-cache": "5.1.2",
-    "sharp": "0.33.0",
+    "sharp": "0.32.6",
     "vercel": "^32.6.1"
   },
   "devDependencies": {
