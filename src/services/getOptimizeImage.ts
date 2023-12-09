@@ -6,7 +6,7 @@ import { requestBufferWithCache } from './requestWithCache'
 const cacheDefaultConfig = { stdTTL: 604800, useClones: false }
 const requestCache = new NodeCache(cacheDefaultConfig)
 
-type OptimizeOptions = {
+interface OptimizeOptions {
   width?: number
   height?: number
   effort?: number
@@ -17,10 +17,10 @@ type GetOptimizedImage = (link: string, name: string, options?: OptimizeOptions)
 const dfOptions = {
   width: 350,
   height: 500,
-  effort: 6,
+  effort: 6
 }
 
-export const getOptimizeImage: GetOptimizedImage = async (url, name, options = dfOptions) => {
+export const getOptimizedImage: GetOptimizedImage = async (url, name, options = dfOptions) => {
   const cacheUrl = requestCache.get<string>(url)
   if (cacheUrl) return cacheUrl
 
@@ -45,9 +45,9 @@ export const getOptimizeImage: GetOptimizedImage = async (url, name, options = d
   try {
     const s3PutImageResponse = await s3PutOperation({
       filename: imageName,
-      fileBuffer: outputImageBuffer,
+      fileBuffer: outputImageBuffer
     })
-    
+
     return s3PutImageResponse.url
   } catch (error) {
     console.log('error uploading image')
@@ -58,12 +58,12 @@ export const getOptimizeImage: GetOptimizedImage = async (url, name, options = d
 async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: OptimizeOptions) {
   const { width, height, effort } = options
 
-  return sharp(Buffer.from(imageArrayBuffer))
+  return await sharp(Buffer.from(imageArrayBuffer))
     .resize(width, height)
     .webp({ effort })
     .toBuffer()
     .catch(error => {
-      console.log('error optimizing image')
+      console.log(`error optimizing image => ${error}`)
       return null
     })
 }

@@ -2,7 +2,7 @@ import { IMG_POSITIONS, LANDSCAPE_DIMENSIONS } from '../enums'
 import { GoogleImage, GoogleImageSearchItem } from '../googleTypes'
 import { CarouselImage } from '../types'
 import { getGoogleImage } from './getGoogleImage'
-import { getOptimizeImage } from './getOptimizeImage'
+import { getOptimizedImage } from './getOptimizeImage'
 
 function determinateImgPosition(image: GoogleImage) {
   const aspectRatioThreshold = 1.5
@@ -35,7 +35,7 @@ export const getCarouselImages = async (keywords: string[] | string): Promise<Ca
     .map(async (image, index) => {
       const imageName = `${keywordsArr.join('-')}-carouselImage-${index}`
       const options = { width: LANDSCAPE_DIMENSIONS.WIDTH, height: LANDSCAPE_DIMENSIONS.HEIGHT, effort: 6 }
-      image.link = image.link && (await getOptimizeImage(image.link, imageName, options))
+      image.link = image.link && (await getOptimizedImage(image.link, imageName, options))
       return image
     })
 
