@@ -9,6 +9,9 @@
     "build": "tsc",
     "start": "node public/api/index.js"
   },
+  "engines": {
+    "node": ">=21.4.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
