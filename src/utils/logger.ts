@@ -1,6 +1,6 @@
-import winston from 'winston'
+/* import winston from 'winston' */
 
-const logger = winston.createLogger({
+/* const logger = winston.createLogger({
   level: 'info',
   format: winston.format.json(),
   defaultMeta: { service: 'user-service' },
@@ -14,6 +14,15 @@ logger.add(
   new winston.transports.Console({
     format: winston.format.simple()
   })
-)
+) */
+
+const logger = {
+  info: (message: string) => {
+    console.log(message)
+  },
+  error: (message: string) => {
+    console.error(message)
+  }
+}
 
 export default logger
