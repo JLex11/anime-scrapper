@@ -8,7 +8,7 @@ import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
 import routesDocumentation from './router/routesDocumentation'
 
-const app = express()
+const app: express.Application = express()
 
 app.use(cors())
 app.use(express.json())
@@ -31,7 +31,10 @@ app.get(`/api${endPoints.IMAGES}`, async (req, res) => {
   try {
     const s3Response = await s3GetOperation({ filename: imgFilename })
     const imgBuffer = s3Response?.Body
-    res.setHeader('Content-Type', 'image/*')
+
+    res.setHeader('Content-Type', 'image/webp')
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+
     return res.send(imgBuffer)
   } catch (error) {
     console.error(error)
