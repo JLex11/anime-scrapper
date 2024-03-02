@@ -1,4 +1,4 @@
-import { Router } from 'express'
+import { Router as RouterApp, type Router as RouterType } from 'express'
 import { animeStatus, endPoints } from '../../src/enums'
 import { scrapeAllAnimes } from '../../src/scrapers/animes/scrapeAllAnimes'
 import { scrapeEmisionAnimes } from '../../src/scrapers/animes/scrapeEmisionAnimes'
@@ -8,7 +8,7 @@ import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
 import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
 
-const router = Router()
+const router: RouterType = RouterApp()
 
 router.get('/', async (req, res) => {
   const { page } = req.query

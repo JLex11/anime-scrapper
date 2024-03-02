@@ -1,11 +1,11 @@
-import { Router } from 'express'
+import { Router as RouterApp, type Router as RouterType } from 'express'
 import { endPoints } from '../../src/enums'
 import { scrapeEpisodeSources } from '../../src/scrapers/episodes/scrapeEpisodeSources'
 import { EpisodeSources } from '../../src/types'
 import { getEpisodeByEpisodeId } from '../controllers/episodes/getEpisodesBy'
 import { getLatestEpisodes } from '../controllers/episodes/getLatestEpisodes'
 
-const router = Router()
+const router: RouterType = RouterApp()
 
 router.get(endPoints.LATEST_EPISODES, async (_, res) => {
   const latestEpisodes = await getLatestEpisodes()
