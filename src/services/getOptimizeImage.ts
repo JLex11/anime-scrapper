@@ -1,7 +1,7 @@
 import NodeCache from 'node-cache'
 import sharp from 'sharp'
 import logger from '../utils/logger'
-import { s3HeadOperation, s3PutOperation } from './clouflareR2'
+import { s3HeadOperation, s3PutOperation } from './cloudflareR2'
 import { requestBufferWithCache } from './requestWithCache'
 
 interface OptimizeOptions {
