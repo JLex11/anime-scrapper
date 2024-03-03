@@ -3,7 +3,7 @@ import express from 'express'
 import morgan from 'morgan'
 import { setOriginPath } from '../src/config'
 import { endPoints } from '../src/enums'
-import { s3GetOperation } from '../src/services/clouflareR2'
+import { s3GetOperation } from '../src/services/cloudflareR2'
 import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
 import routesDocumentation from './router/routesDocumentation'
@@ -20,6 +20,8 @@ app.use(async (req, _, next) => {
   setOriginPath(`${isProdMode ? 'https' : req.protocol}://${req.get('host')}`)
   next()
 })
+
+app.get('/', (_, res) => res.redirect('/api'))
 
 app.use('/api/', routesDocumentation)
 app.use('/api/animes', animesRouter)
