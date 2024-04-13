@@ -8,9 +8,13 @@ import { animeGetter } from './animeGetters'
 
 const CACHE_TIME = 6 * 60 * 60 // -> 6 hours
 
-export async function scrapeFullAnimeInfo(animeId: string, extractImages = true): Promise<AnimeWithoutDates> {
+export async function scrapeFullAnimeInfo(
+  animeId: string,
+  extractImages = true
+): Promise<AnimeWithoutDates | null> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
   const html = await requestTextWithCache(originalLink, { ttl: CACHE_TIME })
+  if (!html) return null
 
   const { document } = new JSDOM(html).window
 

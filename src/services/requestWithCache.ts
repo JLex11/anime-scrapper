@@ -15,7 +15,7 @@ interface RequestCacheInit extends RequestInit {
 }
 
 interface FetchAndCache {
-  (url: string, config?: RequestCacheInit, responseType?: ResponseType): Promise<FetchResponse | null>
+  (url: string, config?: RequestCacheInit, responseType?: ResponseType): Promise<FetchResponse>
 }
 
 const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
@@ -27,14 +27,14 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
     if (cacheResource != null) {
       resolve({
         response: null,
-        resource: cacheResource,
+        resource: cacheResource
       })
     }
   })
 
   const responsePromise = fetch(url, config)
     .then(async response => {
-      if (!response.ok) console.log('response is not ok')
+      if (!response.ok) throw new Error(`Request failed with status ${response.status}`)
 
       const resource =
         responseType === ResponseType.JSON
@@ -48,26 +48,27 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
       return { response, resource }
     })
     .catch(error => {
-      console.log(error)
-      return null
+      return { response: null, resource: null }
     })
 
   return await Promise.race([cachePromise, responsePromise])
 }
 
-type RequestWithCache = (url: string, config?: RequestCacheInit) => Promise<any | null>
-
-export const requestJsonWithCache: RequestWithCache = async (url, config): Promise<Object | undefined> => {
-  const response = await fetchAndCache(url, config, ResponseType.JSON)
-  return response?.resource
+interface RequestWithCacheFn<T extends any> {
+  (url: string, config?: RequestCacheInit): Promise<T | null>
 }
 
-export const requestTextWithCache: RequestWithCache = async (url, config): Promise<string | undefined> => {
+export const requestJsonWithCache: RequestWithCacheFn<Object> = async (url, config) => {
+  const response = await fetchAndCache(url, config, ResponseType.JSON)
+  return response?.resource as Object | null
+}
+
+export const requestTextWithCache: RequestWithCacheFn<string> = async (url, config) => {
   const response = await fetchAndCache(url, config, ResponseType.TEXT)
   return response?.resource
 }
 
-export const requestBufferWithCache: RequestWithCache = async (url, config): Promise<string | undefined> => {
+export const requestBufferWithCache: RequestWithCacheFn<ArrayBuffer> = async (url, config) => {
   const response = await fetchAndCache(url, config, ResponseType.BUFFER)
   return response?.resource
 }

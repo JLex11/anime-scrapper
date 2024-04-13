@@ -21,7 +21,7 @@ export const mapAnimeImagesURLs = (animeImages: Anime['images']) => {
 
 const getCurrentTime = () => new Date().toISOString()
 
-export const getAnimeInfo = async (animeId: string): Promise<Anime> => {
+export const getAnimeInfo = async (animeId: string): Promise<Anime | null> => {
   const { data } = await getAnimeBy('animeId', animeId)
   const dbAnime = data?.at(0)
 
@@ -37,6 +37,8 @@ export const getAnimeInfo = async (animeId: string): Promise<Anime> => {
   const currentTime = getCurrentTime()
 
   const scrapedAnime = await scrapeFullAnimeInfo(animeId, extractImages)
+  if (!scrapedAnime) return null
+
   const animeToUpsert: Anime = {
     ...(dbAnime ?? {}),
     ...scrapedAnime,
