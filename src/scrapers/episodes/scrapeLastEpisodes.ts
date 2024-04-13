@@ -8,6 +8,7 @@ const CACHE_MINUTES = 10
 
 export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
   const html = await requestTextWithCache(animeFLVPages.BASE, { ttl: CACHE_MINUTES * 60 })
+  if (!html) return []
 
   const { document } = new JSDOM(html).window
 

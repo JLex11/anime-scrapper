@@ -15,6 +15,7 @@ export async function scrapeAnimeEpisodes(
 ): Promise<Episode[]> {
   const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
   const html = await requestTextWithCache(originalLink, { ttl: CACHE_HOURS * 60 * 60 })
+  if (!html) return []
 
   const { document } = new JSDOM(html).window
 

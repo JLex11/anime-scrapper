@@ -14,6 +14,12 @@ export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSo
   }
 
   const html = await requestTextWithCache(`${animeFLVPages.BASE}/ver/${episodeId}`, { ttl: CACHE_DAYS * 24 * 60 * 60 })
+  if (!html) {
+    return {
+      episode: 0,
+      videos: []
+    }
+  }
 
   const { document } = new JSDOM(html).window
 

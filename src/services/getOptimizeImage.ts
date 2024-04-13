@@ -65,7 +65,7 @@ export const getOptimizedImage: GetOptimizedImage = async (url, name, options = 
   }
 }
 
-async function getOptimizedImageBuffer(imageArrayBuffer: Buffer, options: OptimizeOptions) {
+async function getOptimizedImageBuffer(imageArrayBuffer: ArrayBuffer, options: OptimizeOptions) {
   const { width, height, effort } = options
   return await sharp(Buffer.from(imageArrayBuffer)).resize(width, height).webp({ effort }).toBuffer()
 }
