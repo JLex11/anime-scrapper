@@ -1,11 +1,11 @@
-let config = {
-  originPath: ''
-};
+const config = {
+	originPath: '',
+}
 
 export const setOriginPath = (url: string) => {
-  config.originPath = url;
-};
+	config.originPath = url
+}
 
 export const getOriginPath = () => {
-  return config.originPath;
-};
+	return config.originPath
+}
