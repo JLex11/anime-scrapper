@@ -16,9 +16,9 @@ app.use(express.static('public'))
 app.use(morgan('dev'))
 
 app.use(async (req, _, next) => {
-  const isProdMode = process.env.VERCEL_ENV === 'production'
-  setOriginPath(`${isProdMode ? 'https' : req.protocol}://${req.get('host')}`)
-  next()
+	const isProdMode = process.env.VERCEL_ENV === 'production'
+	setOriginPath(`${isProdMode ? 'https' : req.protocol}://${req.get('host')}`)
+	next()
 })
 
 app.get('/', (_, res) => res.redirect('/api'))
@@ -28,22 +28,24 @@ app.use('/api/animes', animesRouter)
 app.use('/api/episodes', episodesRouter)
 
 app.get(`/api${endPoints.IMAGES}`, async (req, res) => {
-  const { imgFilename } = req.params
+	const { imgFilename } = req.params
 
-  try {
-    const s3Response = await s3GetOperation({ filename: imgFilename })
-    const imgBuffer = s3Response?.Body
+	try {
+		const s3Response = await s3GetOperation({ filename: imgFilename })
+		const imgBuffer = s3Response?.Body
 
-    res.setHeader('Content-Type', 'image/webp')
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+		res.setHeader('Content-Type', 'image/webp')
+		res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
 
-    return res.send(imgBuffer)
-  } catch (error) {
-    console.error(error)
-    return res.status(404).send({ error: 'Image not found' })
-  }
+		res.send(imgBuffer)
+	} catch (error) {
+		console.error(error)
+		res.status(404).send({ error: 'Image not found' })
+	}
 })
 
-app.use('*', (_, res) => res.status(404).send('Not found'))
+app.use('*', (_, res) => {
+	res.status(404).send('Not found')
+})
 
 export default app
