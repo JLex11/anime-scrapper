@@ -19,7 +19,7 @@ export async function scrapeRatingAnimes(status: animeStatus, limit?: number): P
 	const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
 
 	const mappedRatingAnimes = animeList.slice(0, limit || 10).map<Promise<Anime | null>>(async animeItem => {
-		const originalLink = getAnimeOriginalLink(animeItem)
+		const originalLink = getAnimeOriginalLink(animeItem as HTMLElement)
 		const animeId = getAnimeIdFromLink(originalLink)
 
 		return getAnimeInfo(animeId)
