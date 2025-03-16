@@ -32,7 +32,7 @@ export const getAnimeRank: SelectorGetter<number> = (e, selector = '.Vts') => {
 }
 
 export const getAnimeIdFromLink = (link: string): string => {
-	return link.split('anime/').pop() || ''
+	return link.split('anime/').pop() ?? ''
 }
 
 export const getAnimeOtherTitles: SelectorGetter<string[]> = (e, selector = '.TxtAlt') => {
