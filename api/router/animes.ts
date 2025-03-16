@@ -60,9 +60,9 @@ router.get(endPoints.RATING_ANIMES, async (req, res) => {
 
 router.get(endPoints.SEARCH_ANIMES, async (req, res) => {
 	const { query } = req.params
-	const { limit } = req.query
+	const { page, pageSize } = req.query
 
-	const foundAnimes = await searchAnimes(query, Number(limit))
+	const foundAnimes = await searchAnimes(query, Number(page), Number(pageSize))
 	if (!foundAnimes) {
 		res.status(404).send('No se encontraron animes')
 		return

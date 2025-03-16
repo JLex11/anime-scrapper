@@ -2,8 +2,8 @@ import { getAnimesByQuery } from '../../../src/services/database/animes'
 import type { Anime } from '../../../src/types'
 import { mapAnimeImagesURLs } from './getAnimeInfo'
 
-export const searchAnimes = async (query: string, limit?: number): Promise<Anime[] | undefined> => {
-	const animesResponse = await getAnimesByQuery(query, limit || 30)
+export const searchAnimes = async (query: string, page?: number, pageSize?: number): Promise<Anime[] | undefined> => {
+	const animesResponse = await getAnimesByQuery(query, page, pageSize)
 
 	const animes = animesResponse.data
 	if (!animes) return

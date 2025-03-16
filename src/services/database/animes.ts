@@ -18,18 +18,19 @@ export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(
 }
 
 /* Get Animes by matches */
-export const getAnimesByQuery = async (query: string, limit?: number) => {
-	const columnsToSearch: (keyof AnimeColumns)[] = ['title', 'description', 'type']
-	const arrayColumnsToSearch: (keyof AnimeColumns)[] = ['genres', 'otherTitles']
+export const getAnimesByQuery = async (query: string, page?: number, pageSize?: number) => {
+	const startIndex = ((page || 1) - 1) * (pageSize || 10)
+	const endIndex = startIndex + (pageSize || 10) - 1
 
-	const orQuery = columnsToSearch.map(column => `${column}.ilike.%${query}%`).join(',')
-	const arrayOrQuery = arrayColumnsToSearch.map(column => `${column}.cs.{${query}}`).join(',')
+	console.log({ startIndex, endIndex })
 
 	const animes = await supabase
 		.from('animes')
 		.select()
-		.or(`${orQuery},${arrayOrQuery}`)
-		.limit(limit || 30)
+		.textSearch('full_anime_search', query, {
+			type: 'websearch',
+		})
+		.range(startIndex, endIndex)
 
 	return animes
 }
