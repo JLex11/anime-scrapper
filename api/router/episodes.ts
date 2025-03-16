@@ -1,29 +1,35 @@
-import { Router as RouterApp, type Router as RouterType } from 'express'
+import { Router } from 'express'
 import { endPoints } from '../../src/enums'
 import { scrapeEpisodeSources } from '../../src/scrapers/episodes/scrapeEpisodeSources'
-import { EpisodeSources } from '../../src/types'
+import type { EpisodeSources } from '../../src/types'
 import { getEpisodeByEpisodeId } from '../controllers/episodes/getEpisodesBy'
 import { getLatestEpisodes } from '../controllers/episodes/getLatestEpisodes'
 
-const router: RouterType = RouterApp()
+const router = Router()
 
-router.get(endPoints.LATEST_EPISODES, async (_, res) => {
-  const latestEpisodes = await getLatestEpisodes()
-  return res.send(latestEpisodes)
+router.get(endPoints.LATEST_EPISODES, async (_req, res, next) => {
+	// try {
+	//   const latestEpisodes = await getLatestEpisodes()
+	//   res.send(latestEpisodes)
+	// } catch (error) {
+	//   next(error)
+	// }
+	const latestEpisodes = await getLatestEpisodes()
+	res.send(latestEpisodes)
 })
 
 router.get(endPoints.EPISODE_BY_ID, async (req, res) => {
-  const { episodeId } = req.params
+	const { episodeId } = req.params
 
-  const episodes = await getEpisodeByEpisodeId(episodeId)
-  return res.send(episodes)
+	const episodes = await getEpisodeByEpisodeId(episodeId)
+	res.send(episodes)
 })
 
 router.get(endPoints.EPISODE_SOURCES, async (req, res) => {
-  const { id } = req.params
+	const { id } = req.params
 
-  const episodeSources: EpisodeSources = await scrapeEpisodeSources(id)
-  return res.send(episodeSources)
+	const episodeSources: EpisodeSources = await scrapeEpisodeSources(id)
+	res.send(episodeSources)
 })
 
 export default router

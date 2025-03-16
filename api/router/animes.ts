@@ -1,4 +1,4 @@
-import { Router as RouterApp, type Router as RouterType } from 'express'
+import { Router as RouterApp } from 'express'
 import { animeStatus, endPoints } from '../../src/enums'
 import { scrapeAllAnimes } from '../../src/scrapers/animes/scrapeAllAnimes'
 import { scrapeEmisionAnimes } from '../../src/scrapers/animes/scrapeEmisionAnimes'
@@ -8,71 +8,92 @@ import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
 import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
 
-const router: RouterType = RouterApp()
+const router = RouterApp()
 
 router.get('/', async (req, res) => {
-  const { page } = req.query
+	const { page } = req.query
 
-  const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
-  if (foundAnimes.length === 0) return res.status(404).send('No se encontraron animes')
+	const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
+	if (foundAnimes.length === 0) {
+		res.status(404).send('No se encontraron animes')
+		return
+	}
 
-  return res.send(foundAnimes)
+	res.send(foundAnimes)
 })
 
 router.get(endPoints.LATEST_ANIMES, async (req, res) => {
-  const { limit } = req.query
+	const { limit } = req.query
 
-  const latestAnimes = await scrapeLastAnimes(Number(limit))
-  if (latestAnimes.length === 0) return res.status(404).send('No se encontraron animes')
+	const latestAnimes = await scrapeLastAnimes(Number(limit))
+	if (latestAnimes.length === 0) {
+		res.status(404).send('No se encontraron animes')
+		return
+	}
 
-  return res.send(latestAnimes)
+	res.send(latestAnimes)
 })
 
 router.get(endPoints.BROADCAST_ANIMES, async (req, res) => {
-  const { limit } = req.query
+	const { limit } = req.query
 
-  const emisionAnimes = await scrapeEmisionAnimes(Number(limit))
-  if (emisionAnimes.length === 0) return res.status(404).send('No se encontraron animes')
+	const emisionAnimes = await scrapeEmisionAnimes(Number(limit))
+	if (emisionAnimes.length === 0) {
+		res.status(404).send('No se encontraron animes')
+		return
+	}
 
-  return res.send(emisionAnimes)
+	res.send(emisionAnimes)
 })
 
 router.get(endPoints.RATING_ANIMES, async (req, res) => {
-  const { limit } = req.query
+	const { limit } = req.query
 
-  const ratingAnimes = await scrapeRatingAnimes(animeStatus.BROADCAST, Number(limit))
-  if (ratingAnimes.length === 0) return res.status(404).send('No se encontraron animes')
+	const ratingAnimes = await scrapeRatingAnimes(animeStatus.BROADCAST, Number(limit))
+	if (ratingAnimes.length === 0) {
+		res.status(404).send('No se encontraron animes')
+		return
+	}
 
-  return res.send(ratingAnimes)
+	res.send(ratingAnimes)
 })
 
 router.get(endPoints.SEARCH_ANIMES, async (req, res) => {
-  const { query } = req.params
-  const { limit } = req.query
+	const { query } = req.params
+	const { limit } = req.query
 
-  const foundAnimes = await searchAnimes(query, Number(limit))
-  if (!foundAnimes) return res.status(404).send('No se encontraron animes')
+	const foundAnimes = await searchAnimes(query, Number(limit))
+	if (!foundAnimes) {
+		res.status(404).send('No se encontraron animes')
+		return
+	}
 
-  return res.send(foundAnimes)
+	res.send(foundAnimes)
 })
 
 router.get(endPoints.ANIME_INFO, async (req, res) => {
-  const { animeId } = req.params
+	const { animeId } = req.params
 
-  const animeInfo = await getAnimeInfo(animeId)
-  if (!animeInfo) return res.status(404).send('No se encontró el anime')
+	const animeInfo = await getAnimeInfo(animeId)
+	if (!animeInfo) {
+		res.status(404).send('No se encontró el anime')
+		return
+	}
 
-  return res.send(animeInfo)
+	res.send(animeInfo)
 })
 
 router.get(endPoints.ANIME_EPISODES, async (req, res) => {
-  const { animeId } = req.params
-  const { offset, limit } = req.query
+	const { animeId } = req.params
+	const { offset, limit } = req.query
 
-  const animeEpisodes = await getEpisodesByAnimeId(animeId, Number(offset), Number(limit))
-  if (animeEpisodes.length === 0) return res.status(404).send('No se encontraron episodios')
+	const animeEpisodes = await getEpisodesByAnimeId(animeId, Number(offset), Number(limit))
+	if (animeEpisodes.length === 0) {
+		res.status(404).send('No se encontraron episodios')
+		return
+	}
 
-  return res.send(animeEpisodes)
+	res.send(animeEpisodes)
 })
 
 export default router
