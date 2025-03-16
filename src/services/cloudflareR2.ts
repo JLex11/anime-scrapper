@@ -7,42 +7,42 @@ const MY_R2_BUCKET = 'anime-app'
 const MY_R2_API_URL = `https://${MY_R2_ACCOUNT_ID}.r2.cloudflarestorage.com`
 
 const client = new S3({
-  endpoint: MY_R2_API_URL,
-  credentials: {
-    accessKeyId: MY_R2_ACCESS_KEY_ID,
-    secretAccessKey: MY_R2_SECRET_ACCESS_KEY_ID,
-  },
-  signatureVersion: 'v4',
+	endpoint: MY_R2_API_URL,
+	credentials: {
+		accessKeyId: MY_R2_ACCESS_KEY_ID,
+		secretAccessKey: MY_R2_SECRET_ACCESS_KEY_ID,
+	},
+	signatureVersion: 'v4',
 })
 
 interface S3PutOperation {
-  filename: string
-  fileBuffer: Buffer
+	filename: string
+	fileBuffer: Buffer
 }
 
 interface S3HeadOrGetOperation {
-  filename: string
+	filename: string
 }
 
 export async function s3PutOperation({ filename, fileBuffer }: S3PutOperation) {
-  const putObjectRequest = await client.putObject({ Bucket: MY_R2_BUCKET, Key: filename, Body: fileBuffer }).promise()
+	const putObjectRequest = await client.putObject({ Bucket: MY_R2_BUCKET, Key: filename, Body: fileBuffer }).promise()
 
-  return {
-    ...putObjectRequest,
-    url: `image/${filename}`
-  }
+	return {
+		...putObjectRequest,
+		url: `image/${filename}`,
+	}
 }
 
 export async function s3HeadOperation({ filename }: S3HeadOrGetOperation) {
-  const headObjectRequest = await client.headObject({ Bucket: MY_R2_BUCKET, Key: filename }).promise()
+	const headObjectRequest = await client.headObject({ Bucket: MY_R2_BUCKET, Key: filename }).promise()
 
-  return {
-    ...headObjectRequest,
-    url: `image/${filename}`
-  }
+	return {
+		...headObjectRequest,
+		url: `image/${filename}`,
+	}
 }
 
 export async function s3GetOperation({ filename }: S3HeadOrGetOperation) {
-  const getObjectRequest = await client.getObject({ Bucket: MY_R2_BUCKET, Key: filename }).promise()
-  return getObjectRequest
+	const getObjectRequest = await client.getObject({ Bucket: MY_R2_BUCKET, Key: filename }).promise()
+	return getObjectRequest
 }
