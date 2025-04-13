@@ -1,53 +1,52 @@
 {
-  "name": "anime-scrapper",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "dev": "ts-node-dev --project ./tsconfig.json api/devIndex.ts",
-    "bun:dev": "bun --watch api/devIndex.ts",
-    "test": "ts-node-dev --project ./tsconfig.json src/services/cloudflareR2_beta.ts",
-    "bun:test": "bun --watch src/services/cloudflareR2_beta.ts",
-    "dev:file": "ts-node-dev",
-    "build": "bun build --target=bun --entrypoints api/index.ts --outdir ./public/api",
-    "build:dev": "bun build --target=bun --entrypoints api/devIndex.ts --outdir ./public/api",
-    "start": "node ./public/api/index.js",
-    "bun:start": "bun run ./public/api/index.js",
-    "start:dev": "node ./public/api/devIndex.js",
-    "bun:start:dev": "bun run ./public/api/devIndex.js",
-    "lint": "bunx biome lint --write && bunx biome format --write"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.525.0",
-    "@aws-sdk/credential-provider-ini": "3.299.0",
-    "@supabase/supabase-js": "2.48.1",
-    "aws-sdk": "2.1343.0",
-    "cors": "2.8.5",
-    "express": "4.21.2",
-    "jsdom": "^26.0.0",
-    "morgan": "1.10.0",
-    "node-cache": "5.1.2",
-    "sharp": "^0.33.5",
-    "winston": "^3.11.0"
-  },
-  "devDependencies": {
-    "@aws-sdk/types": "3.296.0",
-    "@biomejs/biome": "1.9.4",
-    "@types/bun": "^1.2.5",
-    "@types/cors": "2.8.17",
-    "@types/express": "5.0.0",
-    "@types/jsdom": "21.1.7",
-    "@types/morgan": "1.9.9",
-    "@types/node": "22.13.10",
-    "ts-node-dev": "2.0.0",
-    "ts-standard": "^12.0.2",
-    "typescript": "5.8.2"
-  },
-  "ts-standard": {
-    "ignore": ["public"]
-  },
-  "private": true
+	"name": "anime-scrapper",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"node:dev": "ts-node-dev --project ./tsconfig.json api/devIndex.ts",
+		"dev": "bun --watch api/devIndex.ts",
+		"dev:file": "ts-node-dev",
+		"build": "bun build --target=bun --entrypoints api/index.ts --outdir ./public/api",
+		"build:dev": "bun build --target=bun --entrypoints api/devIndex.ts --outdir ./public/api",
+		"node:start": "node ./public/api/index.js",
+		"start": "bun run ./public/api/index.js",
+		"node:start:dev": "node ./public/api/devIndex.js",
+		"start:dev": "bun run api/devIndex.ts",
+		"dev:workers": "bun --watch src/scripts/workers.ts",
+		"start:workers": "bun run src/scripts/workers.ts",
+		"lint": "bunx biome lint --write && bunx biome format --write"
+	},
+	"license": "ISC",
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.525.0",
+		"@aws-sdk/credential-provider-ini": "3.299.0",
+		"@supabase/supabase-js": "2.49.4",
+		"@types/amqplib": "^0.10.7",
+		"amqplib": "^0.10.7",
+		"aws-sdk": "2.1343.0",
+		"cors": "2.8.5",
+		"express": "4.21.2",
+		"jsdom": "^26.0.0",
+		"morgan": "1.10.0",
+		"node-cache": "5.1.2",
+		"sharp": "^0.33.5",
+		"winston": "^3.11.0"
+	},
+	"devDependencies": {
+		"@aws-sdk/types": "3.296.0",
+		"@biomejs/biome": "1.9.4",
+		"@types/bun": "^1.2.9",
+		"@types/cors": "2.8.17",
+		"@types/express": "5.0.1",
+		"@types/jsdom": "21.1.7",
+		"@types/morgan": "1.9.9",
+		"@types/node": "22.14.1",
+		"ts-node-dev": "2.0.0",
+		"ts-standard": "^12.0.2",
+		"typescript": "5.8.2"
+	},
+	"ts-standard": {
+		"ignore": ["public"]
+	},
+	"private": true
 }
