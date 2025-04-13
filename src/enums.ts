@@ -36,6 +36,7 @@ export enum endPoints {
 	SEARCH_ANIMES = '/search/:query',
 	ANIME_DIRECTORY = '/directory',
 	IMAGES = '/image/:imgFilename',
+	PROCESS_IMAGES = '/process-image',
 }
 
 export enum GoogleApi {

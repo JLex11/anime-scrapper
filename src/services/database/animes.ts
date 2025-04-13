@@ -1,5 +1,5 @@
 import type { Database } from '../../supabase'
-import type { Anime, AnimeColumns, ColumnType } from '../../types'
+import type { Anime, AnimeColumns, CarouselImage, ColumnType } from '../../types'
 import { supabase } from './supabaseClient'
 
 /* Get Animes */
@@ -13,7 +13,7 @@ export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(
 	column: Column,
 	value: ColumnType<AnimeColumns>[Column]
 ) => {
-	const anime = await supabase.from('animes').select().eq(column, value)
+	const anime = await supabase.from('animes').select().eq(column, value).limit(1).single()
 	return anime
 }
 
@@ -55,6 +55,30 @@ type AnimeUpdate = Database['public']['Tables']['animes']['Update']
 
 export const updateAnime = async (animeId: string, anime: AnimeUpdate) => {
 	const updatedAnime = await supabase.from('animes').update(anime).eq('animeId', animeId)
+	return updatedAnime
+}
+
+/* Update Anime Json Images */
+type PropertyPathMap = {
+	coverImage: string
+	carouselImages: CarouselImage[]
+}
+type NewValueType<Path extends keyof PropertyPathMap> = PropertyPathMap[Path]
+
+export const updateAnimeJsonImages = async <Path extends keyof PropertyPathMap>(
+	animeId: string,
+	propertyPath: Path,
+	newValue: NewValueType<Path>
+) => {
+	const updatedAnime = await supabase.rpc('update_anime_images_json', {
+		anime_id: animeId,
+		property: propertyPath,
+		new_value: newValue,
+	})
+	if (updatedAnime.error) {
+		console.error('Error updating anime images:', updatedAnime.error)
+		return null
+	}
 	return updatedAnime
 }
 
