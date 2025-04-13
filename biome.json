@@ -15,7 +15,7 @@
 		"formatWithErrors": true
 	},
 	"organizeImports": {
-		"enabled": true
+		"enabled": false
 	},
 	"linter": {
 		"enabled": true,
@@ -38,7 +38,7 @@
 			"bracketSpacing": true,
 			"jsxQuoteStyle": "single",
 			"quoteProperties": "asNeeded",
-			"lineWidth": 130
+			"lineWidth": 140
 		}
 	}
 }
