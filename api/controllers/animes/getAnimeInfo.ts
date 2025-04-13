@@ -5,52 +5,51 @@ import type { Anime } from '../../../src/types'
 import { isUpToDate } from '../../../src/utils/isUpToDate'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
-export const mapAnimeImagesURLs = (animeImages: Anime['images']) => {
-	if (!animeImages) return null
+export const mapAnimeImages = (anime: Anime) => {
+	const animeImages = anime.images as Anime['images']
+	const mappedAnimeImages = animeImages
+		? {
+				coverImage: animeImages.coverImage && mapOriginPath(`api/${animeImages.coverImage.replace(domainsToFilter, '')}`),
+				carouselImages:
+					animeImages.carouselImages.map(image => ({
+						...image,
+						link: image.link && mapOriginPath(`api/${image.link.replace(domainsToFilter, '')}`),
+					})) ?? [],
+			}
+		: null
 
 	return {
-		coverImage: animeImages.coverImage && mapOriginPath(`api/${animeImages.coverImage.replace(domainsToFilter, '')}`),
-		carouselImages:
-			animeImages.carouselImages.map(image => ({
-				...image,
-				link: image.link && mapOriginPath(`api/${image.link.replace(domainsToFilter, '')}`),
-			})) ?? [],
+		...anime,
+		images: mappedAnimeImages,
 	}
 }
 
 const getCurrentTime = () => new Date().toISOString()
 
 export const getAnimeInfo = async (animeId: string): Promise<Anime | null> => {
-	const { data } = await getAnimeBy('animeId', animeId)
-	const dbAnime = data?.at(0)
+	const { data: animeFromDb } = await getAnimeBy('animeId', animeId)
 
-	if (dbAnime && isUpToDate(dbAnime.updated_at) && Boolean(dbAnime?.images?.carouselImages?.length)) {
-		return {
-			...dbAnime,
-			images: mapAnimeImagesURLs(dbAnime.images),
-		}
+	const isUpdated = !animeFromDb || !isUpToDate(animeFromDb.updated_at)
+	const hasCarouselImages = Boolean(animeFromDb?.images?.carouselImages?.length)
+
+	if (!isUpdated && hasCarouselImages) {
+		return mapAnimeImages(animeFromDb)
 	}
-
-	const extractImages = !dbAnime?.images || Boolean(dbAnime?.images?.carouselImages?.length)
 
 	const currentTime = getCurrentTime()
 
-	const scrapedAnime = await scrapeFullAnimeInfo(animeId, extractImages)
+	const scrapedAnime = await scrapeFullAnimeInfo(animeId, !hasCarouselImages)
 	if (!scrapedAnime) return null
 
-	const animeToUpsert: Anime = {
-		...(dbAnime ?? {}),
+	const newAnime: Anime = {
+		...(animeFromDb ?? {}),
 		...scrapedAnime,
 		created_at: currentTime,
 		updated_at: currentTime,
 	}
 
-	UpsertAnimes(animeToUpsert)
+	UpsertAnimes(newAnime)
 
-	const mappedAnime = {
-		...animeToUpsert,
-		images: mapAnimeImagesURLs(animeToUpsert.images),
-	}
-
+	const mappedAnime = mapAnimeImages(newAnime)
 	return mappedAnime
 }
