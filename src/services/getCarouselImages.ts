@@ -30,14 +30,14 @@ export const getCarouselImages = async (keywords: string[] | string): Promise<Ca
 		.map((item: GoogleImageSearchItem) => buildImageObject(item.link, item.image))
 		.sort((a, b) => b.width - a.width)
 
-	const optimizedImages = carouselImages
-		.filter(({ link }) => link)
-		.map(async (image, index) => {
-			const imageName = `${keywordsArr.join('-')}-carouselImage-${index}`
-			const options = { width: LANDSCAPE_DIMENSIONS.WIDTH, height: LANDSCAPE_DIMENSIONS.HEIGHT, effort: 6 }
-			image.link = image.link && (await getOptimizedImage(image.link, imageName, options))
-			return image
-		})
+	const optimizedImages = carouselImages.map(async (image, index) => {
+		const imageName = `${keywordsArr.join('-')}-carouselImage-${index}`
+		const options = { width: LANDSCAPE_DIMENSIONS.WIDTH, height: LANDSCAPE_DIMENSIONS.HEIGHT, effort: 6 }
+		if (!image.link) return
 
-	return Promise.all(optimizedImages)
+		image.link = image.link && (await getOptimizedImage(image.link, imageName, options))
+		return image
+	})
+
+	return Promise.all(optimizedImages).then(images => images.filter(Boolean) as CarouselImage[])
 }

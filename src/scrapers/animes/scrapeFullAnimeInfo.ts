@@ -1,12 +1,21 @@
 import { JSDOM } from 'jsdom'
 import { animeFLVPages } from '../../enums'
-import { getCarouselImages } from '../../services/getCarouselImages'
 import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
-import type { AnimeImages, AnimeWithoutDates } from '../../types'
+import type { AnimeImages, AnimeWithoutDates, CarouselImage } from '../../types'
 import { animeGetter } from './animeGetters'
 
 const CACHE_TIME = 6 * 60 * 60 // -> 6 hours
+
+function createWorkerForCarouselImages(title: string): Promise<CarouselImage[]> {
+	return new Promise((resolve, reject) => {
+		const worker = new Worker(new URL('./getCarouselImagesWorker.ts', new URL(`file:${__filename}`).href))
+
+		worker.onmessage = event => resolve(event.data)
+		worker.onerror = err => reject(err)
+		worker.postMessage({ title })
+	})
+}
 
 export async function scrapeFullAnimeInfo(animeId: string, extractImages = true): Promise<AnimeWithoutDates | null> {
 	const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
@@ -39,11 +48,9 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 	}
 
 	if (extractImages) {
-		//sendToQueue({ animeId, query: title })
-
 		const images: AnimeImages = {
 			coverImage: await getOptimizedImage(imageLink, animeId),
-			carouselImages: await getCarouselImages(title),
+			carouselImages: await createWorkerForCarouselImages(title),
 		}
 
 		anime.images = images

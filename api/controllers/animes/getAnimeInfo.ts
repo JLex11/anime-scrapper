@@ -32,9 +32,9 @@ export const getAnimeInfo = async (animeId: string): Promise<Anime | null> => {
 	const isUpdated = !animeFromDb || !isUpToDate(animeFromDb.updated_at)
 	const hasCarouselImages = Boolean(animeFromDb?.images?.carouselImages?.length)
 
-	if (!isUpdated && hasCarouselImages) {
+	/* if (!isUpdated && hasCarouselImages) {
 		return mapAnimeImages(animeFromDb)
-	}
+	} */
 
 	const currentTime = getCurrentTime()
 
