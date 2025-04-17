@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { animeFLVPages } from '../../enums'
+import { getCarouselImages } from '../../services/getCarouselImages'
 import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import type { AnimeImages, AnimeWithoutDates, CarouselImage } from '../../types'
@@ -50,7 +51,7 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 	if (extractImages) {
 		const images: AnimeImages = {
 			coverImage: await getOptimizedImage(imageLink, animeId),
-			carouselImages: await createWorkerForCarouselImages(title),
+			carouselImages: await getCarouselImages(title) /* createWorkerForCarouselImages(title) */,
 		}
 
 		anime.images = images
