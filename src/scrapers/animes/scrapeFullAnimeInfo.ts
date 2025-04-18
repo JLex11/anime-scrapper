@@ -1,6 +1,6 @@
 import { JSDOM } from 'jsdom'
+import { Worker } from 'node:worker_threads'
 import { animeFLVPages } from '../../enums'
-import { getCarouselImages } from '../../services/getCarouselImages'
 import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import type { AnimeImages, AnimeWithoutDates, CarouselImage } from '../../types'
@@ -10,10 +10,11 @@ const CACHE_TIME = 6 * 60 * 60 // -> 6 hours
 
 function createWorkerForCarouselImages(title: string): Promise<CarouselImage[]> {
 	return new Promise((resolve, reject) => {
-		const worker = new Worker(new URL('./getCarouselImagesWorker.ts', new URL(`file:${__filename}`).href))
+		// Use __dirname for Node.js path resolution
+		const worker = new Worker(new URL('./getCarouselImagesWorker.ts', `file://${__dirname}/`).href)
 
-		worker.onmessage = event => resolve(event.data)
-		worker.onerror = err => reject(err)
+		worker.on('message', resolve) // Use 'message' event for Node.js workers
+		worker.on('error', reject) // Use 'error' event for Node.js workers
 		worker.postMessage({ title })
 	})
 }
@@ -22,7 +23,6 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 	const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
 	const html = await requestTextWithCache(originalLink, { ttl: CACHE_TIME })
 	if (!html) return null
-
 	const { document } = new JSDOM(html).window
 
 	const getOfAnime = animeGetter(document)
@@ -51,7 +51,7 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 	if (extractImages) {
 		const images: AnimeImages = {
 			coverImage: await getOptimizedImage(imageLink, animeId),
-			carouselImages: await getCarouselImages(title) /* createWorkerForCarouselImages(title) */,
+			carouselImages: await createWorkerForCarouselImages(title),
 		}
 
 		anime.images = images
