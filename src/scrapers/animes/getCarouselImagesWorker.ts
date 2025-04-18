@@ -1,13 +1,16 @@
+import { parentPort } from 'node:worker_threads'
 import { getCarouselImages } from '../../services/getCarouselImages'
 
-self.onmessage = async event => {
-	const { title } = event.data
+if (!parentPort) throw new Error('This script must be run as a worker thread.')
+
+parentPort.on('message', async event => {
+	const { title } = event
 
 	try {
 		const images = await getCarouselImages(title)
-		self.postMessage(images)
+		parentPort?.postMessage(images)
 	} catch (error) {
 		console.error('Error in worker:', error)
-		self.postMessage({ error: (error as Error).message })
+		parentPort?.postMessage({ error: (error as Error).message })
 	}
-}
+})
