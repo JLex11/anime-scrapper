@@ -4,7 +4,7 @@ import { s3GetOperation } from '../../src/services/cloudflareR2'
 
 const router = RouterApp()
 
-router.get(`/api${endPoints.IMAGES}`, async (req, res) => {
+router.get(endPoints.IMAGES, async (req, res) => {
 	const { imgFilename } = req.params
 
 	try {

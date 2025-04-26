@@ -2,7 +2,6 @@ import cors from 'cors'
 import express from 'express'
 import morgan from 'morgan'
 import { setOriginPath } from '../src/config'
-import { endPoints } from '../src/enums'
 import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
 import imagesRouter from './router/images'
@@ -26,7 +25,7 @@ app.get('/', (_, res) => res.redirect('/api'))
 app.use('/api/', routesDocumentation)
 app.use('/api/animes', animesRouter)
 app.use('/api/episodes', episodesRouter)
-app.use(`/api${endPoints.IMAGES}`, imagesRouter)
+app.use('/api/image', imagesRouter)
 
 app.use('*', (_, res) => {
 	res.status(404).send('Not found')

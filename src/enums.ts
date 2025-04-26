@@ -35,7 +35,7 @@ export enum endPoints {
 	BROADCAST_ANIMES = '/broadcast',
 	SEARCH_ANIMES = '/search/:query',
 	ANIME_DIRECTORY = '/directory',
-	IMAGES = '/image/:imgFilename',
+	IMAGES = '/:imgFilename',
 	PROCESS_IMAGES = '/process-image',
 }
 
