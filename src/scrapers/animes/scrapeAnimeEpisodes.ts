@@ -3,7 +3,7 @@ import { animeFLVPages } from '../../enums'
 import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import type { Episode } from '../../types'
-import { getAnimeTitle } from './animeGetters'
+import { getTitle } from './animeGetters'
 
 const CACHE_HOURS = 0.5
 
@@ -19,7 +19,7 @@ export async function scrapeAnimeEpisodes(
 
 	const { document } = new JSDOM(html).window
 
-	const title = getAnimeTitle(document)
+	const title = getTitle(document)
 	const scrapedScript = [...document.querySelectorAll('script')].map(s => s.textContent).join(' ')
 
 	let animeInfo: string | undefined

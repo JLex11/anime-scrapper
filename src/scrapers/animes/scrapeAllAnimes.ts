@@ -3,7 +3,7 @@ import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
 import { animeFLVPages } from '../../enums'
 import type { Anime } from '../../types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
-import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
+import { getIdFromLink, getOriginalLink } from './animeGetters'
 
 export async function scrapeAllAnimes(page = 1): Promise<Anime[]> {
 	const html = await fetch(`${animeFLVPages.BASE}/browse?page=${page}`)
@@ -16,8 +16,8 @@ export async function scrapeAllAnimes(page = 1): Promise<Anime[]> {
 	const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
 
 	const mappedFoundAnimes = animeList.map<Promise<Anime | null>>(async animeItem => {
-		const originalLink = getAnimeOriginalLink(animeItem)
-		const animeId = getAnimeIdFromLink(originalLink)
+		const originalLink = getOriginalLink(animeItem)
+		const animeId = getIdFromLink(originalLink)
 
 		return getAnimeInfo(animeId)
 	})

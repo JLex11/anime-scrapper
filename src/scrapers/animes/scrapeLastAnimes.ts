@@ -4,7 +4,7 @@ import { animeFLVPages } from '../../enums'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import type { Anime } from '../../types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
-import { getAnimeIdFromLink, getAnimeOriginalLink } from './animeGetters'
+import { getIdFromLink, getOriginalLink } from './animeGetters'
 
 const CACHE_HOURS = 1
 
@@ -17,8 +17,8 @@ export async function scrapeLastAnimes(limit?: number) {
 	const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
 
 	const mappedLastAnimes = animeList.slice(0, limit || 15).map<Promise<Anime | null>>(async animeItem => {
-		const originalLink = getAnimeOriginalLink(animeItem)
-		const animeId = getAnimeIdFromLink(originalLink)
+		const originalLink = getOriginalLink(animeItem)
+		const animeId = getIdFromLink(originalLink)
 		return getAnimeInfo(animeId)
 	})
 
