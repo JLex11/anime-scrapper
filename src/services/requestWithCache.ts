@@ -32,7 +32,7 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
 
 	const responsePromise = fetch(url, config)
 		.then(async response => {
-			if (!response.ok) throw new Error(`Request failed with status ${response.status}`)
+			if (!response.ok || (response.status < 200 || response.status >= 300)) throw new Error(`Request failed with status ${response.status}`)
 
 			const resource =
 				responseType === ResponseType.JSON
@@ -45,7 +45,8 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
 
 			return { response, resource }
 		})
-		.catch(() => {
+		.catch((error) => {
+			console.error(`Error fetching ${url}:`, error)
 			return { response: null, resource: null }
 		})
 
