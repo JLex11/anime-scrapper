@@ -4,10 +4,10 @@ import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import type { Episode } from '../../types'
 
-const CACHE_MINUTES = 10
+const CACHE_TIME = 10 * 60 // -> 10 minutes
 
 export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
-	const html = await requestTextWithCache(animeFLVPages.BASE, { ttl: CACHE_MINUTES * 60 })
+	const html = await requestTextWithCache(animeFLVPages.BASE, { ttl: CACHE_TIME })
 	if (!html) return []
 
 	const { document } = new JSDOM(html).window
