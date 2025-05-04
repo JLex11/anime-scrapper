@@ -1,6 +1,5 @@
 import cors from 'cors'
 import express from 'express'
-import morgan from 'morgan'
 import { setOriginPath } from '../src/config'
 import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
@@ -12,7 +11,6 @@ const app: express.Application = express()
 app.use(cors())
 app.use(express.json())
 app.use(express.static('public'))
-app.use(morgan('dev'))
 
 app.use(async (req, _, next) => {
 	const isProdMode = process.env.VERCEL_ENV === 'production'
