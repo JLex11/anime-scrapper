@@ -14,13 +14,14 @@ export const getType: SelectorGetter<string> = (e, selector = '.Type') => {
 	return e.querySelector(selector)?.textContent?.trim() ?? ''
 }
 
-export const getImgLink: SelectorGetter<string> = (e, selector = '.Image img') => {
-	return `${animeFLVPages.BASE}${e.querySelector(selector)?.getAttribute('src') ?? ''}`
+export const getImgLink: SelectorGetter<string | undefined> = (e, selector = '.Image img') => {
+	if (!e.querySelector(selector)?.getAttribute('src')) return
+	return `${animeFLVPages.BASE}${e.querySelector(selector)?.getAttribute('src')}`
 }
 
-export const getTitle: SelectorGetter<string> = (e, selector = 'h1.Title') => {
+export const getTitle: SelectorGetter<string | undefined> = (e, selector = 'h1.Title') => {
 	const titleElement = e.querySelector(selector) || e.querySelector('h3.Title')
-	return titleElement?.textContent?.trim() ?? ''
+	return titleElement?.textContent?.trim()
 }
 
 export const getDescription: SelectorGetter<string> = (e, selector = '.Description p:last-of-type') => {
