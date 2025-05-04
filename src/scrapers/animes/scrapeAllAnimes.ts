@@ -1,14 +1,15 @@
 import { JSDOM } from 'jsdom'
 import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
 import { animeFLVPages } from '../../enums'
+import { requestTextWithCache } from '../../services/requestWithCache'
 import type { Anime } from '../../types'
 import { getFulfilledResults } from '../../utils/getFulfilledResults'
 import { getIdFromLink, getOriginalLink } from './animeGetters'
 
+const CACHE_TIME = 30 * 60 // -> 30 minutes
+
 export async function scrapeAllAnimes(page = 1): Promise<Anime[]> {
-	const html = await fetch(`${animeFLVPages.BASE}/browse?page=${page}`)
-		.then(async res => await res.text())
-		.catch(() => null)
+		const html = await requestTextWithCache(`${animeFLVPages.BASE}/browse?page=${page}`, { ttl: CACHE_TIME })
 	if (!html) return []
 
 	const { document } = new JSDOM(html).window
