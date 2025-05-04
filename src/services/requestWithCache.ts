@@ -45,7 +45,7 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
 
 			return { response, resource }
 		})
-		.catch(error => {
+		.catch(() => {
 			return { response: null, resource: null }
 		})
 
