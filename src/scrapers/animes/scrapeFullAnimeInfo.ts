@@ -24,6 +24,8 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 	const rank = getOfAnime.rank('.vtprmd')
 	const genres = getOfAnime.genres()
 
+	if (!title || !imageLink) return null
+
 	const anime: AnimeWithoutDates = {
 		animeId,
 		title,
