@@ -57,7 +57,7 @@ export async function scrapeAnimeEpisodes(
 		return {
 			episodeId,
 			animeId,
-			title,
+			title: title || animeId.replace(/-/g, ' '),
 			episode,
 			originalLink,
 			image: optimizeImage,
