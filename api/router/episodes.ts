@@ -4,32 +4,58 @@ import { scrapeEpisodeSources } from '../../src/scrapers/episodes/scrapeEpisodeS
 import type { EpisodeSources } from '../../src/types'
 import { getEpisodeByEpisodeId } from '../controllers/episodes/getEpisodesBy'
 import { getLatestEpisodes } from '../controllers/episodes/getLatestEpisodes'
+import { longCache, mediumCache, shortCache } from '../../src/middleware/expressCache'
+import { logger } from '../../src/utils/logger'
 
 const router = Router()
 
-router.get(endPoints.LATEST_EPISODES, async (_req, res, next) => {
-	// try {
-	//   const latestEpisodes = await getLatestEpisodes()
-	//   res.send(latestEpisodes)
-	// } catch (error) {
-	//   next(error)
-	// }
-	const latestEpisodes = await getLatestEpisodes()
-	res.send(latestEpisodes)
+// Ruta para obtener los últimos episodios (corto TTL porque se actualizan frecuentemente)
+router.get(endPoints.LATEST_EPISODES, shortCache, async (_req, res) => {
+	try {
+		const latestEpisodes = await getLatestEpisodes()
+		res.send(latestEpisodes)
+	} catch (error) {
+		logger.error(`Error al obtener los últimos episodios: ${error}`)
+		res.status(500).send('Error al obtener los episodios')
+	}
 })
 
-router.get(endPoints.EPISODE_BY_ID, async (req, res) => {
+// Ruta para obtener episodio por ID (caché largo porque no cambian)
+router.get(endPoints.EPISODE_BY_ID, longCache, async (req, res) => {
 	const { episodeId } = req.params
 
-	const episodes = await getEpisodeByEpisodeId(episodeId)
-	res.send(episodes)
+	try {
+		const episodes = await getEpisodeByEpisodeId(episodeId)
+		
+		if (!episodes) {
+			res.status(404).send('Episodio no encontrado')
+			return
+		}
+		
+		res.send(episodes)
+	} catch (error) {
+		logger.error(`Error al obtener episodio ${episodeId}: ${error}`)
+		res.status(500).send('Error al obtener el episodio')
+	}
 })
 
-router.get(endPoints.EPISODE_SOURCES, async (req, res) => {
+// Ruta para obtener fuentes de un episodio (caché medio)
+router.get(endPoints.EPISODE_SOURCES, mediumCache, async (req, res) => {
 	const { id } = req.params
 
-	const episodeSources: EpisodeSources = await scrapeEpisodeSources(id)
-	res.send(episodeSources)
+	try {
+		const episodeSources: EpisodeSources = await scrapeEpisodeSources(id)
+		
+		if (!episodeSources || Object.keys(episodeSources).length === 0) {
+			res.status(404).send('No se encontraron fuentes para este episodio')
+			return
+		}
+		
+		res.send(episodeSources)
+	} catch (error) {
+		logger.error(`Error al obtener fuentes del episodio ${id}: ${error}`)
+		res.status(500).send('Error al obtener las fuentes del episodio')
+	}
 })
 
 export default router

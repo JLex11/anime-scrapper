@@ -7,43 +7,67 @@ import { scrapeRatingAnimes } from '../../src/scrapers/animes/scrapeRatingAnimes
 import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
 import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
+import { longCache, mediumCache, shortCache } from '../../src/middleware/expressCache'
+import { searchLimiter } from '../../src/middleware/rateLimiter'
+import { logger } from '../../src/utils/logger'
 
 const router = RouterApp()
 
-router.get('/', async (req, res) => {
+// Ruta para obtener todos los animes (con caché medio)
+router.get('/', mediumCache, async (req, res) => {
 	const { page } = req.query
 
-	const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
-	if (foundAnimes.length === 0) {
-		res.status(404).send('No se encontraron animes')
-		return
-	}
+	try {
+		const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
+		
+		if (foundAnimes.length === 0) {
+			res.status(404).send('No se encontraron animes')
+			return
+		}
 
-	res.send(foundAnimes)
+		res.send(foundAnimes)
+	} catch (error) {
+		logger.error(`Error al obtener todos los animes: ${error}`)
+		res.status(500).send('Error al obtener los animes')
+	}
 })
 
-router.get(endPoints.LATEST_ANIMES, async (req, res) => {
+// Ruta para obtener los últimos animes (con caché corto)
+router.get(endPoints.LATEST_ANIMES, shortCache, async (req, res) => {
 	const { limit } = req.query
 
-	const latestAnimes = await scrapeLastAnimes(Number(limit))
-	if (latestAnimes.length === 0) {
-		res.status(404).send('No se encontraron animes')
-		return
-	}
+	try {
+		const latestAnimes = await scrapeLastAnimes(Number(limit))
+		
+		if (latestAnimes.length === 0) {
+			res.status(404).send('No se encontraron animes')
+			return
+		}
 
-	res.send(latestAnimes)
+		res.send(latestAnimes)
+	} catch (error) {
+		logger.error(`Error al obtener los últimos animes: ${error}`)
+		res.status(500).send('Error al obtener los animes')
+	}
 })
 
-router.get(endPoints.BROADCAST_ANIMES, async (req, res) => {
+// Ruta para obtener animes en emisión (con caché medio)
+router.get(endPoints.BROADCAST_ANIMES, mediumCache, async (req, res) => {
 	const { limit } = req.query
 
-	const emisionAnimes = await scrapeEmisionAnimes(Number(limit))
-	if (emisionAnimes.length === 0) {
-		res.status(404).send('No se encontraron animes')
-		return
-	}
+	try {
+		const emisionAnimes = await scrapeEmisionAnimes(Number(limit))
+		
+		if (emisionAnimes.length === 0) {
+			res.status(404).send('No se encontraron animes')
+			return
+		}
 
-	res.send(emisionAnimes)
+		res.send(emisionAnimes)
+	} catch (error) {
+		logger.error(`Error al obtener animes en emisión: ${error}`)
+		res.status(500).send('Error al obtener los animes')
+	}
 })
 
 router.get(endPoints.RATING_ANIMES, async (req, res) => {
