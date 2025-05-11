@@ -1,0 +1,38 @@
+2025-05-10 22:50:59 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}
+2025-05-10 22:50:59 INFO: 🚀 Servidor iniciado en http://localhost:3002 {"service":"anime-scrapper-api"}
+2025-05-10 22:50:59 INFO: 👉 Accede a la API en http://localhost:3002/api {"service":"anime-scrapper-api"}
+2025-05-10 22:51:07 DEBUG: GET / 302 5ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:07 DEBUG: GET /api 200 21ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:07 DEBUG: GET /favicon.ico 404 1ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:13 DEBUG: GET /api/episodes/latest 200 1470ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:13 DEBUG: GET /api/episodes/latest 200 428ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:19 DEBUG: GET /api/animes 200 1153ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:20 DEBUG: GET /api/animes 200 767ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:27 DEBUG: GET /api/animes/broadcast 200 860ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:27 DEBUG: GET /api/animes/broadcast 200 2ms {"service":"anime-scrapper-api"}
+2025-05-10 22:51:59 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}
+2025-05-10 22:51:59 INFO: 🚀 Servidor iniciado en http://localhost:3002 {"service":"anime-scrapper-api"}
+2025-05-10 22:51:59 INFO: 👉 Accede a la API en http://localhost:3002/api {"service":"anime-scrapper-api"}
+2025-05-10 22:52:00 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}
+2025-05-10 22:52:00 INFO: 🚀 Servidor iniciado en http://localhost:3002 {"service":"anime-scrapper-api"}
+2025-05-10 22:52:00 INFO: 👉 Accede a la API en http://localhost:3002/api {"service":"anime-scrapper-api"}
+2025-05-10 22:52:02 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}
+2025-05-10 22:52:02 INFO: 🚀 Servidor iniciado en http://localhost:3002 {"service":"anime-scrapper-api"}
+2025-05-10 22:52:02 INFO: 👉 Accede a la API en http://localhost:3002/api {"service":"anime-scrapper-api"}
+2025-05-10 22:52:04 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}
+2025-05-10 22:52:04 INFO: 🚀 Servidor iniciado en http://localhost:3002 {"service":"anime-scrapper-api"}
+2025-05-10 22:52:04 INFO: 👉 Accede a la API en http://localhost:3002/api {"service":"anime-scrapper-api"}
+2025-05-10 22:52:07 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}
+2025-05-10 22:52:07 INFO: 🚀 Servidor iniciado en http://localhost:3002 {"service":"anime-scrapper-api"}
+2025-05-10 22:52:07 INFO: 👉 Accede a la API en http://localhost:3002/api {"service":"anime-scrapper-api"}
+2025-05-10 22:52:14 DEBUG: GET /api 304 6ms {"service":"anime-scrapper-api"}
+2025-05-10 23:00:38 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}
+2025-05-10 23:00:38 INFO: 🚀 Servidor iniciado en http://localhost:3002 {"service":"anime-scrapper-api"}
+2025-05-10 23:00:38 INFO: 📚 Documentación de la API disponible en http://localhost:3002/api-docs {"service":"anime-scrapper-api"}
+2025-05-10 23:00:38 INFO: 👉 Endpoints JSON disponibles en http://localhost:3002/api {"service":"anime-scrapper-api"}
+2025-05-10 23:00:45 DEBUG: GET /api 200 8ms {"service":"anime-scrapper-api"}
+2025-05-10 23:00:55 DEBUG: GET /api/ 200 2ms {"service":"anime-scrapper-api"}
+2025-05-10 23:01:06 DEBUG: GET /api/episodes/latest 304 1497ms {"service":"anime-scrapper-api"}
+2025-05-10 23:01:38 DEBUG: GET /api/animes/broadcast 304 1013ms {"service":"anime-scrapper-api"}
+2025-05-10 23:01:46 INFO: Iniciando apagado controlado... {"service":"anime-scrapper-api"}
+2025-05-10 23:02:07 INFO: API inicializada, entorno: nodejs {"service":"anime-scrapper-api"}

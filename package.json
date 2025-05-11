@@ -14,7 +14,11 @@
     "start:dev": "bun run api/devIndex.ts",
     "dev:workers": "bun --watch src/scripts/workers.ts",
     "start:workers": "bun run src/scripts/workers.ts",
-    "lint": "bunx biome lint --write && bunx biome format --write"
+    "lint": "bunx biome lint --write && bunx biome format --write",
+    "analyze": "bun build --target=bun --entrypoints api/index.ts --analyze",
+    "clean-cache": "rm -rf node_modules/.cache",
+    "build:optimized": "NODE_ENV=production bun build --target=bun --minify --entrypoints api/index.ts --outdir ./public/api",
+    "docs:build": "echo 'API Documentation is ready for deployment'"
   },
   "license": "ISC",
   "dependencies": {
@@ -22,12 +26,16 @@
     "@aws-sdk/credential-provider-ini": "3.299.0",
     "@supabase/supabase-js": "2.49.4",
     "@types/amqplib": "^0.10.7",
+    "@types/compression": "^1.7.5",
     "aws-sdk": "2.1692.0",
+    "compression": "^1.8.0",
     "cors": "2.8.5",
     "express": "4.21.2",
+    "express-rate-limit": "^7.5.0",
     "jsdom": "^26.1.0",
     "node-cache": "5.1.2",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@aws-sdk/types": "3.775.0",

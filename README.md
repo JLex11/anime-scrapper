@@ -95,6 +95,26 @@ bun run start:api
 
 Endpoints disponibles:
 
+La API cuenta con una interfaz de documentación interactiva accesible en:
+
+```
+http://localhost:3002/api-docs
+```
+
+Esta interfaz permite:
+- Ver todos los endpoints disponibles
+- Buscar y filtrar endpoints por categoría
+- Probar endpoints directamente desde el navegador
+- Ver detalles sobre parámetros y respuestas
+
+También puedes acceder a la lista de endpoints en formato JSON:
+
+```
+http://localhost:3002/api
+```
+
+Algunos endpoints principales:
+
 ```bash
 # Obtener todos los animes (paginados)
 GET /api/animes?page=1
