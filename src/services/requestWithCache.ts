@@ -1,9 +1,6 @@
-import NodeCache from 'node-cache'
 import { ResponseType } from '../enums'
-
-const cacheDefaultConfig = { stdTTL: 3600, useClones: false }
-
-const requestCache = new NodeCache(cacheDefaultConfig)
+import { defaultCache } from './cacheService'
+import { logger } from '../utils/logger'
 
 interface FetchResponse {
 	response: Response | null
@@ -17,40 +14,49 @@ interface RequestCacheInit extends RequestInit {
 type FetchAndCache = (url: string, config?: RequestCacheInit, responseType?: ResponseType) => Promise<FetchResponse>
 
 const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
-	const cacheKey = JSON.stringify({ url, config })
+	const cacheKey = `fetch:${url}:${JSON.stringify(config)}`
 
-	const cachePromise = new Promise<FetchResponse>(resolve => {
-		const cacheResource = requestCache.get<ResponseType>(cacheKey)
-
-		if (cacheResource != null) {
-			resolve({
+	try {
+		// Intentar obtener del caché primero
+		const cachedResource = defaultCache.get<unknown>(cacheKey)
+		if (cachedResource != null) {
+			return {
 				response: null,
-				resource: cacheResource,
-			})
+				resource: cachedResource,
+			}
 		}
-	})
 
-	const responsePromise = fetch(url, config)
-		.then(async response => {
-			if (!response.ok || (response.status < 200 || response.status >= 300)) throw new Error(`Request failed with status ${response.status}`)
-
-			const resource =
-				responseType === ResponseType.JSON
-					? await response.json()
-					: responseType === ResponseType.TEXT
-						? await response.text()
-						: await response.arrayBuffer()
-
-			requestCache.set(cacheKey, resource, config?.ttl ?? cacheDefaultConfig.stdTTL)
-
-			return { response, resource }
-		})
-		.catch((error) => {
-			console.error(`Error fetching ${url}:`, error)
-			return { response: null, resource: null }
+		// Si no está en caché, realizar la petición
+		const response = await fetch(url, {
+			...config,
+			// Agregar timeout para evitar peticiones que se quedan colgadas
+			signal: config?.signal || AbortSignal.timeout(15000) // 15 segundos timeout
 		})
 
-	return await Promise.race([cachePromise, responsePromise])
+		if (!response.ok || (response.status < 200 || response.status >= 300)) {
+			throw new Error(`Request failed with status ${response.status}`)
+		}
+
+		let resource: unknown
+		switch (responseType) {
+			case ResponseType.JSON:
+				resource = await response.json()
+				break
+			case ResponseType.TEXT:
+				resource = await response.text()
+				break
+			default:
+				resource = await response.arrayBuffer()
+		}
+
+		// Guardar en caché
+		defaultCache.set(cacheKey, resource, config?.ttl)
+
+		return { response, resource }
+	} catch (error) {
+		logger.error(`Error fetching ${url}: ${error instanceof Error ? error.message : String(error)}`)
+		return { response: null, resource: null }
+	}
 }
 
 type RequestWithCacheFn<T> = (url: string, config?: RequestCacheInit) => Promise<T | null>
