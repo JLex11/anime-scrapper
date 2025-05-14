@@ -36,7 +36,7 @@
 
 1. Clona este repositorio:
 ```bash
-git clone https://github.com/tuusuario/anime-scrapper.git
+git clone https://github.com/Jlex11/anime-scrapper.git
 cd anime-scrapper
 ```
 
