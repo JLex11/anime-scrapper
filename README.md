@@ -51,46 +51,14 @@ cp .env.example .env
 # Edita el archivo .env con tus credenciales de Supabase
 ```
 
-## ⚙️ Configuración
-
-Para personalizar las fuentes y opciones de scraping, edita el archivo `config.js`:
-
-```javascript
-// Ejemplo de configuración
-module.exports = {
-  sources: ['crunchyroll', 'funimation'],
-  downloadImages: true,
-  outputFormat: 'json'
-};
-```
-
 ## 📚 Uso
-
-### Herramienta CLI
-
-```bash
-# Comando básico
-bun run index.js
-
-# Buscar por nombre de anime
-bun run index.js --search "Naruto"
-
-# Especificar fuentes
-bun run index.js --source crunchyroll
-
-# Limitar resultados
-bun run index.js --limit 10
-
-# Exportar a CSV
-bun run index.js --export csv
-```
 
 ### API REST
 
 Iniciar el servidor:
 
 ```bash
-bun run start:api
+bun run start
 ```
 
 Endpoints disponibles:
@@ -144,18 +112,42 @@ GET /api/animes/:animeId/episodes?offset=0&limit=12
 
 ```json
 {
-  "animeId": "attack-on-titan",
-  "title": "Attack on Titan",
-  "originalTitle": "進撃の巨人",
-  "episodes": 75,
-  "status": "Finalizado",
-  "genres": ["Acción", "Drama", "Fantasía"],
-  "rating": 9.2,
-  "images": {
-    "poster": "https://example.com/poster.jpg",
-    "banner": "https://example.com/banner.jpg"
+    "animeId": "overlord-movie-3-sei-oukokuhen",
+    "title": "Overlord Movie 3: Sei Oukoku-hen",
+    "type": "Película",
+    "rank": 4.6,
+    "otherTitles": [
+      "Gekijouban Overlord: Sei Oukoku-hen",
+      "劇場版「オーバーロード」聖王国編"
+    ],
+    "description": "",
+    "originalLink": "https://www3.animeflv.net/anime/overlord-movie-3-sei-oukokuhen",
+    "status": "Finalizado",
+    "genres": [
+      "Acción",
+      "Aventuras",
+      "Fantasía"
+    ],
+    "images": {
+      "coverImage": "http://localhost:3002/api/image/overlord-movie-3-sei-oukokuhen.webp",
+      "carouselImages": [
+        {
+          "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-0.webp",
+          "width": 4500,
+          "height": 8001,
+          "position": "50% 20%"
+        },
+        {
+          "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-1.webp",
+          "width": 1896,
+          "height": 1033,
+          "position": "50% 50%"
+        }
+      ]
+    },
+    "created_at": "2025-05-04T17:32:25.307+00:00",
+    "updated_at": "2025-05-04T17:32:25.307+00:00"
   }
-}
 ```
 
 ## 📁 Estructura del proyecto
