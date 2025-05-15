@@ -35,6 +35,7 @@
     "jsdom": "^26.1.0",
     "node-cache": "5.1.2",
     "sharp": "^0.33.5",
+    "supabase": "^2.22.12",
     "winston": "^3.17.0"
   },
   "devDependencies": {

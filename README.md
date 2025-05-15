@@ -31,25 +31,107 @@
 
 - [Bun](https://bun.sh) v1.2.5 o superior
 - Una cuenta en [Supabase](https://supabase.com/) para la base de datos
+- [Supabase CLI](https://supabase.com/docs/guides/cli) para desarrollo local (opcional)
 
 ## 🚀 Instalación
 
 1. Clona este repositorio:
+
 ```bash
 git clone https://github.com/Jlex11/anime-scrapper.git
 cd anime-scrapper
 ```
 
 2. Instala las dependencias:
+
 ```bash
 bun install
 ```
 
 3. Configura las variables de entorno:
+
 ```bash
 cp .env.example .env
 # Edita el archivo .env con tus credenciales de Supabase
 ```
+
+## 🗄️ Configuración de Supabase
+
+### Configuración Remota (Producción)
+
+Para conectar tu aplicación a una base de datos remota de Supabase:
+
+1. Crea un proyecto en [Supabase](https://supabase.com)
+
+2. Actualiza el archivo `.env` con tus credenciales de Supabase:
+
+```plaintext
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_API_KEY=tu-clave-anon-key
+```
+
+3. Inicia la aplicación:
+
+```bash
+bun run start
+```
+
+### Configuración Local (Desarrollo)
+
+Para configurar y ejecutar Supabase localmente:
+
+1. Instala la CLI de Supabase:
+
+```bash
+# En Linux/macOS
+curl -s https://packages.supabase.com/install.sh | bash
+
+# En Windows (con PowerShell)
+iwr https://packages.supabase.com/install.ps1 -useb | iex
+```
+
+2. Inicia los servicios de Supabase localmente:
+
+```bash
+# Desde la raíz del proyecto
+supabase start
+```
+
+3. Actualiza el archivo `.env` con las credenciales locales:
+
+```plaintext
+SUPABASE_URL=http://localhost:54321
+SUPABASE_API_KEY=tu-clave-anon-local # La clave se obtiene al ejecutar supabase start
+```
+
+4. Migra el esquema de la base de datos:
+
+```bash
+supabase db push
+```
+
+5. (Opcional) Llena la base de datos local con datos iniciales:
+
+```bash
+supabase db reset
+```
+
+### Sincronización entre Entornos
+
+Para sincronizar el esquema entre tu entorno local y remoto:
+
+1. Exporta el esquema de la base de datos local:
+
+```bash
+supabase db dump -f supabase/migrations/local_schema.sql
+```
+
+2. Aplica el esquema a la base de datos remota:
+   - Opción 1: Desde la interfaz de Supabase, ve a "SQL Editor" y ejecuta el contenido del archivo SQL generado.
+   - Opción 2: Usa la CLI con la conexión remota:
+     ```bash
+     supabase db push --db-url "postgresql://postgres:[PASSWORD]@tu-proyecto.supabase.co:5432/postgres"
+     ```
 
 ## 📚 Uso
 
@@ -70,6 +152,7 @@ http://localhost:3002/api-docs
 ```
 
 Esta interfaz permite:
+
 - Ver todos los endpoints disponibles
 - Buscar y filtrar endpoints por categoría
 - Probar endpoints directamente desde el navegador
@@ -112,42 +195,38 @@ GET /api/animes/:animeId/episodes?offset=0&limit=12
 
 ```json
 {
-    "animeId": "overlord-movie-3-sei-oukokuhen",
-    "title": "Overlord Movie 3: Sei Oukoku-hen",
-    "type": "Película",
-    "rank": 4.6,
-    "otherTitles": [
-      "Gekijouban Overlord: Sei Oukoku-hen",
-      "劇場版「オーバーロード」聖王国編"
-    ],
-    "description": "",
-    "originalLink": "https://www3.animeflv.net/anime/overlord-movie-3-sei-oukokuhen",
-    "status": "Finalizado",
-    "genres": [
-      "Acción",
-      "Aventuras",
-      "Fantasía"
-    ],
-    "images": {
-      "coverImage": "http://localhost:3002/api/image/overlord-movie-3-sei-oukokuhen.webp",
-      "carouselImages": [
-        {
-          "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-0.webp",
-          "width": 4500,
-          "height": 8001,
-          "position": "50% 20%"
-        },
-        {
-          "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-1.webp",
-          "width": 1896,
-          "height": 1033,
-          "position": "50% 50%"
-        }
-      ]
-    },
-    "created_at": "2025-05-04T17:32:25.307+00:00",
-    "updated_at": "2025-05-04T17:32:25.307+00:00"
-  }
+  "animeId": "overlord-movie-3-sei-oukokuhen",
+  "title": "Overlord Movie 3: Sei Oukoku-hen",
+  "type": "Película",
+  "rank": 4.6,
+  "otherTitles": [
+    "Gekijouban Overlord: Sei Oukoku-hen",
+    "劇場版「オーバーロード」聖王国編"
+  ],
+  "description": "",
+  "originalLink": "https://www3.animeflv.net/anime/overlord-movie-3-sei-oukokuhen",
+  "status": "Finalizado",
+  "genres": ["Acción", "Aventuras", "Fantasía"],
+  "images": {
+    "coverImage": "http://localhost:3002/api/image/overlord-movie-3-sei-oukokuhen.webp",
+    "carouselImages": [
+      {
+        "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-0.webp",
+        "width": 4500,
+        "height": 8001,
+        "position": "50% 20%"
+      },
+      {
+        "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-1.webp",
+        "width": 1896,
+        "height": 1033,
+        "position": "50% 50%"
+      }
+    ]
+  },
+  "created_at": "2025-05-04T17:32:25.307+00:00",
+  "updated_at": "2025-05-04T17:32:25.307+00:00"
+}
 ```
 
 ## 📁 Estructura del proyecto
