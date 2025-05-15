@@ -9,3 +9,6 @@ Notes.md
 
 .vercel
 vercel.json
+
+# Ignorar logs de la aplicación
+src/_logs/
