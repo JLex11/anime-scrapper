@@ -106,14 +106,38 @@ SUPABASE_API_KEY=tu-clave-anon-local # La clave se obtiene al ejecutar supabase 
 
 4. Migra el esquema de la base de datos:
 
-```bash
+````bash
 supabase db push
+### Gestión de datos con Supabase
+
+#### Crear un archivo de seed personalizado
+
+Si ya has realizado scraping y quieres guardar esos datos como seed para futuras instalaciones:
+
+```bash
+# Exportar solo los datos (sin estructura) a un archivo personalizado
+supabase db dump --data-only -f supabase/seeds/my_anime_data.sql
+
+# Exportar estructura y datos
+supabase db dump -f supabase/seeds/full_backup.sql
+````
+
+Para usar tu seed personalizado, edita el archivo `supabase/config.toml`:
+
+```toml
+[db.seed]
+enabled = true
+sql_paths = ["./seeds/my_anime_data.sql"] # Reemplaza con tu archivo
 ```
 
-5. (Opcional) Llena la base de datos local con datos iniciales:
+#### Restaurar datos desde un seed
 
 ```bash
+# Aplicar esquema y datos de una sola vez
 supabase db reset
+
+# O para aplicar solo los datos sin restablecer el esquema
+supabase db seed
 ```
 
 ### Sincronización entre Entornos
@@ -190,6 +214,22 @@ GET /api/animes/:animeId/episodes?offset=0&limit=12
 ```
 
 ## 📊 Ejemplos
+
+### Datos iniciales (Seed)
+
+El archivo seed incluye:
+
+- Estructura completa de la base de datos con tablas para animes y episodios
+- Relaciones y restricciones entre tablas
+- Funciones útiles como búsqueda de texto completo
+- Políticas de seguridad configuradas para Supabase
+- Un conjunto de datos de ejemplo con algunos animes populares
+
+Para inspeccionar o modificar el archivo seed, consulta:
+
+```
+supabase/seeds/seed.sql
+```
 
 ### Ejemplo de salida JSON de la API
 
