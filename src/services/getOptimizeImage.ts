@@ -1,13 +1,15 @@
 import NodeCache from 'node-cache'
-import sharp from 'sharp'
+import type { FitEnum } from 'sharp'
 import logger from '../utils/logger'
 import { s3HeadOperation, s3PutOperation } from './cloudflareR2'
+import { optimizeImage } from './imageOptimizer'
 import { requestBufferWithCache } from './requestWithCache'
 
 interface OptimizeOptions {
 	width?: number
 	height?: number
 	effort?: number
+	fit?: keyof FitEnum
 }
 
 type GetOptimizedImage = (link: string, name: string, options?: OptimizeOptions) => Promise<string | null>
@@ -15,7 +17,7 @@ type GetOptimizedImage = (link: string, name: string, options?: OptimizeOptions)
 const cacheDefaultConfig = { stdTTL: 604800, useClones: false }
 const requestCache = new NodeCache(cacheDefaultConfig)
 const TTL_24H = 86400
-const dfOptions = { width: 350, height: 500, effort: 6 }
+const dfOptions = { width: 350, height: 500, effort: 6, fit: 'cover' as keyof FitEnum }
 
 const handleS3HeadOperationError = (error: unknown) => logger.error('image not found')
 
@@ -64,6 +66,14 @@ export const getOptimizedImage: GetOptimizedImage = async (url, name, options = 
 }
 
 async function getOptimizedImageBuffer(imageArrayBuffer: ArrayBuffer, options: OptimizeOptions) {
-	const { width, height, effort } = options
-	return await sharp(Buffer.from(imageArrayBuffer)).resize(width, height).webp({ effort }).toBuffer()
+	const { width, height, effort, fit = 'cover' } = options
+	const buffer = Buffer.from(imageArrayBuffer)
+
+	return optimizeImage(buffer, {
+		width,
+		height,
+		fit,
+		format: 'webp',
+		quality: effort ? Math.min(effort * 10, 100) : undefined, // Convertir effort (0-9) a quality (0-100)
+	})
 }
