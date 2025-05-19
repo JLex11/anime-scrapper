@@ -9,10 +9,7 @@ export const getAnimesById = async (animeIds: Anime['animeId'][]) => {
 }
 
 /* Get Anime */
-export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(
-	column: Column,
-	value: ColumnType<AnimeColumns>[Column]
-) => {
+export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(column: Column, value: ColumnType<AnimeColumns>[Column]) => {
 	const anime = await supabase.from('animes').select().eq(column, value).limit(1).single()
 	return anime
 }
@@ -65,11 +62,7 @@ type PropertyPathMap = {
 }
 type NewValueType<Path extends keyof PropertyPathMap> = PropertyPathMap[Path]
 
-export const updateAnimeJsonImages = async <Path extends keyof PropertyPathMap>(
-	animeId: string,
-	propertyPath: Path,
-	newValue: NewValueType<Path>
-) => {
+export const updateAnimeJsonImages = async <Path extends keyof PropertyPathMap>(animeId: string, propertyPath: Path, newValue: NewValueType<Path>) => {
 	const updatedAnime = await supabase.rpc('update_anime_images_json', {
 		anime_id: animeId,
 		property: propertyPath,

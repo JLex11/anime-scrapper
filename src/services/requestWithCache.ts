@@ -1,6 +1,6 @@
 import { ResponseType } from '../enums'
-import { defaultCache } from './cacheService'
 import { logger } from '../utils/logger'
+import { defaultCache } from './cacheService'
 
 interface FetchResponse {
 	response: Response | null
@@ -30,10 +30,10 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
 		const response = await fetch(url, {
 			...config,
 			// Agregar timeout para evitar peticiones que se quedan colgadas
-			signal: config?.signal || AbortSignal.timeout(15000) // 15 segundos timeout
+			signal: config?.signal || AbortSignal.timeout(15000), // 15 segundos timeout
 		})
 
-		if (!response.ok || (response.status < 200 || response.status >= 300)) {
+		if (!response.ok || response.status < 200 || response.status >= 300) {
 			throw new Error(`Request failed with status ${response.status}`)
 		}
 
@@ -50,7 +50,7 @@ const fetchAndCache: FetchAndCache = async (url, config, responseType) => {
 		}
 
 		// Guardar en caché
-		defaultCache.set(cacheKey, resource, config?.ttl)
+		defaultCache.set(cacheKey, resource)
 
 		return { response, resource }
 	} catch (error) {
