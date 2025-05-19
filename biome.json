@@ -26,6 +26,11 @@
 					"level": "warn",
 					"fix": "none"
 				}
+			},
+			"complexity": {
+				"noForEach": {
+					"level": "off"
+				}
 			}
 		}
 	},
@@ -38,7 +43,7 @@
 			"bracketSpacing": true,
 			"jsxQuoteStyle": "single",
 			"quoteProperties": "asNeeded",
-			"lineWidth": 140
+			"lineWidth": 160
 		}
 	}
 }
