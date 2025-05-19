@@ -70,3 +70,5 @@ if (!isServerless) {
 		logger.info(`Servidor Express iniciado en el puerto ${PORT}`)
 	})
 }
+
+export default app
