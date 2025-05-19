@@ -4,22 +4,19 @@ import { scrapeAllAnimes } from '../../src/scrapers/animes/scrapeAllAnimes'
 import { scrapeEmisionAnimes } from '../../src/scrapers/animes/scrapeEmisionAnimes'
 import { scrapeLastAnimes } from '../../src/scrapers/animes/scrapeLastAnimes'
 import { scrapeRatingAnimes } from '../../src/scrapers/animes/scrapeRatingAnimes'
+import { logger } from '../../src/utils/logger'
 import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
 import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
-import { longCache, mediumCache, shortCache } from '../../src/middleware/expressCache'
-import { searchLimiter } from '../../src/middleware/rateLimiter'
-import { logger } from '../../src/utils/logger'
 
 const router = RouterApp()
 
-// Ruta para obtener todos los animes (con caché medio)
-router.get('/', mediumCache, async (req, res) => {
+router.get('/', async (req, res) => {
 	const { page } = req.query
 
 	try {
 		const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
-		
+
 		if (foundAnimes.length === 0) {
 			res.status(404).send('No se encontraron animes')
 			return
@@ -33,12 +30,12 @@ router.get('/', mediumCache, async (req, res) => {
 })
 
 // Ruta para obtener los últimos animes (con caché corto)
-router.get(endPoints.LATEST_ANIMES, shortCache, async (req, res) => {
+router.get(endPoints.LATEST_ANIMES, async (req, res) => {
 	const { limit } = req.query
 
 	try {
 		const latestAnimes = await scrapeLastAnimes(Number(limit))
-		
+
 		if (latestAnimes.length === 0) {
 			res.status(404).send('No se encontraron animes')
 			return
@@ -52,12 +49,12 @@ router.get(endPoints.LATEST_ANIMES, shortCache, async (req, res) => {
 })
 
 // Ruta para obtener animes en emisión (con caché medio)
-router.get(endPoints.BROADCAST_ANIMES, mediumCache, async (req, res) => {
+router.get(endPoints.BROADCAST_ANIMES, async (req, res) => {
 	const { limit } = req.query
 
 	try {
 		const emisionAnimes = await scrapeEmisionAnimes(Number(limit))
-		
+
 		if (emisionAnimes.length === 0) {
 			res.status(404).send('No se encontraron animes')
 			return
