@@ -2,6 +2,7 @@ import compression from 'compression'
 import cors from 'cors'
 import express from 'express'
 import { setOriginPath } from '../src/config'
+import { expressCacheMiddleware } from '../src/middleware/expressCache'
 import { logger } from '../src/utils/logger'
 import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
@@ -16,6 +17,7 @@ const app: express.Application = express()
 app.use(compression({ level: 2 }))
 app.use(cors())
 app.use(express.json({ limit: '10mb' }))
+app.use(expressCacheMiddleware() as express.RequestHandler)
 
 app.use(
 	'/api/docs',
