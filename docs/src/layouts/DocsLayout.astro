@@ -1,0 +1,222 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+export interface DocsGroup {
+	category: string
+	entries: CollectionEntry<'docs'>[]
+}
+
+interface Props {
+	title?: string
+	doc?: CollectionEntry<'docs'>
+	groups: DocsGroup[]
+}
+
+const { doc, groups, title } = Astro.props as Props
+const baseUrl = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')
+const withBase = (path: string) => {
+	if (path === '/' || path === '') {
+		return baseUrl === '' ? '/' : baseUrl
+	}
+	const normalized = path.startsWith('/') ? path : `/${path}`
+	return (baseUrl + normalized).replace(/\/\/+/, '/')
+}
+const pageTitle = doc?.data.title ?? title ?? 'Documentación del API'
+---
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{pageTitle} | Anime Scrapper API</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="layout">
+			<aside class="sidebar">
+				<div class="brand">
+					<h1>Anime Scrapper API</h1>
+					<p>Documentación interactiva</p>
+				</div>
+				<nav>
+					{groups.map(group => (
+						<section>
+							<h2>{group.category}</h2>
+							<ul>
+								{group.entries
+									.sort((a, b) => a.data.order - b.data.order)
+									.map(entry => (
+										<li class={entry.id === doc?.id ? 'active' : ''}>
+											<a href={withBase(`/docs/${entry.slug}/`)}>{entry.data.title}</a>
+										</li>
+									))}
+							</ul>
+						</section>
+					))}
+				</nav>
+			</aside>
+			<main class="content">
+				<article class="article">
+					<slot />
+				</article>
+			</main>
+		</div>
+	</body>
+	<style>
+		:global(body) {
+			margin: 0;
+			font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+			background: #0f172a;
+			color: #e2e8f0;
+		}
+
+		.layout {
+			display: grid;
+			grid-template-columns: minmax(18rem, 22rem) 1fr;
+			min-height: 100vh;
+		}
+
+		.sidebar {
+			background: #0b1220;
+			padding: 2rem 1.5rem;
+			display: flex;
+			flex-direction: column;
+			gap: 2rem;
+			border-right: 1px solid rgba(148, 163, 184, 0.1);
+		}
+
+		.brand h1 {
+			font-size: 1.25rem;
+			margin: 0;
+		}
+
+		.brand p {
+			margin: 0.25rem 0 0;
+			color: #94a3b8;
+			font-size: 0.9rem;
+		}
+
+		nav {
+			display: flex;
+			flex-direction: column;
+			gap: 1.5rem;
+			overflow-y: auto;
+		}
+
+		section h2 {
+			margin: 0 0 0.5rem;
+			font-size: 0.85rem;
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			color: #64748b;
+		}
+
+		section ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			gap: 0.35rem;
+		}
+
+		section li a {
+			text-decoration: none;
+			color: inherit;
+			padding: 0.4rem 0.6rem;
+			display: block;
+			border-radius: 0.35rem;
+			transition: background 0.2s ease, color 0.2s ease;
+			font-size: 0.95rem;
+		}
+
+		section li.active a,
+		section li a:hover {
+			background: rgba(59, 130, 246, 0.15);
+			color: #60a5fa;
+		}
+
+		.content {
+			padding: 3rem clamp(2rem, 5vw, 4rem);
+			background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.1), transparent 55%),
+				radial-gradient(circle at bottom right, rgba(168, 85, 247, 0.1), transparent 45%);
+		}
+
+		.article {
+			max-width: 54rem;
+			margin: 0 auto;
+			display: grid;
+			gap: 1.25rem;
+		}
+
+		.article h1 {
+			font-size: clamp(1.8rem, 4vw, 2.6rem);
+			margin-bottom: 0.5rem;
+		}
+
+		.article h2,
+		.article h3 {
+			color: #f8fafc;
+			margin-top: 2rem;
+		}
+
+		.article p,
+		.article li {
+			line-height: 1.7;
+			color: #cbd5f5;
+		}
+
+		.article pre {
+			background: rgba(15, 23, 42, 0.85);
+			padding: 1rem;
+			border-radius: 0.75rem;
+			overflow-x: auto;
+			border: 1px solid rgba(148, 163, 184, 0.12);
+		}
+
+	@media (max-width: 960px) {
+		.layout {
+			grid-template-columns: 1fr;
+		}
+
+		.sidebar {
+			position: sticky;
+			top: 0;
+			z-index: 10;
+			flex-direction: column;
+			align-items: stretch;
+			gap: 1rem;
+			padding: 1rem 1.25rem;
+			border-right: none;
+			border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		}
+
+		nav {
+			display: flex;
+			flex-direction: row;
+			gap: 1rem;
+			overflow-x: auto;
+			padding-bottom: 0.25rem;
+		}
+
+		nav section {
+			min-width: 12rem;
+		}
+
+		nav section ul {
+			gap: 0.2rem;
+		}
+
+		nav section h2 {
+			font-size: 0.75rem;
+			margin-bottom: 0.25rem;
+		}
+
+		.content {
+			padding: 8.5rem 1.25rem 2.5rem;
+		}
+	}
+	</style>
+</html>

@@ -159,6 +159,41 @@ supabase db dump -f supabase/migrations/local_schema.sql
 
 ## 📚 Uso
 
+### Documentación interactiva
+
+La documentación de la API está construida con **Astro** y se genera como un sitio estático alojado en `/api-docs`.
+
+Comandos útiles:
+
+```bash
+# Modo desarrollador con recarga en caliente
+bun run docs:dev
+
+# Generar la versión estática en public/api-docs
+bun run docs:build
+
+# Revisar la build estática localmente
+bun run docs:preview
+```
+
+Una vez generada, la documentación queda disponible en:
+
+```
+http://localhost:3000/api-docs/
+```
+
+El sitio permite:
+
+- Consultar todo el contenido en Markdown por categorías
+- Visualizar ejemplos de peticiones y respuestas
+- Probar endpoints con el playground interactivo sin salir del navegador
+
+También puedes obtener la lista de rutas en formato JSON desde:
+
+```
+http://localhost:3000/api/api-routes/
+```
+
 ### API REST
 
 Iniciar el servidor:
@@ -168,25 +203,6 @@ bun run start
 ```
 
 Endpoints disponibles:
-
-La API cuenta con una interfaz de documentación interactiva accesible en:
-
-```
-http://localhost:3002/api-docs
-```
-
-Esta interfaz permite:
-
-- Ver todos los endpoints disponibles
-- Buscar y filtrar endpoints por categoría
-- Probar endpoints directamente desde el navegador
-- Ver detalles sobre parámetros y respuestas
-
-También puedes acceder a la lista de endpoints en formato JSON:
-
-```
-http://localhost:3002/api
-```
 
 Algunos endpoints principales:
 

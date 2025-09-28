@@ -1,0 +1,526 @@
+---
+interface Parameter {
+  name: string
+  description?: string
+  required?: boolean
+  example?: string | number | boolean
+}
+
+interface Props {
+  title?: string
+  description?: string
+  endpoint: string
+  method?: string
+  queryParams?: Parameter[]
+  bodyParams?: Parameter[]
+  headers?: Parameter[]
+  requestExample?: Record<string, unknown>
+  responseExample?: unknown
+}
+
+const {
+  title,
+  description,
+  endpoint,
+  method = 'GET',
+  queryParams = [],
+  bodyParams = [],
+  headers = [],
+  requestExample,
+  responseExample,
+} = Astro.props as Props
+
+const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+const componentId = `api-playground-${normalizedEndpoint.replace(/[^a-z0-9]/gi, '-')}`.toLowerCase()
+const showBody = ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) || bodyParams.length > 0 || requestExample !== undefined
+---
+
+<section
+  id={componentId}
+  class='api-playground'
+  aria-live='polite'
+  data-method={method.toUpperCase()}
+  data-endpoint={normalizedEndpoint}
+  data-has-body={showBody ? 'true' : 'false'}
+>
+  <header>
+    <div>
+      <h3>{title ?? 'Playground'}</h3>
+      <p>{description ?? 'Prueba este endpoint directamente desde el navegador.'}</p>
+    </div>
+    <span class='badge'>{method.toUpperCase()}</span>
+  </header>
+  <form class='request' autocomplete='off'>
+    <div class='base-info'>
+      <span>URL base</span>
+      <code data-role='base-url'>Calculando…</code>
+    </div>
+    <label class='field'>
+      <span>Ruta del endpoint</span>
+      <input type='text' name='path' readonly value={normalizedEndpoint} />
+    </label>
+
+    {
+      queryParams.length > 0 && (
+        <div class='field'>
+          <span>Parámetros de consulta</span>
+          <div class='kv-grid'>
+            {queryParams.map(param => (
+              <label class='kv-field'>
+                <span>
+                  {param.name}
+                  {param.required ? '*' : ''}
+                </span>
+                <input type='text' name={`query-${param.name}`} placeholder={param.example?.toString() ?? ''} />
+                {param.description && <small>{param.description}</small>}
+              </label>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    {
+      headers.length > 0 && (
+        <div class='field'>
+          <span>Headers</span>
+          <div class='kv-grid'>
+            {headers.map(header => (
+              <label class='kv-field'>
+                <span>
+                  {header.name}
+                  {header.required ? '*' : ''}
+                </span>
+                <input type='text' name={`header-${header.name}`} placeholder={header.example?.toString() ?? ''} />
+                {header.description && <small>{header.description}</small>}
+              </label>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    {
+      showBody && (
+        <div class='field'>
+          <span>Payload JSON</span>
+          <textarea name='body' rows='8' placeholder={'{\n  "dato": "valor"\n}'}>
+            {requestExample ? JSON.stringify(requestExample, null, 2) : ''}
+          </textarea>
+        </div>
+      )
+    }
+
+    <button type='submit'>Probar endpoint</button>
+  </form>
+
+  <section class='response'>
+    <header>
+      <span class='status' data-role='status'>Esperando solicitud…</span>
+      <button type='button' class='copy' data-role='copy'>Copiar curl</button>
+    </header>
+    <pre data-role='curl'></pre>
+    <pre data-role='output'>Realiza una solicitud para ver la respuesta formateada.</pre>
+  </section>
+
+  {
+    responseExample && (
+      <section class='examples'>
+        <h4>Respuesta esperada</h4>
+        <pre>{JSON.stringify(responseExample, null, 2)}</pre>
+      </section>
+    )
+  }
+</section>
+
+<script define:vars={{ componentId }}>
+  const componentIdValue = componentId
+
+  const normalizeUrl = (value) => value.replace(/\/$/, '')
+
+  const toJSON = (value) => {
+    if (!value.trim()) return undefined
+    try {
+      return JSON.parse(value)
+    } catch {
+      throw new Error('JSON inválido en el payload')
+    }
+  }
+
+  const buildCurl = (url, options) => {
+    const segments = [`curl -X ${options.method ?? 'GET'} '${url}'`]
+    const { headers, body } = options
+
+    if (headers instanceof Headers) {
+      headers.forEach((value, key) => {
+        segments.push(`  -H '${key}: ${value}'`)
+      })
+    } else if (Array.isArray(headers)) {
+      headers.forEach(([key, value]) => {
+        segments.push(`  -H '${key}: ${value}'`)
+      })
+    } else if (headers && typeof headers === 'object') {
+      Object.entries(headers).forEach(([key, value]) => {
+        segments.push(`  -H '${key}: ${value}'`)
+      })
+    }
+
+    if (body !== undefined) {
+      segments.push(`  -d '${String(body)}'`)
+    }
+
+    return segments.join(' \\\n')
+  }
+
+  const setStatus = (statusEl, message, tone) => {
+    statusEl.textContent = message
+    statusEl.dataset.tone = tone
+  }
+
+  const collectElements = (root) => {
+    const form = root.querySelector('form.request')
+    const statusEl = root.querySelector('[data-role="status"]')
+    const outputEl = root.querySelector('[data-role="output"]')
+    const curlEl = root.querySelector('[data-role="curl"]')
+
+    if (
+      !(form instanceof HTMLFormElement) ||
+      !(statusEl instanceof HTMLElement) ||
+      !(outputEl instanceof HTMLElement) ||
+      !(curlEl instanceof HTMLElement)
+    ) {
+      return null
+    }
+
+    return {
+      form,
+      statusEl,
+      outputEl,
+      curlEl,
+      copyButton: root.querySelector('[data-role="copy"]'),
+      baseUrlEl: root.querySelector('[data-role="base-url"]'),
+      bodyInput: form.elements.namedItem('body'),
+    }
+  }
+
+  const getBaseUrl = (baseUrlEl) => {
+    const base = `${window.location.origin.replace(/\/$/, '')}/api`
+    if (baseUrlEl) {
+      baseUrlEl.textContent = base
+      baseUrlEl.dataset.url = base
+    }
+    return base
+  }
+
+  const initialize = () => {
+    const root = document.getElementById(componentIdValue)
+    if (!(root instanceof HTMLElement) || root.dataset.initialized === 'true') {
+      return
+    }
+
+    const elements = collectElements(root)
+    if (!elements) {
+      console.warn('No se pudo inicializar el playground para', componentIdValue)
+      return
+    }
+
+    const method = root.dataset.method ?? 'GET'
+    const endpoint = root.dataset.endpoint ?? '/'
+    const shouldSendBody = root.dataset.hasBody === 'true'
+
+    const { form, statusEl, outputEl, curlEl, copyButton, baseUrlEl, bodyInput } = elements
+
+    const ensureBaseUrl = () => baseUrlEl?.dataset.url ?? getBaseUrl(baseUrlEl)
+
+    ensureBaseUrl()
+
+    copyButton?.addEventListener('click', async () => {
+      const value = curlEl.textContent ?? ''
+      if (!value.trim()) return
+      try {
+        await navigator.clipboard.writeText(value)
+        copyButton.textContent = '¡Copiado!'
+        setTimeout(() => {
+          copyButton.textContent = 'Copiar curl'
+        }, 1500)
+      } catch (error) {
+        console.warn('No se pudo copiar al portapapeles', error)
+      }
+    })
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault()
+
+      try {
+        setStatus(statusEl, 'Ejecutando…', 'idle')
+        outputEl.textContent = 'Esperando respuesta…'
+
+        const data = new FormData(form)
+        const base = ensureBaseUrl()
+        const path = data.get('path')?.toString() ?? endpoint
+        const url = new URL(normalizeUrl(base) + path)
+
+        Array.from(data.entries()).forEach(([key, value]) => {
+          if (key.startsWith('query-') && value) {
+            url.searchParams.set(key.replace('query-', ''), String(value))
+          }
+        })
+
+        const headers = {}
+        Array.from(data.entries()).forEach(([key, value]) => {
+          if (key.startsWith('header-') && value) {
+            headers[key.replace('header-', '')] = String(value)
+          }
+        })
+
+        const requestInit = { method }
+
+        if (shouldSendBody) {
+          try {
+            const rawBody = bodyInput instanceof HTMLTextAreaElement ? bodyInput.value : ''
+            const parsed = rawBody ? toJSON(rawBody) : undefined
+            if (parsed !== undefined) {
+              requestInit.body = JSON.stringify(parsed)
+              headers['Content-Type'] = headers['Content-Type'] ?? 'application/json'
+            }
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Payload inválido'
+            setStatus(statusEl, message, 'error')
+            outputEl.textContent = message
+            return
+          }
+        }
+
+        if (Object.keys(headers).length > 0) {
+          requestInit.headers = headers
+        }
+
+        const response = await fetch(url, requestInit)
+        const contentType = response.headers.get('content-type') ?? ''
+        const text = await response.text()
+
+        let parsed = text
+        if (contentType.includes('application/json')) {
+          try {
+            parsed = JSON.stringify(JSON.parse(text), null, 2)
+          } catch {
+            parsed = text
+          }
+        }
+
+        setStatus(statusEl, `HTTP ${response.status}`, response.ok ? 'success' : 'error')
+        outputEl.textContent = parsed
+        curlEl.textContent = buildCurl(url.toString(), requestInit)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'No se pudo completar la solicitud'
+        setStatus(statusEl, message, 'error')
+        outputEl.textContent = message
+      }
+    })
+
+    root.dataset.initialized = 'true'
+  }
+
+  const register = () => {
+    initialize()
+  }
+
+  document.addEventListener('astro:page-load', register)
+  document.addEventListener('astro:after-swap', register)
+  register()
+</script>
+
+<style>
+  .api-playground {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 1rem;
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1.25rem, 2vw, 1.75rem);
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  header p {
+    margin: 0.35rem 0 0;
+    color: #94a3b8;
+    font-size: 0.9rem;
+  }
+
+  .badge {
+    background: rgba(59, 130, 246, 0.18);
+    color: #3b82f6;
+    border-radius: 999px;
+    padding: 0.35rem 0.8rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+  }
+
+  .request {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .field {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .field span {
+    font-weight: 500;
+  }
+
+  .base-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.6rem 0.75rem;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.65rem;
+  }
+
+  .base-info span {
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .base-info code {
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    background: rgba(15, 23, 42, 0.75);
+    padding: 0.35rem 0.5rem;
+    border-radius: 0.45rem;
+    color: #60a5fa;
+    font-size: 0.85rem;
+  }
+
+  .field input,
+  .field textarea {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 0.65rem;
+    color: #f8fafc;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.95rem;
+    font-family: inherit;
+  }
+
+  .field textarea {
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+      'Courier New', monospace;
+  }
+
+  button[type='submit'] {
+    justify-self: flex-start;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border: none;
+    color: #fff;
+    padding: 0.7rem 1.5rem;
+    font-weight: 600;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  button[type='submit']:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.25);
+  }
+
+  .kv-grid {
+    display: grid;
+    gap: 0.65rem;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  }
+
+  .kv-field small {
+    color: #94a3b8;
+    font-size: 0.75rem;
+  }
+
+  .response {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .response header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .status {
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .status[data-tone='success'] {
+    color: #34d399;
+  }
+
+  .status[data-tone='error'] {
+    color: #f87171;
+  }
+
+  .copy {
+    background: rgba(148, 163, 184, 0.2);
+    border: none;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    padding: 0.35rem 0.8rem;
+    cursor: pointer;
+  }
+
+  .response pre {
+    background: rgba(10, 15, 30, 0.85);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    overflow-x: auto;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+      'Courier New', monospace;
+    font-size: 0.85rem;
+  }
+
+  .examples {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .examples pre {
+    background: rgba(15, 23, 42, 0.65);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+  }
+
+  @media (max-width: 640px) {
+    .api-playground {
+      padding: 1rem;
+    }
+
+    header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    button[type='submit'] {
+      width: 100%;
+    }
+  }
+</style>

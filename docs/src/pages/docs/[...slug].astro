@@ -1,0 +1,154 @@
+---
+import { getCollection, getEntryBySlug } from 'astro:content'
+import DocsLayout, { type DocsGroup } from '../../layouts/DocsLayout.astro'
+import ApiPlayground from '../../components/ApiPlayground.astro'
+
+export async function getStaticPaths() {
+	const entries = await getCollection('docs')
+	return entries.map(entry => ({
+		params: {
+			slug: entry.slug,
+		},
+	}))
+}
+
+const docs = await getCollection('docs')
+
+const groups = Array.from(
+	docs.reduce((acc, entry) => {
+		const category = entry.data.category ?? 'General'
+		if (!acc.has(category)) {
+			acc.set(category, [])
+		}
+		acc.get(category)?.push(entry)
+		return acc
+	}, new Map<string, typeof docs>())
+)
+	.map(([category, entries]) => ({
+		category,
+		entries: entries.sort((a, b) => a.data.order - b.data.order),
+	}))
+	.sort((a, b) => {
+		const scoreA = Math.min(...a.entries.map(entry => entry.data.order ?? 0))
+		const scoreB = Math.min(...b.entries.map(entry => entry.data.order ?? 0))
+		if (scoreA !== scoreB) return scoreA - scoreB
+		return a.category.localeCompare(b.category)
+	}) satisfies DocsGroup[]
+
+const slugParam = Astro.params.slug
+const slug = Array.isArray(slugParam)
+	? slugParam.filter(Boolean).join('/')
+	: slugParam ?? ''
+
+const entry = slug ? await getEntryBySlug('docs', slug) : undefined
+if (!entry) {
+	return Astro.redirect('/404')
+}
+
+const { Content } = await entry.render()
+---
+<DocsLayout groups={groups} doc={entry}>
+	<header class="doc-header">
+		<p class="category">{entry.data.category}</p>
+		<h1>{entry.data.title}</h1>
+		{entry.data.description && <p class="description">{entry.data.description}</p>}
+		{entry.data.endpoint && (
+			<code class="endpoint">
+				<span class="method">{entry.data.method ?? 'GET'}</span>
+				<span class="path">{entry.data.endpoint}</span>
+			</code>
+		)}
+	</header>
+
+	<Content />
+
+	{entry.data.playground && entry.data.endpoint && (
+		<ApiPlayground
+			title={`Probar ${entry.data.title}`}
+			description="Realiza una petición en vivo y visualiza la respuesta en tiempo real."
+			endpoint={entry.data.endpoint}
+			method={entry.data.method}
+			queryParams={entry.data.queryParams}
+			bodyParams={entry.data.bodyParams}
+			headers={entry.data.headers}
+			requestExample={entry.data.requestExample}
+			responseExample={entry.data.responseExample}
+		/>
+	)}
+</DocsLayout>
+
+<style>
+	.doc-header {
+		display: grid;
+		gap: 0.6rem;
+		margin-bottom: 2rem;
+	}
+
+	.category {
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		font-size: 0.75rem;
+		color: #64748b;
+		margin: 0;
+	}
+
+	.doc-header h1 {
+		margin: 0;
+		font-size: clamp(1.8rem, 4vw, 2.4rem);
+	}
+
+	.description {
+		margin: 0;
+		color: #cbd5f5;
+		max-width: 60ch;
+	}
+
+	.endpoint {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.65rem;
+		font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+		border-radius: 0.65rem;
+		border: 1px solid rgba(148, 163, 184, 0.22);
+		background: rgba(15, 23, 42, 0.75);
+		padding: 0.5rem 0.8rem;
+		color: #f8fafc;
+	}
+
+	.endpoint .method {
+		font-weight: 700;
+		color: #34d399;
+	}
+
+	.endpoint .path {
+		color: #e2e8f0;
+	}
+
+	:global(.article h2) {
+		margin-top: 2.5rem;
+	}
+
+	:global(.article table) {
+		width: 100%;
+		border-collapse: collapse;
+		margin: 1rem 0;
+	}
+
+	:global(.article table th),
+	:global(.article table td) {
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		padding: 0.6rem;
+		text-align: left;
+	}
+
+	:global(.article table th) {
+		background: rgba(15, 23, 42, 0.7);
+	}
+
+	@media (max-width: 640px) {
+		.endpoint {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+	}
+</style>

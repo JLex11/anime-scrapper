@@ -1,0 +1,32 @@
+---
+title: Últimos episodios
+category: Episodios
+order: 20
+description: Recupera los episodios añadidos recientemente al catálogo.
+endpoint: /episodes/latest
+method: GET
+playground: true
+responseExample:
+  - originalLink: https://www3.animeflv.net/ver/solo-leveling-15
+    image: https://api.ejemplo.com/api/image/solo-leveling-15?width=350&height=250
+    episode: 15
+    title: Solo Leveling - Episodio 15
+    episodeId: solo-leveling-15
+    animeId: solo-leveling
+---
+## Descripción
+
+Obtiene un arreglo con los episodios más recientes detectados en la fuente oficial. La lista siempre se devuelve ordenada de más nuevo a más antiguo.
+
+## Respuesta
+
+Cada elemento del arreglo contiene:
+
+- `originalLink`: URL original del episodio en el proveedor.
+- `image`: Ruta optimizada servida desde este API (útil para miniaturas en clientes web).
+- `episode`: Número de episodio detectado.
+- `title`: Nombre del episodio.
+- `episodeId`: Identificador único del episodio, útil para otras rutas.
+- `animeId`: Identificador del anime relacionado.
+
+> **Nota:** El playground genera los recursos con la URL base que definas. Si sirves la API detrás de un proxy recuerda ajustar el campo `URL base` para conservar el dominio correcto.

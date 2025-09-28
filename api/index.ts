@@ -1,6 +1,9 @@
 import compression from 'compression'
 import cors from 'cors'
 import express from 'express'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { setOriginPath } from '../src/config'
 import { expressCacheMiddleware } from '../src/middleware/expressCache'
 import { logger } from '../src/utils/logger'
@@ -13,18 +16,15 @@ const isServerless = process.env.VERCEL_ENV !== undefined
 const isProdMode = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production'
 
 const app: express.Application = express()
+const currentDir = path.dirname(fileURLToPath(import.meta.url))
+const docsStaticDir = path.resolve(currentDir, '../public/api-docs')
+const docsIndexPath = path.join(docsStaticDir, 'index.html')
+const hasBuiltDocs = () => fs.existsSync(docsIndexPath)
 
 app.use(compression({ level: 2 }))
 app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 app.use(expressCacheMiddleware() as express.RequestHandler)
-
-app.use(
-	'/api/docs',
-	express.static('public/api-docs', {
-		maxAge: isProdMode ? '1d' : 0,
-	})
-)
 
 app.use(async (req, _, next) => {
 	setOriginPath(`${isProdMode ? 'https' : req.protocol}://${req.get('host')}`)
@@ -44,15 +44,33 @@ if (!isProdMode) {
 	})
 }
 
-app.get('/', (_, res) => res.redirect('/api/docs'))
-app.get('/api/', (_, res) => res.redirect('/api/docs'))
+if (!hasBuiltDocs()) {
+	logger.warn('La documentación Astro no está construida. Ejecuta "bun run docs:build" para generarla.')
+}
+
+app.use('/api-docs', (req, res, next) => {
+	if (!hasBuiltDocs()) {
+		res
+			.status(503)
+			.send('La documentación interactiva aún no está disponible. Ejecuta "bun run docs:build" y vuelve a intentarlo.')
+		return
+	}
+	next()
+})
+app.use('/api-docs', express.static(docsStaticDir))
+app.get('/api-docs', (_, res) => {
+	res.redirect('/api-docs/')
+})
+
+app.get('/', (_, res) => res.redirect('/api-docs/'))
+app.get('/api/', (_, res) => res.redirect('/api-docs/'))
 
 app.use('/api/api-routes', routesDocumentation)
 app.use('/api/animes', animesRouter)
 app.use('/api/episodes', episodesRouter)
 app.use('/api/image', imagesRouter)
 
-app.use('*', (_, res) => {
+app.use((_, res) => {
 	res.status(404).send('Not found')
 })
 

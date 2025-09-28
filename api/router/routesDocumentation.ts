@@ -1,7 +1,6 @@
 import { Router as RouterApp, type Router as RouterType } from 'express'
 import { endPoints } from '../../src/enums'
 import { mapOriginPath } from '../../src/utils/mapOriginPath'
-import path from 'node:path'
 
 const router: RouterType = RouterApp()
 
@@ -75,7 +74,7 @@ router.get('/', async (_, res) => {
 
 // Servir la documentación de API con interfaz de usuario
 router.get('/docs', (_, res) => {
-	res.redirect('/api-docs')
+	res.redirect('/api-docs/')
 })
 
 export default router

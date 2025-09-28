@@ -1,0 +1,37 @@
+---
+title: Lista de animes
+category: Animes
+order: 10
+description: Obtén el catálogo completo con paginación opcional.
+endpoint: /animes
+method: GET
+playground: true
+queryParams:
+  - name: page
+    description: Número de página a consultar (1 por defecto).
+    example: 2
+responseExample:
+  - title: Solo Leveling
+    id: solo-leveling
+    poster: https://api.ejemplo.com/api/image/solo-leveling?width=300&height=450
+    synopsis: Un cazador débil obtiene un misterioso poder.
+    rating: 4.8
+    status: broadcast
+---
+## Descripción
+
+Devuelve un arreglo con la información resumida del catálogo. El origen se pagina de manera secuencial y la página inicial es `1`.
+
+## Parámetros de consulta
+
+| Parámetro | Tipo | Descripción |
+| --- | --- | --- |
+| `page` | number | Página solicitada (por defecto `1`). |
+
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/animes?page=2"
+```
+
+La respuesta es un arreglo de animes que incluye atributos listos para renderizar tarjetas en el frontend.

@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content'
+import DocsLayout, { type DocsGroup } from '../layouts/DocsLayout.astro'
+
+const docs = await getCollection('docs')
+
+const groups = Array.from(
+	docs.reduce((acc, entry) => {
+		const category = entry.data.category ?? 'General'
+		if (!acc.has(category)) {
+			acc.set(category, [])
+		}
+		acc.get(category)?.push(entry)
+		return acc
+	}, new Map<string, typeof docs>())
+)
+	.map(([category, entries]) => ({
+		category,
+		entries: entries.sort((a, b) => a.data.order - b.data.order),
+	}))
+	.sort((a, b) => {
+		const scoreA = Math.min(...a.entries.map(entry => entry.data.order ?? 0))
+		const scoreB = Math.min(...b.entries.map(entry => entry.data.order ?? 0))
+		if (scoreA !== scoreB) return scoreA - scoreB
+		return a.category.localeCompare(b.category)
+	}) satisfies DocsGroup[]
+const baseUrl = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '')
+const withBase = (path: string) => {
+	if (path === '/' || path === '') {
+		return baseUrl === '' ? '/' : baseUrl
+	}
+	const normalized = path.startsWith('/') ? path : `/${path}`
+	return (baseUrl + normalized).replace(/\/\/+/, '/')
+}
+---
+<DocsLayout groups={groups} title="Documento no encontrado">
+	<section class="not-found">
+		<h1>404</h1>
+		<p>No encontramos la página que estabas buscando. Selecciona un tema desde el menú lateral.</p>
+		<a href={withBase('/')}>Volver al inicio</a>
+	</section>
+</DocsLayout>
+
+<style>
+	.not-found {
+		display: grid;
+		gap: 1rem;
+		place-items: flex-start;
+	}
+
+	.not-found h1 {
+		font-size: clamp(3rem, 8vw, 5rem);
+		margin: 0;
+	}
+
+	.not-found p {
+		margin: 0;
+		color: #cbd5f5;
+	}
+
+	.not-found a {
+		text-decoration: none;
+		background: rgba(148, 163, 184, 0.16);
+		color: #e2e8f0;
+		padding: 0.6rem 1.2rem;
+		border-radius: 0.65rem;
+		font-weight: 600;
+	}
+</style>
