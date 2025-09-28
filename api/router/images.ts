@@ -19,7 +19,50 @@ router.get(endPoints.IMAGES, async (req, res) => {
 			return
 		}
 
-		let imgBuffer = s3Response.Body as Buffer
+		// Convert Body to Buffer for AWS SDK v3
+		let imgBuffer: Buffer
+
+		if (Buffer.isBuffer(s3Response.Body)) {
+			// If it's already a Buffer
+			imgBuffer = s3Response.Body
+		} else if (s3Response.Body instanceof Uint8Array) {
+			// If it's a Uint8Array
+			imgBuffer = Buffer.from(s3Response.Body)
+		} else if (typeof s3Response.Body === 'string') {
+			// If it's a string
+			imgBuffer = Buffer.from(s3Response.Body, 'binary')
+		} else if (s3Response.Body && typeof s3Response.Body === 'object' && 'getReader' in s3Response.Body) {
+			// If it's a ReadableStream
+			const stream = s3Response.Body as ReadableStream<Uint8Array>
+			const reader = stream.getReader()
+			const chunks: Uint8Array[] = []
+
+			try {
+				while (true) {
+					const { done, value } = await reader.read()
+					if (done) break
+					chunks.push(value)
+				}
+			} finally {
+				reader.releaseLock()
+			}
+
+			imgBuffer = Buffer.concat(chunks)
+		} else if (s3Response.Body && s3Response.Body.constructor?.name === 'IncomingMessage') {
+			// Handle Node.js IncomingMessage stream (common in AWS SDK v3 with Node.js)
+			const stream = s3Response.Body as any
+			const chunks: Buffer[] = []
+
+			for await (const chunk of stream) {
+				chunks.push(chunk)
+			}
+
+			imgBuffer = Buffer.concat(chunks)
+		} else {
+			// Fallback: try to convert to array buffer
+			const arrayBuffer = await (s3Response.Body as any).arrayBuffer()
+			imgBuffer = Buffer.from(arrayBuffer)
+		}
 
 		if (width || height || format || quality) {
 			try {

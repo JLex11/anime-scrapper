@@ -39,7 +39,7 @@ export const getOptimizedImage: GetOptimizedImage = async (url, name, options = 
 
 	try {
 		const s3ImageResponse = await s3HeadOperation({ filename: imageName })
-		if (!s3ImageResponse.$response?.error) {
+		if (s3ImageResponse) {
 			requestCache.set(url, s3ImageResponse.url, cacheDefaultConfig.stdTTL)
 			return s3ImageResponse.url
 		}
