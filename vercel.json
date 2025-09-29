@@ -1,6 +1,8 @@
 {
+	"framework": null,
 	"buildCommand": "bun build --target=bun --format=esm --entrypoints api/index.ts --outdir ./public/api",
 	"outputDirectory": "public",
+	"installCommand": "bun install",
 	"rewrites": [
 		{
 			"source": "/api/(.*)",
