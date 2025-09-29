@@ -1,5 +1,12 @@
 {
-	"rewrites": [{ "source": "/api/(.*)", "destination": "/api" }],
+	"buildCommand": "bun run build",
+	"outputDirectory": "public",
+	"rewrites": [
+		{
+			"source": "/api/(.*)",
+			"destination": "/api"
+		}
+	],
 	"headers": [
 		{
 			"source": "/api/(.*)",
@@ -19,11 +26,5 @@
 				}
 			]
 		}
-	],
-	"functions": {
-		"api/index.ts": {
-			"memory": 1024,
-			"maxDuration": 10
-		}
-	}
+	]
 }
