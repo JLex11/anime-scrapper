@@ -20,7 +20,14 @@ const docsStaticDir = path.resolve(currentDir, '../public/api-docs')
 const docsIndexPath = path.join(docsStaticDir, 'index.html')
 const hasBuiltDocs = () => fs.existsSync(docsIndexPath)
 
-app.use(compression({ level: 2 }))
+app.use(compression({
+	level: 6,
+	threshold: 1024,
+	filter: (req, res) => {
+		if (req.headers['x-no-compression']) return false
+		return compression.filter(req, res)
+	}
+}))
 app.use(cors())
 app.use(express.json({ limit: '10mb' }))
 app.use(expressCacheMiddleware() as express.RequestHandler)
@@ -56,13 +63,10 @@ app.use('/api-docs', (req, res, next) => {
 	}
 	next()
 })
-app.use('/api-docs', express.static(docsStaticDir))
-app.get('/api-docs', (_, res) => {
-	res.redirect('/api-docs/')
-})
+app.use('/api/api-docs', express.static(docsStaticDir))
 
-app.get('/', (_, res) => res.redirect('/api-docs/'))
-app.get('/api/', (_, res) => res.redirect('/api-docs/'))
+app.get('/', (_, res) => res.redirect('/api/api-docs/'))
+app.get('/api/', (_, res) => res.redirect('/api/api-docs/'))
 
 app.use('/api/api-routes', routesDocumentation)
 app.use('/api/animes', animesRouter)
