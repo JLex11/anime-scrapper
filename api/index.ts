@@ -15,7 +15,7 @@ const isServerless = process.env.VERCEL_ENV !== undefined
 const isProdMode = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production'
 
 const app: express.Application = express()
-const currentDir = path.dirname(fileURLToPath(import.meta.url))
+const currentDir = __dirname
 const docsStaticDir = path.resolve(currentDir, '../public/api-docs')
 const docsIndexPath = path.join(docsStaticDir, 'index.html')
 const hasBuiltDocs = () => fs.existsSync(docsIndexPath)
