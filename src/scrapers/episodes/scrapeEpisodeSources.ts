@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+import { Window } from 'happy-dom'
 import { animeFLVPages } from '../../enums'
 import { requestTextWithCache } from '../../services/requestWithCache'
 import type { EpisodeSources } from '../../types'
@@ -21,7 +21,9 @@ export async function scrapeEpisodeSources(episodeId: string): Promise<EpisodeSo
 		}
 	}
 
-	const { document } = new JSDOM(html).window
+	const window = new Window()
+	window.document.write(html)
+	const document = window.document
 
 	const scrapedScript = [...document.querySelectorAll('script[type="text/javascript"]')]
 		.map(script => script.textContent)

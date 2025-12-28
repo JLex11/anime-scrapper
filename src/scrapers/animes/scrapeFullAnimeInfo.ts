@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+import { Window } from 'happy-dom'
 import { animeFLVPages } from '../../enums'
 import { getCarouselImages } from '../../services/getCarouselImages'
 import { getOptimizedImage } from '../../services/getOptimizeImage'
@@ -12,7 +12,9 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 	const originalLink = `${animeFLVPages.BASE}/anime/${animeId}`
 	const html = await requestTextWithCache(originalLink, { ttl: CACHE_TIME })
 	if (!html) return null
-	const { document } = new JSDOM(html).window
+	const window = new Window()
+	window.document.write(html)
+	const document = window.document
 
 	const getOfAnime = animeGetter(document)
 	const type = getOfAnime.type()

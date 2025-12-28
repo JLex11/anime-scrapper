@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+import { Window } from 'happy-dom'
 import { animeFLVPages } from '../../enums'
 import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
@@ -10,7 +10,9 @@ export async function scrapeLastEpisodes(limit: number): Promise<Episode[]> {
 	const html = await requestTextWithCache(animeFLVPages.BASE, { ttl: CACHE_TIME })
 	if (!html) return []
 
-	const { document } = new JSDOM(html).window
+	const window = new Window()
+	window.document.write(html)
+	const document = window.document
 
 	const episodesList = [...document.querySelectorAll('ul.ListEpisodios li')].slice(0, limit)
 

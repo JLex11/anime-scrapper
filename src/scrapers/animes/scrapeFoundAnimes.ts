@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+import { Window } from 'happy-dom'
 import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
 import { animeFLVPages } from '../../enums'
 import { requestTextWithCache } from '../../services/requestWithCache'
@@ -14,7 +14,9 @@ export async function scrapeFoundAnimes(query: string): Promise<Anime[]> {
 	})
 	if (!html) return []
 
-	const { document } = new JSDOM(html).window
+	const window = new Window()
+	window.document.write(html)
+	const document = window.document
 
 	const animeList = [...document.querySelectorAll('ul.ListAnimes li')]
 

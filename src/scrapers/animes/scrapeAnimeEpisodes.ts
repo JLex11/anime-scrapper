@@ -1,4 +1,4 @@
-import { JSDOM } from 'jsdom'
+import { Window } from 'happy-dom'
 import { animeFLVPages } from '../../enums'
 import { getOptimizedImage } from '../../services/getOptimizeImage'
 import { requestTextWithCache } from '../../services/requestWithCache'
@@ -17,7 +17,9 @@ export async function scrapeAnimeEpisodes(
 	const html = await requestTextWithCache(originalLink, { ttl: CACHE_HOURS * 60 * 60 })
 	if (!html) return []
 
-	const { document } = new JSDOM(html).window
+	const window = new Window()
+	window.document.write(html)
+	const document = window.document
 
 	const title = getTitle(document)
 	const scrapedScript = [...document.querySelectorAll('script')].map(s => s.textContent).join(' ')
