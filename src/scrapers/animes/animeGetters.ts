@@ -1,3 +1,4 @@
+import type { Element, Document } from 'happy-dom'
 import { animeFLVPages } from '../../enums'
 
 type SelectorGetter<T> = (e: Element | Document, selector?: string) => T
