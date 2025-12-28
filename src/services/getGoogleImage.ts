@@ -1,15 +1,14 @@
 import { GoogleApi } from '../enums'
 import type { GoogleRequestConfig, GoogleSearchResponse } from '../googleTypes'
 import { requestJsonWithCache } from './requestWithCache'
+import { GOOGLE_API_KEY, GOOGLE_SEARCH_ENGINE_ID } from '../config/env'
 
 export const getGoogleImage = async (query: string, config?: GoogleRequestConfig) => {
 	if (!query) return []
 
-	const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY
-
 	const DEFAULT_CONFIG: GoogleRequestConfig = {
 		key: GOOGLE_API_KEY,
-		cx: GoogleApi.SEARCH_ENGINE_ID,
+		cx: GOOGLE_SEARCH_ENGINE_ID,
 		imgOrientation: config?.imgOrientation || 'horizontal',
 		searchType: config?.searchType || 'image',
 		imgSize: config?.imgSize || 'huge',

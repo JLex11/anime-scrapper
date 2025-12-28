@@ -41,5 +41,4 @@ export enum endPoints {
 
 export enum GoogleApi {
 	API_URL = 'https://www.googleapis.com/customsearch/v1?',
-	SEARCH_ENGINE_ID = 'd605fa7e0557f4774',
 }
