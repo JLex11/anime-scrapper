@@ -58,10 +58,26 @@ router.get(endPoints.IMAGES, async (req, res) => {
 			}
 
 			imgBuffer = Buffer.concat(chunks)
+		} else if (s3Response.Body && typeof (s3Response.Body as any)[Symbol.asyncIterator] === 'function') {
+			// Handle async iterable streams (common in Bun with R2)
+			const stream = s3Response.Body as any
+			const chunks: Buffer[] = []
+
+			for await (const chunk of stream) {
+				chunks.push(Buffer.from(chunk))
+			}
+
+			imgBuffer = Buffer.concat(chunks)
 		} else {
-			// Fallback: try to convert to array buffer
-			const arrayBuffer = await (s3Response.Body as any).arrayBuffer()
-			imgBuffer = Buffer.from(arrayBuffer)
+			// Fallback: try to convert to array buffer if the method exists
+			if (typeof (s3Response.Body as any).arrayBuffer === 'function') {
+				const arrayBuffer = await (s3Response.Body as any).arrayBuffer()
+				imgBuffer = Buffer.from(arrayBuffer)
+			} else {
+				// Last resort: try to convert directly to Buffer
+				logger.error(`Tipo de Body desconocido: ${s3Response.Body?.constructor?.name}`)
+				throw new Error(`Unsupported Body type: ${s3Response.Body?.constructor?.name}`)
+			}
 		}
 
 		if (width || height || format || quality) {
