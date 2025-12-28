@@ -1,5 +1,5 @@
 {
-  "bunVersion": "1.x",
+  "bunVersion": "1",
   "outputDirectory": "public",
   "rewrites": [
     {
@@ -14,6 +14,18 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=60, s-maxage=300, stale-while-revalidate=300"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
         }
       ]
     },
@@ -22,7 +34,19 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200"
+          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=43200, immutable"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Accept-Ranges",
+          "value": "bytes"
+        },
+        {
+          "key": "Vary",
+          "value": "Accept-Encoding, Accept"
         }
       ]
     }
