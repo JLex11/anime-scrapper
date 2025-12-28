@@ -17,12 +17,12 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.525.0",
-    "@supabase/supabase-js": "2.58.0",
+    "@supabase/supabase-js": "2.89.0",
     "@types/amqplib": "^0.10.7",
     "@types/compression": "^1.7.5",
     "compression": "^1.8.0",
     "cors": "2.8.5",
-    "express": "5.1.0",
+    "express": "5.2.1",
     "jsdom": "^27.0.0",
     "node-cache": "5.1.2",
     "sharp": "^0.34.1",
@@ -30,18 +30,18 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@aws-sdk/types": "3.893.0",
+    "@aws-sdk/types": "3.957.0",
     "@biomejs/biome": "2.2.4",
     "@types/bun": "^1.2.12",
     "@types/cors": "2.8.19",
-    "@types/express": "5.0.3",
-    "@types/jsdom": "21.1.7",
-    "@types/node": "^24.5.2",
-    "@astrojs/mdx": "4.3.6",
-    "astro": "5.14.1",
+    "@types/express": "5.0.6",
+    "@types/jsdom": "27.0.0",
+    "@types/node": "^25.0.3",
+    "@astrojs/mdx": "4.3.13",
+    "astro": "5.16.6",
     "ts-node-dev": "2.0.0",
     "ts-standard": "^12.0.2",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "ts-standard": {
     "ignore": [
