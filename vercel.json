@@ -1,6 +1,7 @@
 {
   "bunVersion": "1",
   "outputDirectory": "public",
+  "buildCommand": "bun run docs:build",
   "rewrites": [
     {
       "source": "/api/(.*)",
