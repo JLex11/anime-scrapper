@@ -5,6 +5,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { setOriginPath } from '../src/config'
 import { expressCacheMiddleware } from '../src/middleware/expressCache'
+import { supabase } from '../src/services/database/supabaseClient'
 import { logger } from '../src/utils/logger'
 import animesRouter from './router/animes'
 import episodesRouter from './router/episodes'
@@ -86,6 +87,7 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
 
 if (!isServerless) {
 	const PORT = process.env.PORT || 3000
+	
 	app.listen(PORT, () => {
 		console.log(`http://localhost:${PORT}`)
 		logger.info(`Servidor Express iniciado en el puerto ${PORT}`)

@@ -23,7 +23,7 @@ export const getAnimesByQuery = async (query: string, page?: number, pageSize?: 
 
 	const animes = await supabase
 		.from('animes')
-		.select()
+		.select('animeId, title, type, status, genres, images, description, otherTitles')
 		.textSearch('full_anime_search', query, {
 			type: 'websearch',
 		})
