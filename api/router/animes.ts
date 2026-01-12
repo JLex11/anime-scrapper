@@ -6,6 +6,7 @@ import { scrapeLastAnimes } from '../../src/scrapers/animes/scrapeLastAnimes'
 import { scrapeRatingAnimes } from '../../src/scrapers/animes/scrapeRatingAnimes'
 import { logger } from '../../src/utils/logger'
 import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
+import { getRelatedAnimes } from '../controllers/animes/getRelatedAnimes'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
 import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
 
@@ -102,6 +103,13 @@ router.get(endPoints.ANIME_INFO, async (req, res) => {
 	}
 
 	res.send(animeInfo)
+})
+
+router.get(endPoints.ANIME_RELATED, async (req, res) => {
+	const { animeId } = req.params
+
+	const relatedAnimes = await getRelatedAnimes(animeId)
+	res.send(relatedAnimes)
 })
 
 router.get(endPoints.ANIME_EPISODES, async (req, res) => {

@@ -1,6 +1,6 @@
 import { domainsToFilter } from '../../../src/constants'
 import { scrapeFullAnimeInfo } from '../../../src/scrapers/animes/scrapeFullAnimeInfo'
-import { UpsertAnimes, getAnimeBy } from '../../../src/services/database/animes'
+import { UpsertAnimes, getAnimeBy, getRelatedAnimesFromDb } from '../../../src/services/database/animes'
 import type { Anime } from '../../../src/types'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
@@ -30,7 +30,10 @@ export const getAnimeInfo = async (animeId: string): Promise<Anime | null> => {
 
 	const hasCarouselImages = Boolean(animeFromDb?.images?.carouselImages?.length)
 
-	if (animeFromDb && hasCarouselImages) return mapAnimeImages(animeFromDb)
+	if (animeFromDb && hasCarouselImages) {
+		const relatedAnimes = await getRelatedAnimesFromDb(animeId)
+		return mapAnimeImages({ ...animeFromDb, relatedAnimes })
+	}
 
 	const currentTime = getCurrentTime()
 

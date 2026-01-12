@@ -45,6 +45,19 @@ export const getGenres: SelectorGetter<string[]> = (e, selector = '.Nvgnrs a') =
 	return [...e.querySelectorAll(selector)].map(genre => genre.textContent?.trim()).filter(Boolean) as string[]
 }
 
+export const getRelatedAnimes: SelectorGetter<{ animeId: string; title: string; relation: string }[]> = (e, selector = '.ListAnmRel li') => {
+	return [...e.querySelectorAll(selector)]
+		.map(li => {
+			const a = li.querySelector('a')
+			if (!a) return null
+			const title = a.textContent?.trim() ?? ''
+			const animeId = a.getAttribute('href')?.split('/').pop() ?? ''
+			const relation = li.textContent?.replace(title, '').trim().replace(/[()]/g, '') ?? ''
+			return { animeId, title, relation }
+		})
+		.filter(Boolean) as { animeId: string; title: string; relation: string }[]
+}
+
 export const animeGetter = (e: Element | Document) => {
 	return {
 		originalLink: () => getOriginalLink(e),
@@ -57,5 +70,6 @@ export const animeGetter = (e: Element | Document) => {
 		idFromLink: (link: string) => getIdFromLink(link),
 		otherTitles: (selector = '.TxtAlt') => getOtherTitles(e, selector),
 		genres: (selector = '.Nvgnrs a') => getGenres(e, selector),
+		relatedAnimes: (selector = '.ListAnmRel li') => getRelatedAnimes(e, selector),
 	}
 }

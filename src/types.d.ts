@@ -43,6 +43,12 @@ type AnimeImages = {
 	carouselImages: CarouselImage[]
 }
 
+export interface RelatedAnime {
+	animeId: string
+	title: string
+	relation: string
+}
+
 export interface Anime {
 	images?: AnimeImages | null
 	title: string
@@ -54,6 +60,7 @@ export interface Anime {
 	originalLink?: string | null
 	status?: string | null
 	genres?: string[] | null
+	relatedAnimes?: RelatedAnime[] | null
 	created_at: string
 	updated_at: string
 }

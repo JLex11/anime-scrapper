@@ -44,6 +44,7 @@ export interface Database {
 					type: string | null
 					created_at: string
 					updated_at: string
+					full_anime_search: string | null // Generated column
 				}
 				Insert: {
 					animeId: string
@@ -58,6 +59,7 @@ export interface Database {
 					type?: string | null
 					created_at?: string | null
 					updated_at?: string | null
+					// full_anime_search is NOT here because it's generated
 				}
 				Update: {
 					animeId?: string
@@ -72,8 +74,46 @@ export interface Database {
 					type?: string | null
 					created_at?: string | null
 					updated_at?: string | null
+					// full_anime_search is NOT here because it's generated
 				}
 				Relationships: []
+			}
+			related_animes: {
+				Row: {
+					id: number
+					anime_id: string
+					related_id: string
+					title: string
+					relation: string
+					created_at: string
+					updated_at: string
+				}
+				Insert: {
+					id?: number
+					anime_id: string
+					related_id: string
+					title: string
+					relation: string
+					created_at?: string | null
+					updated_at?: string | null
+				}
+				Update: {
+					id?: number
+					anime_id?: string
+					related_id?: string
+					title?: string
+					relation?: string
+					created_at?: string | null
+					updated_at?: string | null
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'related_animes_anime_id_fkey'
+						columns: ['anime_id']
+						referencedRelation: 'animes'
+						referencedColumns: ['animeId']
+					}
+				]
 			}
 			episodes: {
 				Row: {

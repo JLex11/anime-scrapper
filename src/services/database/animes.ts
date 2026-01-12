@@ -14,6 +14,16 @@ export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(
 	return anime
 }
 
+/* Get Related Animes from DB */
+export const getRelatedAnimesFromDb = async (animeId: string) => {
+	const { data, error } = await supabase.from('related_animes').select('related_id, title, relation').eq('anime_id', animeId)
+	if (error) {
+		console.error('Error fetching related animes:', error)
+		return []
+	}
+	return data.map(rel => ({ animeId: rel.related_id, title: rel.title, relation: rel.relation }))
+}
+
 /* Get Animes by matches */
 export const getAnimesByQuery = async (query: string, page?: number, pageSize?: number) => {
 	const startIndex = ((page || 1) - 1) * (pageSize || 10)
@@ -41,10 +51,44 @@ export const createAnime = async (anime: AnimeInsert) => {
 }
 
 /* Upsert Animes */
-export const UpsertAnimes = async (animes: AnimeInsert[] | AnimeInsert) => {
+type AnimeWithRelated = AnimeInsert & { relatedAnimes?: { animeId: string; title: string; relation: string }[] }
+
+export const UpsertAnimes = async (animes: AnimeWithRelated[] | AnimeWithRelated) => {
 	const animesToUpsert = Array.isArray(animes) ? animes : [animes]
-	const newAnimes = await supabase.from('animes').upsert(animesToUpsert).select()
-	return newAnimes
+
+	// Extract related animes before upserting main anime record
+	// because 'relatedAnimes' is not in the 'animes' table columns (managed via separate table)
+	const animesData = animesToUpsert.map(({ relatedAnimes, ...anime }) => anime)
+
+	const { data: upsertedAnimes, error } = await supabase.from('animes').upsert(animesData).select()
+
+	if (error) {
+		console.error('Error upserting animes:', error)
+		return { data: null, error }
+	}
+
+	// Upsert related animes
+	for (const anime of animesToUpsert) {
+		if (anime.relatedAnimes && anime.relatedAnimes.length > 0) {
+			const relatedData = anime.relatedAnimes.map(rel => ({
+				anime_id: anime.animeId,
+				related_id: rel.animeId,
+				title: rel.title,
+				relation: rel.relation,
+			}))
+
+			// @ts-ignore - Supabase types might not be updated yet
+			const { error: relError } = await supabase.from('related_animes').upsert(relatedData, {
+				onConflict: 'anime_id,related_id,relation',
+			})
+
+			if (relError) {
+				console.error(`Error upserting related animes for ${anime.animeId}:`, relError)
+			}
+		}
+	}
+
+	return { data: upsertedAnimes, error: null }
 }
 
 /* Update Anime */

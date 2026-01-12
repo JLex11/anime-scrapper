@@ -25,6 +25,7 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 	const description = getOfAnime.description()
 	const rank = getOfAnime.rank('.vtprmd')
 	const genres = getOfAnime.genres()
+	const relatedAnimes = getOfAnime.relatedAnimes()
 
 	if (!title || !imageLink) return null
 
@@ -38,6 +39,7 @@ export async function scrapeFullAnimeInfo(animeId: string, extractImages = true)
 		originalLink,
 		status,
 		genres,
+		relatedAnimes,
 		images: undefined,
 	}
 

@@ -30,6 +30,7 @@ export enum endPoints {
 	EPISODE_SOURCES = '/sources/:id',
 	ANIME_INFO = '/:animeId',
 	ANIME_EPISODES = '/:animeId/episodes',
+	ANIME_RELATED = '/:animeId/related',
 	LATEST_ANIMES = '/latest',
 	RATING_ANIMES = '/latest/rating',
 	BROADCAST_ANIMES = '/broadcast',
