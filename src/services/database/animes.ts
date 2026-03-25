@@ -45,20 +45,30 @@ export const getAnimesByQuery = async (query: string, page?: number, pageSize?: 
 /* Create Anime */
 type AnimeInsert = Database['public']['Tables']['animes']['Insert']
 
+const stripGeneratedAnimeFields = <T extends Record<string, unknown>>(anime: T) => {
+	// Supabase/Postgres rejects writes to generated columns, so keep only writable fields here.
+	const { full_anime_search, relatedAnimes, ...writableAnime } = anime as T & {
+		full_anime_search?: unknown
+		relatedAnimes?: unknown
+	}
+
+	return writableAnime
+}
+
 export const createAnime = async (anime: AnimeInsert) => {
-	const newAnime = await supabase.from('animes').insert(anime)
+	const newAnime = await supabase.from('animes').insert(stripGeneratedAnimeFields(anime))
 	return newAnime
 }
 
 /* Upsert Animes */
-type AnimeWithRelated = AnimeInsert & { relatedAnimes?: { animeId: string; title: string; relation: string }[] }
+type RelatedAnimeInsert = { animeId: string; title: string; relation: string }
+type AnimeWithRelated = AnimeInsert & { relatedAnimes?: RelatedAnimeInsert[] | null }
 
 export const UpsertAnimes = async (animes: AnimeWithRelated[] | AnimeWithRelated) => {
 	const animesToUpsert = Array.isArray(animes) ? animes : [animes]
 
-	// Extract related animes before upserting main anime record
-	// because 'relatedAnimes' is not in the 'animes' table columns (managed via separate table)
-	const animesData = animesToUpsert.map(({ relatedAnimes, ...anime }) => anime)
+	// Remove generated/non-writable fields before writing to Postgres.
+	const animesData = animesToUpsert.map(anime => stripGeneratedAnimeFields(anime))
 
 	const { data: upsertedAnimes, error } = await supabase.from('animes').upsert(animesData).select()
 
@@ -95,7 +105,7 @@ export const UpsertAnimes = async (animes: AnimeWithRelated[] | AnimeWithRelated
 type AnimeUpdate = Database['public']['Tables']['animes']['Update']
 
 export const updateAnime = async (animeId: string, anime: AnimeUpdate) => {
-	const updatedAnime = await supabase.from('animes').update(anime).eq('animeId', animeId)
+	const updatedAnime = await supabase.from('animes').update(stripGeneratedAnimeFields(anime)).eq('animeId', animeId)
 	return updatedAnime
 }
 

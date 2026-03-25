@@ -1,0 +1,41 @@
+---
+title: Animes relacionados
+category: Animes
+order: 70
+description: Recupera los animes relacionados a un titulo.
+endpoint: /animes/:animeId/related
+method: GET
+playground: true
+responseExample:
+  - animeId: solo-leveling-2
+    title: Solo Leveling 2nd Season
+    relation: Secuela
+  - animeId: solo-leveling-ova
+    title: Solo Leveling OVA
+    relation: Especial
+---
+## Descripcion
+
+Lista los animes relacionados detectados por la fuente. Si la relacion no esta en cache, se vuelve a consultar el proveedor.
+
+## Parametros de ruta
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `animeId` | string | Identificador del anime base. |
+
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/animes/solo-leveling/related"
+```
+
+## Respuesta
+
+Cada elemento incluye:
+
+| Campo | Tipo | Descripcion |
+| --- | --- | --- |
+| `animeId` | string | Identificador del anime relacionado. |
+| `title` | string | Titulo del anime relacionado. |
+| `relation` | string | Tipo de relacion (Secuela, Precuela, Especial, etc.). |

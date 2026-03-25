@@ -1,12 +1,11 @@
 import { getAnimesByQuery } from '../../../src/services/database/animes'
-import type { Anime } from '../../../src/types'
-import { mapAnimeImages } from './getAnimeInfo'
+import { mapAnimeImages, type AnimeWithMappedImages } from './getAnimeInfo'
 
 // Caché simple en memoria (considera Redis para producción)
-const searchCache = new Map<string, { data: Anime[]; timestamp: number }>()
+const searchCache = new Map<string, { data: AnimeWithMappedImages[]; timestamp: number }>()
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutos
 
-export const searchAnimes = async (query: string, page?: number, pageSize?: number): Promise<Anime[] | undefined> => {
+export const searchAnimes = async (query: string, page?: number, pageSize?: number): Promise<AnimeWithMappedImages[] | undefined> => {
 	const cacheKey = `${query}-${page || 1}-${pageSize || 10}`
 	const cached = searchCache.get(cacheKey)
 

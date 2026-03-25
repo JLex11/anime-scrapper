@@ -4,7 +4,23 @@ import { UpsertAnimes, getAnimeBy, getRelatedAnimesFromDb } from '../../../src/s
 import type { Anime } from '../../../src/types'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
-export const mapAnimeImages = (anime: Anime) => {
+export type AnimeWithMappedImages = {
+	animeId: string
+	title: string
+	type?: string | null
+	rank?: number | null
+	otherTitles?: string[] | null
+	description?: string | null
+	originalLink?: string | null
+	status?: string | null
+	genres?: string[] | null
+	images?: Anime['images'] | null
+	relatedAnimes?: Anime['relatedAnimes'] | null
+	created_at?: string
+	updated_at?: string
+}
+
+export const mapAnimeImages = <T extends AnimeWithMappedImages>(anime: T) => {
 	const animeImages = anime.images as Anime['images']
 	const mappedAnimeImages = animeImages
 		? {

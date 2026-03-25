@@ -1,0 +1,58 @@
+---
+title: Detalle de un anime
+category: Animes
+order: 60
+description: Recupera toda la informacion disponible de un anime especifico.
+endpoint: /animes/:animeId
+method: GET
+playground: true
+responseExample:
+  animeId: solo-leveling
+  title: Solo Leveling
+  type: TV
+  rank: 1
+  otherTitles:
+    - Na Honjaman Rebeleop
+  description: Un cazador de rango E obtiene una habilidad que cambia su destino.
+  originalLink: https://www3.animeflv.net/anime/solo-leveling
+  status: En emision
+  genres:
+    - Accion
+    - Fantasia
+  images:
+    coverImage: https://tu-dominio/api/image/solo-leveling-cover.webp?width=420&height=630
+    carouselImages:
+      - link: https://tu-dominio/api/image/solo-leveling-1.webp?width=1280&height=720
+        position: 50% 50%
+        width: 1280
+        height: 720
+  relatedAnimes:
+    - animeId: solo-leveling-2
+      title: Solo Leveling 2nd Season
+      relation: Secuela
+  created_at: 2026-03-24T15:36:45.000Z
+  updated_at: 2026-03-24T15:36:45.000Z
+---
+## Descripcion
+
+Devuelve el detalle completo del anime, con sinopsis, generos, imagenes y relaciones. Esta ruta es la fuente principal de datos para la vista de detalle.
+
+## Parametros de ruta
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `animeId` | string | Identificador del anime. Se obtiene desde otras rutas. |
+
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/animes/solo-leveling"
+```
+
+## Respuesta
+
+Incluye `images` con recursos optimizados y, cuando existe, `relatedAnimes` con relaciones semanticas (secuela, spin-off, etc.).
+
+## Errores comunes
+
+- `404`: El anime no existe o no pudo ser obtenido en la fuente.

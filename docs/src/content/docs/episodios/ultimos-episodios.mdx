@@ -13,20 +13,56 @@ responseExample:
     title: Solo Leveling - Episodio 15
     episodeId: solo-leveling-15
     animeId: solo-leveling
+  - originalLink: https://www3.animeflv.net/ver/tsukimichi-2-11
+    image: https://api.ejemplo.com/api/image/tsukimichi-2-11?width=350&height=250
+    episode: 11
+    title: Tsukimichi Season 2 - Episodio 11
+    episodeId: tsukimichi-2-11
+    animeId: tsukimichi-2
 ---
 ## Descripción
 
-Obtiene un arreglo con los episodios más recientes detectados en la fuente oficial. La lista siempre se devuelve ordenada de más nuevo a más antiguo.
+Obtiene un arreglo con los episodios más recientes detectados en la fuente oficial. La lista siempre se devuelve ordenada de más nuevo a más antiguo. Este endpoint no requiere parámetros y es el punto de entrada recomendado para mostrar novedades.
+
+El campo `image` ya viene con el prefijo correcto para consumir la imagen optimizada desde el API. Puedes aplicar `width`, `height`, `format` o `quality` sobre la ruta de imagen resultante.
 
 ## Respuesta
 
 Cada elemento del arreglo contiene:
 
-- `originalLink`: URL original del episodio en el proveedor.
-- `image`: Ruta optimizada servida desde este API (útil para miniaturas en clientes web).
-- `episode`: Número de episodio detectado.
-- `title`: Nombre del episodio.
-- `episodeId`: Identificador único del episodio, útil para otras rutas.
-- `animeId`: Identificador del anime relacionado.
+| Campo | Tipo | Descripción |
+| --- | --- | --- |
+| `originalLink` | string | URL del episodio en el proveedor original. |
+| `image` | string \| null | URL optimizada desde este API para miniaturas. |
+| `episode` | number | Número de episodio detectado. |
+| `title` | string | Título del episodio. |
+| `episodeId` | string | Identificador único, útil para otras rutas. |
+| `animeId` | string | Identificador del anime relacionado. |
 
-> **Nota:** El playground genera los recursos con la URL base que definas. Si sirves la API detrás de un proxy recuerda ajustar el campo `URL base` para conservar el dominio correcto.
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/episodes/latest"
+```
+
+## Ejemplo de respuesta
+
+```json
+[
+  {
+    "originalLink": "https://www3.animeflv.net/ver/solo-leveling-15",
+    "image": "https://tu-dominio/api/image/solo-leveling-15?width=350&height=250",
+    "episode": 15,
+    "title": "Solo Leveling - Episodio 15",
+    "episodeId": "solo-leveling-15",
+    "animeId": "solo-leveling"
+  }
+]
+```
+
+## Casos comunes
+
+- Para obtener las fuentes de un episodio, usa `episodeId` en `/episodes/sources/:id`.
+- Para el detalle, usa `episodeId` en `/episodes/:episodeId`.
+
+> Nota: El playground genera los recursos con la URL base que definas. Si sirves la API detrás de un proxy recuerda ajustar el campo `URL base` para conservar el dominio correcto.

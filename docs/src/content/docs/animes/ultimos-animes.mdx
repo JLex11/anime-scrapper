@@ -1,0 +1,55 @@
+---
+title: Ultimos animes
+category: Animes
+order: 20
+description: Lista los animes mas recientes detectados en la portada.
+endpoint: /animes/latest
+method: GET
+playground: true
+queryParams:
+  - name: limit
+    description: Cantidad maxima de animes a retornar (por defecto 15).
+    example: 10
+responseExample:
+  - animeId: kaiju-8-gou
+    title: Kaiju 8-gou
+    type: TV
+    rank: 8
+    otherTitles:
+      - Kaiju No. 8
+    description: Un limpiador de kaiju descubre un poder peligroso.
+    originalLink: https://www3.animeflv.net/anime/kaiju-8-gou
+    status: En emision
+    genres:
+      - Accion
+      - Ciencia ficcion
+    images:
+      coverImage: https://tu-dominio/api/image/kaiju-8-gou-cover.webp?width=420&height=630
+      carouselImages:
+        - link: https://tu-dominio/api/image/kaiju-8-gou-1.webp?width=1280&height=720
+          position: 50% 50%
+          width: 1280
+          height: 720
+    created_at: 2026-03-24T15:30:12.000Z
+    updated_at: 2026-03-24T15:30:12.000Z
+---
+## Descripcion
+
+Devuelve un arreglo con los animes mas recientes visibles en la portada del proveedor. La lista se ordena de mas nuevo a mas antiguo.
+
+## Parametros de consulta
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `limit` | number | Cantidad maxima de resultados. Si no se envia, se usa `15`. |
+
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/animes/latest?limit=10"
+```
+
+## Consideraciones
+
+- Los objetos retornados incluyen la informacion completa del anime (sinopsis, generos, imagenes y fechas).
+- Si el proveedor no publica un campo especifico, ese valor puede venir como `null`.

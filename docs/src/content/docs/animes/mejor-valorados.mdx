@@ -1,0 +1,54 @@
+---
+title: Animes mejor valorados
+category: Animes
+order: 40
+description: Lista los animes con mejor ranking segun el proveedor.
+endpoint: /animes/latest/rating
+method: GET
+playground: true
+queryParams:
+  - name: limit
+    description: Cantidad maxima de animes a retornar (por defecto 10).
+    example: 8
+responseExample:
+  - animeId: fullmetal-alchemist-brotherhood
+    title: "Fullmetal Alchemist: Brotherhood"
+    type: TV
+    rank: 1
+    otherTitles:
+      - "Hagane no Renkinjutsushi: Fullmetal Alchemist"
+    description: Dos hermanos buscan la piedra filosofal para recuperar sus cuerpos.
+    originalLink: https://www3.animeflv.net/anime/fullmetal-alchemist-brotherhood
+    status: Finalizado
+    genres:
+      - Accion
+      - Aventura
+    images:
+      coverImage: https://tu-dominio/api/image/fullmetal-alchemist-cover.webp?width=420&height=630
+      carouselImages:
+        - link: https://tu-dominio/api/image/fullmetal-alchemist-1.webp?width=1280&height=720
+          position: 50% 50%
+          width: 1280
+          height: 720
+    created_at: 2026-03-24T15:34:05.000Z
+    updated_at: 2026-03-24T15:34:05.000Z
+---
+## Descripcion
+
+Entrega una lista de animes ordenada por rating. La fuente utiliza su propio ranking, por lo que el orden puede variar con el tiempo.
+
+## Parametros de consulta
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `limit` | number | Cantidad maxima de resultados. Si no se envia, se usa `10`. |
+
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/animes/latest/rating?limit=8"
+```
+
+## Recomendacion de uso
+
+Si necesitas mostrar un top en tu frontend, combina esta ruta con `/animes/:animeId` para refrescar detalles especificos.

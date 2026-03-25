@@ -11,12 +11,31 @@ queryParams:
     description: Número de página a consultar (1 por defecto).
     example: 2
 responseExample:
-  - title: Solo Leveling
-    id: solo-leveling
-    poster: https://api.ejemplo.com/api/image/solo-leveling?width=300&height=450
-    synopsis: Un cazador débil obtiene un misterioso poder.
-    rating: 4.8
-    status: broadcast
+  - animeId: solo-leveling
+    title: Solo Leveling
+    type: TV
+    rank: 1
+    otherTitles:
+      - Na Honjaman Rebeleop
+    description: Un cazador de rango E obtiene una habilidad que cambia su destino.
+    originalLink: https://www3.animeflv.net/anime/solo-leveling
+    status: En emision
+    genres:
+      - Accion
+      - Fantasia
+    images:
+      coverImage: https://tu-dominio/api/image/solo-leveling-cover.webp?width=420&height=630
+      carouselImages:
+        - link: https://tu-dominio/api/image/solo-leveling-1.webp?width=1280&height=720
+          position: 50% 50%
+          width: 1280
+          height: 720
+    relatedAnimes:
+      - animeId: solo-leveling-2
+        title: Solo Leveling 2nd Season
+        relation: Secuela
+    created_at: 2026-03-24T15:20:01.000Z
+    updated_at: 2026-03-24T15:20:01.000Z
 ---
 ## Descripción
 
@@ -28,6 +47,26 @@ Devuelve un arreglo con la información resumida del catálogo. El origen se pag
 | --- | --- | --- |
 | `page` | number | Página solicitada (por defecto `1`). |
 
+## Respuesta
+
+Cada elemento contiene:
+
+| Campo | Tipo | Descripción |
+| --- | --- | --- |
+| `animeId` | string | Identificador único del anime. |
+| `title` | string | Título principal. |
+| `type` | string \| null | Tipo de anime (TV, OVA, Película, etc.). |
+| `rank` | number \| null | Ranking numérico si está disponible. |
+| `otherTitles` | string[] \| null | Títulos alternativos. |
+| `description` | string \| null | Sinopsis. |
+| `originalLink` | string \| null | URL original en el proveedor. |
+| `status` | string \| null | Estado de emisión. |
+| `genres` | string[] \| null | Géneros detectados. |
+| `images` | object \| null | Imágenes optimizadas para el frontend. |
+| `relatedAnimes` | array \| null | Animes relacionados cuando están disponibles. |
+| `created_at` | string | Fecha de inserción ISO 8601. |
+| `updated_at` | string | Fecha de última actualización ISO 8601. |
+
 ## Ejemplo de uso
 
 ```bash
@@ -35,3 +74,9 @@ curl -X GET "https://tu-dominio/api/animes?page=2"
 ```
 
 La respuesta es un arreglo de animes que incluye atributos listos para renderizar tarjetas en el frontend.
+
+## Notas
+
+- Los campos opcionales pueden llegar como `null` si el proveedor no publica esa información.
+- `images.coverImage` y `images.carouselImages[].link` apuntan al endpoint `/api/image` con parámetros opcionales de optimización.
+- Si la fuente cambia, algunos valores (como `rank` o `status`) pueden variar entre consultas.

@@ -1,0 +1,66 @@
+---
+title: Buscar animes
+category: Animes
+order: 50
+description: Busca animes por nombre con paginacion.
+endpoint: /animes/search/:query
+method: GET
+playground: true
+queryParams:
+  - name: page
+    description: Numero de pagina (por defecto 1).
+    example: 1
+  - name: pageSize
+    description: Cantidad de resultados por pagina (por defecto 10).
+    example: 12
+responseExample:
+  - animeId: solo-leveling
+    title: Solo Leveling
+    type: TV
+    status: En emision
+    genres:
+      - Accion
+      - Fantasia
+    images:
+      coverImage: https://tu-dominio/api/image/solo-leveling-cover.webp?width=420&height=630
+      carouselImages:
+        - link: https://tu-dominio/api/image/solo-leveling-1.webp?width=1280&height=720
+          position: 50% 50%
+          width: 1280
+          height: 720
+    description: Un cazador de rango E obtiene una habilidad que cambia su destino.
+    otherTitles:
+      - Na Honjaman Rebeleop
+---
+## Descripcion
+
+Permite buscar animes por texto usando el indice interno. La respuesta es un arreglo paginado con informacion parcial para listas rapidas.
+
+## Parametros de ruta
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `query` | string | Termino de busqueda. |
+
+## Parametros de consulta
+
+| Parametro | Tipo | Descripcion |
+| --- | --- | --- |
+| `page` | number | Pagina solicitada (por defecto `1`). |
+| `pageSize` | number | Tamano de pagina (por defecto `10`). |
+
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/animes/search/solo-leveling?page=1&pageSize=12"
+```
+
+## Respuesta
+
+Esta ruta retorna un subconjunto de campos para optimizar el listado:
+
+- `animeId`, `title`, `type`, `status`
+- `genres`, `description`, `otherTitles`
+- `images` con `coverImage` y `carouselImages`
+
+Si necesitas informacion completa, usa `/animes/:animeId`.

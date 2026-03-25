@@ -1,0 +1,41 @@
+---
+title: Catalogo de rutas
+category: Rutas
+order: 5
+description: Devuelve un JSON con todas las rutas publicas del API.
+endpoint: /api-routes
+method: GET
+playground: true
+responseExample:
+  - route: https://tu-dominio/api/episodes/latest
+    description: Obtiene los ultimos episodios de anime anadidos
+    category: episodes
+  - route: https://tu-dominio/api/animes/latest
+    description: Obtiene los ultimos animes anadidos
+    category: animes
+  - route: https://tu-dominio/api/image/:imgFilename
+    description: Obtiene la imagen de un anime. Requiere el nombre del archivo como parametro. Se puede optimizar con los parametros de consulta width, height, format y quality
+    category: images
+---
+## Descripcion
+
+Este endpoint lista las rutas expuestas por el servicio con su descripcion y categoria. Es util para construir menus dinamicos o para validar rapidamente el inventario de endpoints disponibles.
+
+## Ejemplo de uso
+
+```bash
+curl -X GET "https://tu-dominio/api/api-routes"
+```
+
+## Estructura de la respuesta
+
+Cada item del arreglo incluye:
+
+- `route`: URL absoluta construida con el origen actual.
+- `description`: resumen corto del endpoint.
+- `category`: grupo logico (`animes`, `episodes`, `images`).
+
+## Notas
+
+- La ruta `GET /api/api-routes/docs` redirige a la documentacion interactiva en `/api-docs/`.
+- Las rutas se generan en tiempo real usando el origen actual (protocolo + host).
