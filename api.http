@@ -1,0 +1,206 @@
+@baseUrl = http://localhost:3000
+
+###############################################
+# ROUTES DOCUMENTATION
+###############################################
+
+### GET all available routes
+GET {{baseUrl}}/api/api-routes
+
+### Redirect to interactive API docs
+GET {{baseUrl}}/api/api-routes/docs
+
+
+###############################################
+# ANIMES
+###############################################
+
+### GET all animes (page 1 default)
+GET {{baseUrl}}/api/animes/
+
+### GET all animes - page 2
+GET {{baseUrl}}/api/animes/?page=2
+
+### GET all animes - page 5
+GET {{baseUrl}}/api/animes/?page=5
+
+---
+
+### GET latest animes (default limit)
+GET {{baseUrl}}/api/animes/latest
+
+### GET latest animes - limit 5
+GET {{baseUrl}}/api/animes/latest?limit=5
+
+### GET latest animes - limit 20
+GET {{baseUrl}}/api/animes/latest?limit=20
+
+---
+
+### GET broadcast/airing animes (default limit)
+GET {{baseUrl}}/api/animes/broadcast
+
+### GET broadcast animes - limit 10
+GET {{baseUrl}}/api/animes/broadcast?limit=10
+
+### GET broadcast animes - limit 3
+GET {{baseUrl}}/api/animes/broadcast?limit=3
+
+---
+
+### GET top rated animes (default limit)
+GET {{baseUrl}}/api/animes/latest/rating
+
+### GET top rated animes - limit 5
+GET {{baseUrl}}/api/animes/latest/rating?limit=5
+
+### GET top rated animes - limit 15
+GET {{baseUrl}}/api/animes/latest/rating?limit=15
+
+---
+
+### SEARCH animes - titulo basico
+GET {{baseUrl}}/api/animes/search/naruto
+
+### SEARCH animes - con espacios
+GET {{baseUrl}}/api/animes/search/one%20piece
+
+### SEARCH animes - con paginacion
+GET {{baseUrl}}/api/animes/search/dragon%20ball?page=1&pageSize=5
+
+### SEARCH animes - segunda pagina
+GET {{baseUrl}}/api/animes/search/dragon%20ball?page=2&pageSize=5
+
+### SEARCH animes - pageSize grande
+GET {{baseUrl}}/api/animes/search/bleach?pageSize=20
+
+### SEARCH animes - query corto
+GET {{baseUrl}}/api/animes/search/db
+
+### SEARCH animes - query inexistente (espera 404)
+GET {{baseUrl}}/api/animes/search/zzz_anime_que_no_existe_xyzabc
+
+---
+
+### GET anime info por ID
+GET {{baseUrl}}/api/animes/naruto
+
+### GET anime info - otro anime
+GET {{baseUrl}}/api/animes/one-piece
+
+### GET anime info - ID inexistente (espera 404)
+GET {{baseUrl}}/api/animes/anime-que-no-existe-xyz
+
+---
+
+### GET related animes
+GET {{baseUrl}}/api/animes/naruto/related
+
+### GET related animes - otro anime
+GET {{baseUrl}}/api/animes/one-piece/related
+
+---
+
+### GET episodios de un anime (defaults: offset=0, limit=10)
+GET {{baseUrl}}/api/animes/naruto/episodes
+
+### GET episodios - con offset y limit
+GET {{baseUrl}}/api/animes/naruto/episodes?offset=0&limit=5
+
+### GET episodios - segunda pagina (offset 10)
+GET {{baseUrl}}/api/animes/naruto/episodes?offset=10&limit=10
+
+### GET episodios - limit grande
+GET {{baseUrl}}/api/animes/naruto/episodes?offset=0&limit=50
+
+### GET episodios - otro anime
+GET {{baseUrl}}/api/animes/one-piece/episodes?offset=0&limit=10
+
+### GET episodios - anime inexistente (espera 404)
+GET {{baseUrl}}/api/animes/anime-que-no-existe-xyz/episodes
+
+
+###############################################
+# EPISODES
+###############################################
+
+### GET latest episodes
+GET {{baseUrl}}/api/episodes/latest
+
+---
+
+### GET episode por ID
+GET {{baseUrl}}/api/episodes/naruto-1
+
+### GET episode - otro episodio
+GET {{baseUrl}}/api/episodes/one-piece-1
+
+### GET episode - episodio avanzado
+GET {{baseUrl}}/api/episodes/naruto-100
+
+### GET episode - ID inexistente (espera 404)
+GET {{baseUrl}}/api/episodes/episodio-que-no-existe-xyz
+
+---
+
+### GET episode sources
+GET {{baseUrl}}/api/episodes/sources/naruto-1
+
+### GET episode sources - otro episodio
+GET {{baseUrl}}/api/episodes/sources/one-piece-1
+
+### GET episode sources - ID inexistente (espera 404)
+GET {{baseUrl}}/api/episodes/sources/episodio-inexistente-xyz
+
+
+###############################################
+# IMAGES
+###############################################
+
+### GET imagen por filename (formato webp por defecto)
+GET {{baseUrl}}/api/image/cover-naruto.jpg
+
+### GET imagen con width personalizado
+GET {{baseUrl}}/api/image/cover-naruto.jpg?width=300
+
+### GET imagen con width y height
+GET {{baseUrl}}/api/image/cover-naruto.jpg?width=300&height=400
+
+### GET imagen en formato jpeg
+GET {{baseUrl}}/api/image/cover-naruto.jpg?format=jpeg
+
+### GET imagen en formato png
+GET {{baseUrl}}/api/image/cover-naruto.jpg?format=png
+
+### GET imagen en formato avif
+GET {{baseUrl}}/api/image/cover-naruto.jpg?format=avif
+
+### GET imagen con calidad baja
+GET {{baseUrl}}/api/image/cover-naruto.jpg?format=webp&quality=40
+
+### GET imagen con calidad alta
+GET {{baseUrl}}/api/image/cover-naruto.jpg?format=webp&quality=90
+
+### GET imagen con todos los params
+GET {{baseUrl}}/api/image/cover-naruto.jpg?width=640&height=360&format=webp&quality=80
+
+### GET imagen inexistente (espera 404)
+GET {{baseUrl}}/api/image/imagen-que-no-existe.jpg
+
+
+###############################################
+# MISC / EDGE CASES
+###############################################
+
+### Ruta raiz (redirect a /api/api-docs/)
+GET {{baseUrl}}/
+
+### Ruta /api/ (redirect a /api/api-docs/)
+GET {{baseUrl}}/api/
+
+### Ruta inexistente (espera 404)
+GET {{baseUrl}}/api/ruta-que-no-existe
+
+### Sin compresion
+GET {{baseUrl}}/api/animes/latest
+x-no-compression: true
