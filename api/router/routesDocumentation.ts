@@ -74,7 +74,7 @@ router.get('/', async (_, res) => {
 
 // Servir la documentación de API con interfaz de usuario
 router.get('/docs', (_, res) => {
-	res.redirect('/api-docs/')
+	res.redirect('/api/api-docs/')
 })
 
 export default router

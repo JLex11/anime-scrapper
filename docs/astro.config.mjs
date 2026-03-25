@@ -5,7 +5,7 @@ export default defineConfig({
 	srcDir: './src',
 	publicDir: './public',
 	output: 'static',
-	base: '/api-docs',
+	base: '/api/api-docs',
 	integrations: [mdx()],
 	markdown: {
 		syntaxHighlight: 'shiki',

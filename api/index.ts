@@ -55,14 +55,15 @@ if (!hasBuiltDocs()) {
 	logger.warn('La documentación Astro no está construida. Ejecuta "bun run docs:build" para generarla.')
 }
 
-app.use('/api-docs', (req, res, next) => {
+app.use('/api-docs', (req, res) => {
 	if (!hasBuiltDocs()) {
 		res
 			.status(503)
 			.send('La documentación interactiva aún no está disponible. Ejecuta "bun run docs:build" y vuelve a intentarlo.')
 		return
 	}
-	next()
+
+	res.redirect(301, `/api${req.originalUrl}`)
 })
 app.use('/api/api-docs', express.static(docsStaticDir))
 
