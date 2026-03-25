@@ -163,9 +163,20 @@ export interface Database {
 			[_ in never]: never
 		}
 		Functions: {
-			full_anime_search: {
-				Args: { '': Database['public']['Tables']['animes']['Row'] }
-				Returns: string
+			search_animes: {
+				Args: { search_query: string; result_limit?: number; result_offset?: number }
+				Returns: {
+					animeId: string
+					title: string
+					type: string | null
+					status: string | null
+					genres: string[] | null
+					images: Json | null
+					description: string | null
+					otherTitles: string[] | null
+					rank: number | null
+					relevance: number
+				}[]
 			}
 			update_anime_images_json: {
 				Args: { anime_id: string; property: string; new_value: Json }

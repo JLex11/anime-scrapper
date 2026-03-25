@@ -20,7 +20,7 @@ export const searchAnimes = async (query: string, page?: number, pageSize?: numb
 	if (!animes) return
 
 	const result = animes.map(anime => {
-		return mapAnimeImages(anime)
+		return mapAnimeImages(anime as unknown as AnimeWithMappedImages)
 	})
 
 	// Guardar en caché

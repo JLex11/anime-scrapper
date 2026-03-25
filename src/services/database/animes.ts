@@ -26,18 +26,14 @@ export const getRelatedAnimesFromDb = async (animeId: string) => {
 
 /* Get Animes by matches */
 export const getAnimesByQuery = async (query: string, page?: number, pageSize?: number) => {
-	const startIndex = ((page || 1) - 1) * (pageSize || 10)
-	const endIndex = startIndex + (pageSize || 10) - 1
+	const limit = pageSize || 10
+	const offset = ((page || 1) - 1) * limit
 
-	console.log({ startIndex, endIndex })
-
-	const animes = await supabase
-		.from('animes')
-		.select('animeId, title, type, status, genres, images, description, otherTitles')
-		.textSearch('full_anime_search', query, {
-			type: 'websearch',
-		})
-		.range(startIndex, endIndex)
+	const animes = await supabase.rpc('search_animes', {
+		search_query: query,
+		result_limit: limit,
+		result_offset: offset,
+	})
 
 	return animes
 }
