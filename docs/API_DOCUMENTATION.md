@@ -22,13 +22,14 @@ Base URL (ejemplo local):
      - `animes`
      - `episodes`
      - `related_animes`
-   - Tablas de feed precalculado:
+   - Tablas auxiliares de feed precalculado:
      - `anime_feed_items`
      - `episode_feed_items`
    - Tabla de fuentes precalculadas:
      - `episode_sources`
    - Tabla de estado operativo del worker:
      - `sync_state`
+   - La API publica consulta directamente `animes` y `episodes` para los listados; los `feed_items` quedan como estructura auxiliar del worker y no forman parte del contrato de lectura.
 
 3. Worker de scraping (separado)
    - Vive fuera de la API publica.
@@ -73,6 +74,9 @@ Base URL (ejemplo local):
 - Sin scraping on-demand:
   - antes: algunas rutas scrapeaban al vuelo y luego persistian.
   - ahora: solo se consulta Supabase.
+- Sin dependencia obligatoria de `feed_items`:
+  - los listados leen directamente `animes` y `episodes`.
+  - el worker puede seguir usando feeds materializados para ingesta u ordenamiento interno.
 - Sin refresco implicito:
   - la API no dispara recrawl ni jobs.
 - Semantica de latencia:

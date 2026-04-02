@@ -2,30 +2,6 @@ import type { Database } from '../../supabase'
 import type { Anime, AnimeColumns, CarouselImage, ColumnType, FeedType } from '../../types'
 import { supabase } from './supabaseClient'
 
-/* Get Animes */
-export const getAnimesById = async (animeIds: Anime['animeId'][]) => {
-	const animesResponse = await supabase.from('animes').select().in('animeId', animeIds)
-	return animesResponse
-}
-
-const mapOrderedAnimes = async (animeIds: Anime['animeId'][]) => {
-	if (animeIds.length === 0) {
-		return { data: [] as Anime[], error: null }
-	}
-
-	const { data, error } = await getAnimesById(animeIds)
-
-	if (error || !data) {
-		return { data: [] as Anime[], error }
-	}
-
-	const byId = new Map(data.map(anime => [anime.animeId, anime]))
-	return {
-		data: animeIds.map(animeId => byId.get(animeId)).filter(Boolean) as Anime[],
-		error: null,
-	}
-}
-
 /* Get Anime */
 export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(column: Column, value: ColumnType<AnimeColumns>[Column]) => {
 	const anime = await supabase.from('animes').select().eq(column, value).limit(1).single()
@@ -61,20 +37,24 @@ export const getAnimeFeed = async (feedType: FeedType, options?: { page?: number
 	const from = limit == null ? (page - 1) * pageSize : 0
 	const to = limit == null ? from + pageSize - 1 : Math.max(0, limit - 1)
 
-	const { data: feedItems, error } = await supabase
-		.from('anime_feed_items')
-		.select('anime_id')
-		.eq('feed_type', feedType)
-		.order('page', { ascending: true })
-		.order('position', { ascending: true })
-		.range(from, to)
+	let query = supabase.from('animes').select()
 
-	if (error || !feedItems) {
-		return { data: [] as Anime[], error }
+	if (feedType === 'broadcast') {
+		query = query.eq('status', 'En emision')
 	}
 
-	const animeIds = feedItems.map(item => item.anime_id)
-	return mapOrderedAnimes(animeIds)
+	if (feedType === 'directory') {
+		query = query.order('title', { ascending: true })
+	} else if (feedType === 'rating') {
+		query = query
+			.order('rank', { ascending: false, nullsFirst: false })
+			.order('updated_at', { ascending: false })
+	} else {
+		query = query.order('updated_at', { ascending: false })
+	}
+
+	const { data, error } = await query.range(from, to)
+	return { data: (data ?? []) as Anime[], error }
 }
 
 /* Create Anime */

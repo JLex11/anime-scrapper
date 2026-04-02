@@ -6,6 +6,8 @@
     "dev": "bun --watch api/index.ts",
     "build": "bun build --target=bun --entrypoints api/index.ts --outdir ./public/api & bun run docs:build",
     "start": "bun run ./public/api/index.js",
+    "test": "bun test",
+    "test:endpoints": "bun run scripts/smokeEndpoints.ts",
     "lint": "bunx biome lint --write && bunx biome format --write",
     "analyze": "bun build --target=bun --entrypoints api/index.ts --analyze",
     "clean-cache": "rm -rf node_modules/.cache",

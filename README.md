@@ -223,7 +223,7 @@ GET /api/animes/latest?limit=10
 GET /api/animes/broadcast?limit=20
 
 # Obtener animes por rating
-GET /api/animes/rating?limit=15
+GET /api/animes/latest/rating?limit=15
 
 # Buscar animes por texto
 GET /api/animes/search/:query?page=1&pageSize=10

@@ -17,13 +17,8 @@ export const getEpisodeBy = async <Column extends keyof ColumnType<EpisodeColumn
 		.select()
 		.eq(column, value)
 		.range(from, to)
-		.order('episode', { ascending: false })
+	.order('episode', { ascending: false })
 	return episode
-}
-
-export const getEpisodesByIds = async (episodeIds: string[]) => {
-	const episodesResponse = await supabase.from('episodes').select().in('episodeId', episodeIds)
-	return episodesResponse
 }
 
 /* Get Episodes by matches */
@@ -57,32 +52,15 @@ export const UpsertEpisodes = async (episodes: EpisodeInsert[] | EpisodeInsert) 
 }
 
 export const getLatestEpisodesFeed = async (limit = 30) => {
-	const { data: feedItems, error } = await supabase
-		.from('episode_feed_items')
-		.select('episode_id')
-		.eq('feed_type', 'latest')
-		.order('position', { ascending: true })
+	const { data: episodes, error } = await supabase
+		.from('episodes')
+		.select()
+		.order('created_at', { ascending: false })
 		.range(0, Math.max(0, limit - 1))
 
-	if (error || !feedItems) {
-		return { data: [] as Database['public']['Tables']['episodes']['Row'][], error }
-	}
-
-	const episodeIds = feedItems.map(item => item.episode_id)
-	if (episodeIds.length === 0) {
-		return { data: [] as Database['public']['Tables']['episodes']['Row'][], error: null }
-	}
-
-	const { data: episodes, error: episodesError } = await getEpisodesByIds(episodeIds)
-
-	if (episodesError || !episodes) {
-		return { data: [] as Database['public']['Tables']['episodes']['Row'][], error: episodesError }
-	}
-
-	const byId = new Map(episodes.map(episode => [episode.episodeId, episode]))
 	return {
-		data: episodeIds.map(episodeId => byId.get(episodeId)).filter(Boolean) as Database['public']['Tables']['episodes']['Row'][],
-		error: null,
+		data: episodes ?? [],
+		error,
 	}
 }
 
