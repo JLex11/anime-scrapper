@@ -24,9 +24,9 @@ responseExample:
       - Accion
       - Escolar
     images:
-      coverImage: https://tu-dominio/api/image/wind-breaker-cover.webp?width=420&height=630
+      coverImage: https://tu-dominio/api/image/ZXhhbXBsZS10b2tlbg
       carouselImages:
-        - link: https://tu-dominio/api/image/wind-breaker-1.webp?width=1280&height=720
+        - link: https://tu-dominio/api/image/ZXhhbXBsZS10b2tlbi0y
           position: 50% 50%
           width: 1280
           height: 720
@@ -35,7 +35,7 @@ responseExample:
 ---
 ## Descripcion
 
-Retorna una lista de animes que el proveedor marca como en emision. Esta ruta es util para construir secciones de temporada actual.
+Retorna una lista del feed `broadcast` precalculado. Esta ruta es util para construir secciones de temporada actual.
 
 ## Parametros de consulta
 
@@ -51,5 +51,6 @@ curl -X GET "https://tu-dominio/api/animes/broadcast?limit=12"
 
 ## Notas
 
-- La respuesta incluye la informacion completa del anime, incluidas imagenes optimizadas.
+- La respuesta incluye la informacion completa del anime, incluidas URLs finales de imagen.
 - Algunos campos pueden variar segun la fuente (por ejemplo `rank` o `status`).
+- El endpoint no ejecuta scraping en demanda.

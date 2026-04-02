@@ -16,7 +16,7 @@ queryParams:
 responseExample:
   - originalLink: https://www3.animeflv.net/ver/solo-leveling-01
     title: Solo Leveling - Episodio 1
-    image: https://tu-dominio/api/image/solo-leveling-01.webp?width=480&height=270
+    image: https://tu-dominio/api/image/ZXhhbXBsZS1lcGlzb2RlLXRva2Vu
     episode: 1
     episodeId: solo-leveling-01
     animeId: solo-leveling
@@ -25,7 +25,7 @@ responseExample:
 ---
 ## Descripcion
 
-Retorna la lista de episodios asociados a un anime, con soporte de paginacion por `offset` y `limit`.
+Retorna la lista de episodios precalculados asociados a un anime, con soporte de paginacion por `offset` y `limit`.
 
 ## Parametros de ruta
 
@@ -48,4 +48,4 @@ curl -X GET "https://tu-dominio/api/animes/solo-leveling/episodes?offset=0&limit
 
 ## Respuesta
 
-Cada episodio incluye el `episodeId` que puedes usar en `/episodes/:episodeId` o `/episodes/sources/:id`.
+Cada episodio incluye el `episodeId` que puedes usar en `/episodes/:episodeId` o `/episodes/:episodeId/sources`.

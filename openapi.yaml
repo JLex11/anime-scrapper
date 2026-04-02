@@ -1,31 +1,33 @@
 openapi: 3.0.3
 info:
   title: Anime Scrapper API
-  version: '1.0.0'
+  version: '2.0.0'
   description: |
-    API pública para consultar animes, episodios y optimización de imágenes.
-    Se basa en el servicio de scraping con cache dentro de este repo.
+    API publica read-only para consultar animes y episodios precalculados en Supabase.
+    Esta API no ejecuta scraping en runtime.
 servers:
   - url: https://{host}
-    description: Entorno dinámico (dev/prod)
+    description: Entorno dinamico (dev/prod)
     variables:
       host:
         default: localhost:3000
         description: Host de desarrollo
   - url: https://anime-scrapper.vercel.app
-    description: Producción (ejemplo)
+    description: Produccion (ejemplo)
 
 paths:
   /api/animes:
     get:
-      summary: Listado de animes
-      description: Obtiene todos los animes, permite paginación.
+      summary: Listado de animes del feed directory
       parameters:
         - name: page
           in: query
           schema: { type: integer, minimum: 1, default: 1 }
           required: false
-          description: Número de página de fuente de scraping
+        - name: pageSize
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 24 }
+          required: false
       responses:
         '200':
           description: Lista de animes
@@ -45,11 +47,11 @@ paths:
 
   /api/animes/latest:
     get:
-      summary: Últimos animes
+      summary: Ultimos animes precalculados
       parameters:
         - name: limit
           in: query
-          schema: { type: integer, minimum: 1 }
+          schema: { type: integer, minimum: 1, maximum: 100, default: 15 }
           required: false
       responses:
         '200':
@@ -70,15 +72,15 @@ paths:
 
   /api/animes/broadcast:
     get:
-      summary: Animes en emisión
+      summary: Animes en emision precalculados
       parameters:
         - name: limit
           in: query
-          schema: { type: integer, minimum: 1 }
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
           required: false
       responses:
         '200':
-          description: Lista de animes en emisión
+          description: Lista de animes en emision
           content:
             application/json:
               schema:
@@ -95,11 +97,11 @@ paths:
 
   /api/animes/latest/rating:
     get:
-      summary: Animes mejor valorados
+      summary: Animes mejor valorados precalculados
       parameters:
         - name: limit
           in: query
-          schema: { type: integer, minimum: 1 }
+          schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
           required: false
       responses:
         '200':
@@ -128,11 +130,11 @@ paths:
           schema: { type: string }
         - name: page
           in: query
-          schema: { type: integer, minimum: 1 }
+          schema: { type: integer, minimum: 1, default: 1 }
           required: false
         - name: pageSize
           in: query
-          schema: { type: integer, minimum: 1 }
+          schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
           required: false
       responses:
         '200':
@@ -209,7 +211,7 @@ paths:
           required: false
         - name: limit
           in: query
-          schema: { type: integer, minimum: 1, default: 30 }
+          schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
           required: false
       responses:
         '200':
@@ -230,7 +232,12 @@ paths:
 
   /api/episodes/latest:
     get:
-      summary: Últimos episodios
+      summary: Ultimos episodios precalculados
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 30 }
+          required: false
       responses:
         '200':
           description: Episodios recientes
@@ -239,6 +246,10 @@ paths:
               schema:
                 type: array
                 items: { $ref: '#/components/schemas/Episode' }
+        '404':
+          description: No se encontraron episodios
+          content:
+            text/plain: { schema: { type: string } }
         '500':
           description: Error servidor
           content:
@@ -267,9 +278,33 @@ paths:
           content:
             text/plain: { schema: { type: string } }
 
+  /api/episodes/{episodeId}/sources:
+    get:
+      summary: Fuentes precalculadas de un episodio
+      parameters:
+        - name: episodeId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Fuentes encontradas
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EpisodeSources' }
+        '404':
+          description: No se encontraron fuentes
+          content:
+            text/plain: { schema: { type: string } }
+        '500':
+          description: Error servidor
+          content:
+            text/plain: { schema: { type: string } }
+
   /api/episodes/sources/{id}:
     get:
-      summary: Fuentes de vídeo de episodio
+      deprecated: true
+      summary: Alias legado de fuentes de episodio
       parameters:
         - name: id
           in: path
@@ -290,45 +325,19 @@ paths:
           content:
             text/plain: { schema: { type: string } }
 
-  /api/image/{imgFilename}:
+  /api/image/{imageToken}:
     get:
-      summary: Imagen de anime (Cloudflare R2)
+      summary: Redirecciona a una URL firmada temporal de Cloudflare R2
       parameters:
-        - name: imgFilename
+        - name: imageToken
           in: path
           required: true
           schema: { type: string }
-        - name: width
-          in: query
-          schema: { type: integer, minimum: 1 }
-          required: false
-        - name: height
-          in: query
-          schema: { type: integer, minimum: 1 }
-          required: false
-        - name: format
-          in: query
-          schema:
-            type: string
-            enum: [webp, jpeg, png, avif]
-          required: false
-        - name: quality
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-          required: false
       responses:
-        '200':
-          description: Imagen binaria
-          content:
-            image/webp: {}
-            image/jpeg: {}
-            image/png: {}
-            image/avif: {}
+        '302':
+          description: Redireccion temporal a asset firmado
         '404':
-          description: Imagen no encontrada
+          description: Token invalido
           content:
             application/json:
               schema:
@@ -338,17 +347,22 @@ paths:
         '500':
           description: Error servidor
           content:
-            text/plain: { schema: { type: string } }
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error: { type: string }
 
 components:
   schemas:
     Anime:
       type: object
       properties:
-        animeId: { type: string, example: '11976' }
-        title: { type: string, example: 'Jujutsu Kaisen' }
+        animeId: { type: string, example: 'solo-leveling' }
+        title: { type: string, example: 'Solo Leveling' }
         images:
           type: object
+          nullable: true
           properties:
             coverImage: { type: string, format: uri, nullable: true }
             carouselImages:
@@ -356,14 +370,14 @@ components:
               items:
                 $ref: '#/components/schemas/CarouselImage'
         type: { type: string, nullable: true, example: 'TV' }
-        rank: { type: integer, nullable: true, example: 1 }
+        rank: { type: number, nullable: true, example: 1 }
         otherTitles:
           type: array
           items: { type: string }
           nullable: true
         description: { type: string, nullable: true }
         originalLink: { type: string, nullable: true, format: uri }
-        status: { type: string, nullable: true, example: 'En emisión' }
+        status: { type: string, nullable: true, example: 'En emision' }
         genres:
           type: array
           items: { type: string }
@@ -396,15 +410,15 @@ components:
     Episode:
       type: object
       properties:
-        originalLink: { type: string, format: uri }
-        title: { type: string }
+        originalLink: { type: string, format: uri, nullable: true }
+        title: { type: string, nullable: true }
         image: { type: string, nullable: true, format: uri }
-        episode: { type: integer }
+        episode: { type: integer, nullable: true }
         episodeId: { type: string }
-        animeId: { type: string }
+        animeId: { type: string, nullable: true }
         created_at: { type: string, format: date-time, nullable: true }
         updated_at: { type: string, format: date-time, nullable: true }
-      required: [originalLink, title, episode, episodeId, animeId]
+      required: [episodeId]
 
     EpisodeVideo:
       type: object
@@ -442,9 +456,7 @@ components:
               items: { $ref: '#/components/schemas/EpisodeVideo' }
             - type: array
               items: {}
+        scraped_at: { type: string, format: date-time, nullable: true }
+        expires_at: { type: string, format: date-time, nullable: true }
+        updated_at: { type: string, format: date-time, nullable: true }
       required: [episode, videos]
-
-    Error:
-      type: object
-      properties:
-        error: { type: string }

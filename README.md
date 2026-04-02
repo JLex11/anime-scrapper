@@ -16,6 +16,12 @@
 
 **Anime Scrapper** es una solución completa para obtener información sobre animes desde varios sitios web populares. Incluye una herramienta de scraping de línea de comandos y una API REST para acceder a los datos almacenados. Con esta herramienta puedes obtener datos como títulos, sinopsis, episodios, calificaciones y más, todo de manera rápida y eficiente.
 
+### Arquitectura actual (v2)
+
+- Este repositorio expone una API **read-only** sobre Supabase.
+- El scraping operativo vive en `anime-scraper-engine/` como motor separado en Bun.
+- La API pública no ejecuta scraping ni optimización de imágenes en demanda.
+
 ## ✨ Características
 
 - 🚀 **Rápido y Eficiente**: Aprovecha la velocidad de Bun.js para realizar scraping rápido
@@ -264,16 +270,16 @@ supabase/seeds/seed.sql
   "status": "Finalizado",
   "genres": ["Acción", "Aventuras", "Fantasía"],
   "images": {
-    "coverImage": "http://localhost:3002/api/image/overlord-movie-3-sei-oukokuhen.webp",
+    "coverImage": "https://cdn.tu-dominio/overlord-movie-3-sei-oukokuhen.webp",
     "carouselImages": [
       {
-        "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-0.webp",
+        "link": "https://cdn.tu-dominio/overlord-movie-3-sei-oukokuhen-carouselImage-0.webp",
         "width": 4500,
         "height": 8001,
         "position": "50% 20%"
       },
       {
-        "link": "http://localhost:3002/api/image/Overlord%20Movie%203:%20Sei%20Oukoku-hen-carouselImage-1.webp",
+        "link": "https://cdn.tu-dominio/overlord-movie-3-sei-oukokuhen-carouselImage-1.webp",
         "width": 1896,
         "height": 1033,
         "position": "50% 50%"
@@ -289,19 +295,13 @@ supabase/seeds/seed.sql
 
 ```
 anime-scrapper/
-├── index.js          # Punto de entrada CLI
-├── src/
-│   ├── scrapers/     # Módulos de scraping para cada sitio
-│   ├── services/     # Servicios (base de datos, etc.)
-│   ├── utils/        # Utilidades y helpers
-│   ├── enums/        # Enumeraciones y constantes
-│   └── types/        # Tipos TypeScript
-├── api/
-│   ├── router/       # Rutas de la API
-│   ├── controllers/  # Controladores de la API
-│   └── index.ts      # Punto de entrada de la API
-├── config.js         # Configuración principal
-└── README.md         # Este archivo
+├── api/                   # API read-only (Express)
+├── src/                   # Servicios, tipos y utilidades de la API
+├── docs/                  # Sitio de documentación Astro
+├── supabase/              # Migraciones y seeds
+├── anime-scraper-engine/  # Worker Bun de scraping + ingesta
+├── openapi.yaml           # Contrato OpenAPI
+└── README.md
 ```
 
 ## 🤝 Contribución

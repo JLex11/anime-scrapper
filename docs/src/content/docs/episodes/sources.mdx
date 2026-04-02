@@ -3,7 +3,7 @@ title: Fuentes de episodio
 category: Episodios
 order: 30
 description: Lista las fuentes de reproduccion disponibles para un episodio.
-endpoint: /episodes/sources/:id
+endpoint: /episodes/:episodeId/sources
 method: GET
 playground: true
 responseExample:
@@ -15,23 +15,26 @@ responseExample:
       allow_mobile: true
       code: Hk3R1Pq
       episodeId: solo-leveling-15
+  scraped_at: 2026-04-02T08:45:00.000Z
+  expires_at: 2026-04-02T09:15:00.000Z
 ---
 ## Descripcion
 
-Devuelve las fuentes de reproduccion disponibles para un episodio. El parametro `id` corresponde al `episodeId` obtenido desde los listados de episodios.
+Devuelve las fuentes de reproduccion precalculadas para un episodio. El parametro `episodeId` corresponde al ID obtenido desde los listados de episodios.
 
 El formato de `videos` puede variar segun el proveedor: algunas veces es un arreglo simple y otras un objeto con listas `SUB` o `DUB`. Por eso se recomienda tratarlo como una estructura flexible.
+La ruta canonica es `/episodes/:episodeId/sources` y el alias legado `/episodes/sources/:id` sigue disponible de forma temporal.
 
 ## Parametros de ruta
 
 | Parametro | Tipo | Descripcion |
 | --- | --- | --- |
-| `id` | string | Identificador del episodio (ejemplo: `solo-leveling-15`). |
+| `episodeId` | string | Identificador del episodio (ejemplo: `solo-leveling-15`). |
 
 ## Ejemplo de uso
 
 ```bash
-curl -X GET "https://tu-dominio/api/episodes/sources/solo-leveling-15"
+curl -X GET "https://tu-dominio/api/episodes/solo-leveling-15/sources"
 ```
 
 ## Ejemplo de respuesta

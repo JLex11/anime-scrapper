@@ -24,9 +24,9 @@ responseExample:
       - Accion
       - Ciencia ficcion
     images:
-      coverImage: https://tu-dominio/api/image/kaiju-8-gou-cover.webp?width=420&height=630
+      coverImage: https://tu-dominio/api/image/ZXhhbXBsZS10b2tlbg
       carouselImages:
-        - link: https://tu-dominio/api/image/kaiju-8-gou-1.webp?width=1280&height=720
+        - link: https://tu-dominio/api/image/ZXhhbXBsZS10b2tlbi0y
           position: 50% 50%
           width: 1280
           height: 720
@@ -35,7 +35,7 @@ responseExample:
 ---
 ## Descripcion
 
-Devuelve un arreglo con los animes mas recientes visibles en la portada del proveedor. La lista se ordena de mas nuevo a mas antiguo.
+Devuelve un arreglo con los animes mas recientes del feed `latest` precalculado. La lista se ordena de mas nuevo a mas antiguo.
 
 ## Parametros de consulta
 
@@ -53,3 +53,4 @@ curl -X GET "https://tu-dominio/api/animes/latest?limit=10"
 
 - Los objetos retornados incluyen la informacion completa del anime (sinopsis, generos, imagenes y fechas).
 - Si el proveedor no publica un campo especifico, ese valor puede venir como `null`.
+- El endpoint no ejecuta scraping en demanda.

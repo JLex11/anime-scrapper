@@ -16,8 +16,11 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@aws-crypto/sha256-js": "^5.2.0",
     "@aws-sdk/client-s3": "^3.525.0",
     "@supabase/supabase-js": "2.89.0",
+    "@smithy/protocol-http": "^5.3.5",
+    "@smithy/signature-v4": "^5.3.5",
     "@types/amqplib": "^0.10.7",
     "@types/compression": "^1.7.5",
     "compression": "^1.8.0",

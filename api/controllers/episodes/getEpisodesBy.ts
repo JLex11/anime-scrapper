@@ -1,45 +1,41 @@
-import { domainsToFilter } from '../../../src/constants'
-import { scrapeAnimeEpisodes } from '../../../src/scrapers/animes/scrapeAnimeEpisodes'
-import { UpsertEpisodes, getEpisodeBy } from '../../../src/services/database/episodes'
+import { getEpisodeBy } from '../../../src/services/database/episodes'
 import type { Database } from '../../../src/supabase'
 import type { Episode } from '../../../src/types'
-import { isUpToDate } from '../../../src/utils/isUpToDate'
+import { encodeImageKey, getLegacyImageKey } from '../../../src/utils/imageToken'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
 type EpisodeRow = Database['public']['Tables']['episodes']['Row']
 type EpisodeInsert = Database['public']['Tables']['episodes']['Insert']
 
-const mapEpisodeImage = (episode: EpisodeRow | EpisodeInsert) => {
+export const mapEpisodeImage = (episode: EpisodeRow | EpisodeInsert) => {
+	const imageKey = ('image_key' in episode ? episode.image_key : null) ?? getLegacyImageKey(episode.image)
+	const imageUrl = imageKey
+		? mapOriginPath(`api/image/${encodeImageKey(imageKey)}`)
+		: episode.image
+			? (episode.image.startsWith('https://') || episode.image.startsWith('http://')
+					? episode.image
+					: mapOriginPath(episode.image.startsWith('/') ? episode.image.slice(1) : episode.image))
+			: null
+
 	return {
-		...episode,
-		image: episode.image && mapOriginPath(`api/${episode.image.replace(domainsToFilter, '')}`),
+		originalLink: episode.originalLink ?? '',
+		title: episode.title ?? '',
+		image: imageUrl,
+		episode: episode.episode ?? 0,
+		episodeId: episode.episodeId,
+		animeId: episode.animeId ?? '',
+		created_at: episode.created_at ?? undefined,
+		updated_at: episode.updated_at ?? undefined,
 	} as Episode
 }
 
 export const getEpisodesByAnimeId = async (animeId: string, offset = 0, limit = 10) => {
 	const { data: episodesData }: { data: EpisodeRow[] | null } = await getEpisodeBy('animeId', animeId, offset, limit)
-
-	if (episodesData?.[0] && isUpToDate(episodesData[0]?.updated_at)) {
-		return episodesData.map(mapEpisodeImage)
-	}
-
-	const extractImage = !(episodesData?.[0]?.image && !episodesData[0]?.image.includes('https://cdn.animeflv.net'))
-
-	const scrapedEpisodes: EpisodeInsert[] = await scrapeAnimeEpisodes(animeId, offset, limit, extractImage)
-
-	const mappedEpisodes = scrapedEpisodes.map(scrapeEpisode => {
-		const dbEpisode = episodesData?.find(episode => episode.episodeId === scrapeEpisode.episodeId)
-		return { ...(dbEpisode ?? {}), ...scrapeEpisode }
-	})
-
-	UpsertEpisodes(mappedEpisodes)
-	return mappedEpisodes.map(mapEpisodeImage)
+	return (episodesData ?? []).map(mapEpisodeImage)
 }
 
 export const getEpisodeByEpisodeId = async (episodeId: string) => {
 	const episodesResponse = await getEpisodeBy('episodeId', episodeId)
-
-	const episodes = episodesResponse.data?.map(mapEpisodeImage)
-
-	return episodes
+	const episode = episodesResponse.data?.[0]
+	return episode ? mapEpisodeImage(episode) : null
 }

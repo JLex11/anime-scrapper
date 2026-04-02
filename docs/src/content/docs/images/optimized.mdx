@@ -1,68 +1,29 @@
 ---
-title: Imagen optimizada
+title: Imagenes firmadas
 category: Imagenes
 order: 30
-description: Entrega una imagen desde el storage y permite optimizarla por parametros.
-endpoint: /image/:imgFilename
+description: Redireccion temporal a assets firmados en Cloudflare R2.
+endpoint: /image/:imageToken
 method: GET
-playground: true
-queryParams:
-  - name: width
-    description: Ancho objetivo en pixeles.
-    example: 320
-  - name: height
-    description: Alto objetivo en pixeles.
-    example: 480
-  - name: format
-    description: "Formato de salida. Valores soportados: webp, jpeg, png, avif."
-    example: webp
-  - name: quality
-    description: Calidad de compresion (1-100).
-    example: 80
+playground: false
 ---
 ## Descripcion
 
-Este endpoint sirve imagenes almacenadas en el bucket y permite reescalarlas o convertirlas. Si no envias parametros de optimizacion, la imagen se devuelve tal como esta guardada.
+Este endpoint no entrega binario directamente. Devuelve un `302` hacia una URL firmada temporal en Cloudflare R2.
 
-## Parametros de ruta
+## Como se usa
 
-| Parametro | Tipo | Descripcion |
-| --- | --- | --- |
-| `imgFilename` | string | Nombre del archivo tal como esta en el storage. |
+- La API de animes/episodios ya devuelve campos `image` con este formato:
+  - `https://tu-dominio/api/image/<imageToken>`
+- Tu frontend solo consume esa URL y sigue la redireccion automaticamente.
 
-## Parametros de consulta
+## Respuesta esperada
 
-| Parametro | Tipo | Descripcion |
-| --- | --- | --- |
-| `width` | number | Ancho objetivo en pixeles. |
-| `height` | number | Alto objetivo en pixeles. |
-| `format` | string | `webp`, `jpeg`, `png`, `avif`. |
-| `quality` | number | Calidad de compresion (1-100). |
+- `302`: token valido, redireccion a URL firmada.
+- `404`: token invalido.
+- `500`: error al firmar.
 
-## Ejemplos de uso
+## Notas de seguridad
 
-```bash
-curl -L "https://tu-dominio/api/image/solo-leveling-cover.webp" \
-  --output cover.webp
-```
-
-```bash
-curl -L "https://tu-dominio/api/image/solo-leveling-cover.webp?width=320&height=480&format=jpeg&quality=75" \
-  --output cover-320x480.jpg
-```
-
-## Respuesta
-
-La respuesta es binaria (imagen). El servidor define el `Content-Type` segun el parametro `format`:
-
-- `webp` (por defecto si no envias `format`).
-- `jpeg`, `png`, `avif` si se solicitan.
-
-Tambien se aplica cache agresiva para assets estaticos:
-
-- `Cache-Control: public, max-age=31536000, immutable`.
-
-## Errores comunes
-
-- `404`: la imagen no existe en el storage.
-- `500`: fallo al optimizar la imagen con los parametros enviados.
+- El `imageToken` no expone el `object key` plano.
+- La URL firmada tiene expiracion corta y se genera por request.

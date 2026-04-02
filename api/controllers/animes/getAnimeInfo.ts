@@ -1,7 +1,6 @@
-import { domainsToFilter } from '../../../src/constants'
-import { scrapeFullAnimeInfo } from '../../../src/scrapers/animes/scrapeFullAnimeInfo'
-import { UpsertAnimes, getAnimeBy, getRelatedAnimesFromDb } from '../../../src/services/database/animes'
+import { getAnimeBy, getRelatedAnimesFromDb } from '../../../src/services/database/animes'
 import type { Anime } from '../../../src/types'
+import { encodeImageKey, getLegacyImageKey } from '../../../src/utils/imageToken'
 import { mapOriginPath } from '../../../src/utils/mapOriginPath'
 
 export type AnimeWithMappedImages = {
@@ -16,55 +15,62 @@ export type AnimeWithMappedImages = {
 	genres?: string[] | null
 	images?: Anime['images'] | null
 	relatedAnimes?: Anime['relatedAnimes'] | null
+	cover_image_key?: string | null
+	carousel_image_keys?: unknown
 	created_at?: string
 	updated_at?: string
 }
 
+const toImageProxyUrl = (objectKey: string | null | undefined) => {
+	if (!objectKey) return null
+	return mapOriginPath(`api/image/${encodeImageKey(objectKey)}`)
+}
+
+const normalizeMediaUrl = (url: string | null | undefined) => {
+	if (!url) return url ?? null
+	if (url.startsWith('https://') || url.startsWith('http://')) return url
+	if (url.startsWith('//')) return `https:${url}`
+
+	return mapOriginPath(url.startsWith('/') ? url.slice(1) : url)
+}
+
 export const mapAnimeImages = <T extends AnimeWithMappedImages>(anime: T) => {
 	const animeImages = anime.images as Anime['images']
+	const coverKey = anime.cover_image_key ?? getLegacyImageKey(animeImages?.coverImage)
+	const carouselKeys = Array.isArray(anime.carousel_image_keys)
+		? anime.carousel_image_keys.filter((item): item is string => typeof item === 'string' && item.length > 0)
+		: []
+
 	const mappedAnimeImages = animeImages
 		? {
-				coverImage: animeImages.coverImage && mapOriginPath(`api/${animeImages.coverImage.replace(domainsToFilter, '')}`),
+				coverImage: toImageProxyUrl(coverKey) ?? normalizeMediaUrl(animeImages.coverImage),
 				carouselImages:
-					animeImages.carouselImages.map(image => ({
-						...image,
-						link: image.link && mapOriginPath(`api/${image.link.replace(domainsToFilter, '')}`),
-					})) ?? [],
+					animeImages.carouselImages?.map((image, index) => {
+						const carouselKey = carouselKeys[index] ?? getLegacyImageKey(image.link)
+
+						return {
+							...image,
+							link: toImageProxyUrl(carouselKey) ?? normalizeMediaUrl(image.link),
+						}
+					}) ?? [],
 			}
 		: null
 
+	const { cover_image_key, carousel_image_keys, ...restAnime } = anime as T & {
+		cover_image_key?: string | null
+		carousel_image_keys?: unknown
+	}
+
 	return {
-		...anime,
+		...restAnime,
 		images: mappedAnimeImages,
 	}
 }
 
-const getCurrentTime = () => new Date().toISOString()
-
 export const getAnimeInfo = async (animeId: string): Promise<Anime | null> => {
 	const { data: animeFromDb } = await getAnimeBy('animeId', animeId)
+	if (!animeFromDb) return null
 
-	const hasCarouselImages = Boolean(animeFromDb?.images?.carouselImages?.length)
-
-	if (animeFromDb && hasCarouselImages) {
-		const relatedAnimes = await getRelatedAnimesFromDb(animeId)
-		return mapAnimeImages({ ...animeFromDb, relatedAnimes })
-	}
-
-	const currentTime = getCurrentTime()
-
-	const scrapedAnime = await scrapeFullAnimeInfo(animeId, !hasCarouselImages)
-	if (!scrapedAnime) return null
-
-	const newAnime: Anime = {
-		...(animeFromDb ?? {}),
-		...scrapedAnime,
-		created_at: currentTime,
-		updated_at: currentTime,
-	}
-
-	UpsertAnimes(newAnime)
-
-	const mappedAnime = mapAnimeImages(newAnime)
-	return mappedAnime
+	const relatedAnimes = await getRelatedAnimesFromDb(animeId)
+	return mapAnimeImages({ ...animeFromDb, relatedAnimes })
 }

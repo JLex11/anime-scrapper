@@ -8,8 +8,11 @@ method: GET
 playground: true
 queryParams:
   - name: page
-    description: Número de página a consultar (1 por defecto).
+    description: Numero de pagina del feed directory (1 por defecto).
     example: 2
+  - name: pageSize
+    description: Cantidad de animes por pagina (por defecto 24).
+    example: 24
 responseExample:
   - animeId: solo-leveling
     title: Solo Leveling
@@ -24,9 +27,9 @@ responseExample:
       - Accion
       - Fantasia
     images:
-      coverImage: https://tu-dominio/api/image/solo-leveling-cover.webp?width=420&height=630
+      coverImage: https://tu-dominio/api/image/ZXhhbXBsZS1jb3Zlci10b2tlbg
       carouselImages:
-        - link: https://tu-dominio/api/image/solo-leveling-1.webp?width=1280&height=720
+        - link: https://tu-dominio/api/image/ZXhhbXBsZS1jYXJvdXNlbC10b2tlbg
           position: 50% 50%
           width: 1280
           height: 720
@@ -39,13 +42,14 @@ responseExample:
 ---
 ## Descripción
 
-Devuelve un arreglo con la información resumida del catálogo. El origen se pagina de manera secuencial y la página inicial es `1`.
+Devuelve un arreglo con la informacion resumida del feed `directory` precalculado. La pagina inicial es `1`.
 
 ## Parámetros de consulta
 
 | Parámetro | Tipo | Descripción |
 | --- | --- | --- |
 | `page` | number | Página solicitada (por defecto `1`). |
+| `pageSize` | number | Tamano de pagina (por defecto `24`). |
 
 ## Respuesta
 
@@ -70,7 +74,7 @@ Cada elemento contiene:
 ## Ejemplo de uso
 
 ```bash
-curl -X GET "https://tu-dominio/api/animes?page=2"
+curl -X GET "https://tu-dominio/api/animes?page=2&pageSize=24"
 ```
 
 La respuesta es un arreglo de animes que incluye atributos listos para renderizar tarjetas en el frontend.
@@ -78,5 +82,5 @@ La respuesta es un arreglo de animes que incluye atributos listos para renderiza
 ## Notas
 
 - Los campos opcionales pueden llegar como `null` si el proveedor no publica esa información.
-- `images.coverImage` y `images.carouselImages[].link` apuntan al endpoint `/api/image` con parámetros opcionales de optimización.
-- Si la fuente cambia, algunos valores (como `rank` o `status`) pueden variar entre consultas.
+- `images.coverImage` y `images.carouselImages[].link` apuntan a `/api/image/:token` (redirect 302 firmado).
+- El endpoint no dispara scraping: si el feed no existe en DB, responde `404`.

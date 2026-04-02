@@ -24,9 +24,9 @@ responseExample:
       - Accion
       - Aventura
     images:
-      coverImage: https://tu-dominio/api/image/fullmetal-alchemist-cover.webp?width=420&height=630
+      coverImage: https://tu-dominio/api/image/ZXhhbXBsZS10b2tlbg
       carouselImages:
-        - link: https://tu-dominio/api/image/fullmetal-alchemist-1.webp?width=1280&height=720
+        - link: https://tu-dominio/api/image/ZXhhbXBsZS10b2tlbi0y
           position: 50% 50%
           width: 1280
           height: 720
@@ -35,7 +35,7 @@ responseExample:
 ---
 ## Descripcion
 
-Entrega una lista de animes ordenada por rating. La fuente utiliza su propio ranking, por lo que el orden puede variar con el tiempo.
+Entrega una lista del feed `rating` precalculado, ordenada por ranking.
 
 ## Parametros de consulta
 
@@ -52,3 +52,4 @@ curl -X GET "https://tu-dominio/api/animes/latest/rating?limit=8"
 ## Recomendacion de uso
 
 Si necesitas mostrar un top en tu frontend, combina esta ruta con `/animes/:animeId` para refrescar detalles especificos.
+Este endpoint no ejecuta scraping en demanda.

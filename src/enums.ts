@@ -27,6 +27,7 @@ export enum animeFLVPages {
 export enum endPoints {
 	LATEST_EPISODES = '/latest',
 	EPISODE_BY_ID = '/:episodeId',
+	EPISODE_SOURCES_BY_EPISODE_ID = '/:episodeId/sources',
 	EPISODE_SOURCES = '/sources/:id',
 	ANIME_INFO = '/:animeId',
 	ANIME_EPISODES = '/:animeId/episodes',
@@ -36,8 +37,7 @@ export enum endPoints {
 	BROADCAST_ANIMES = '/broadcast',
 	SEARCH_ANIMES = '/search/:query',
 	ANIME_DIRECTORY = '/directory',
-	IMAGES = '/:imgFilename',
-	PROCESS_IMAGES = '/process-image',
+	IMAGES = '/:imageToken',
 }
 
 export enum GoogleApi {

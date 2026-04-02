@@ -7,18 +7,18 @@ endpoint: /episodes/:episodeId
 method: GET
 playground: true
 responseExample:
-  - originalLink: https://www3.animeflv.net/ver/solo-leveling-15
-    image: https://api.ejemplo.com/api/image/solo-leveling-15?width=350&height=250
-    episode: 15
-    title: Solo Leveling - Episodio 15
-    episodeId: solo-leveling-15
-    animeId: solo-leveling
-    created_at: 2026-03-24T10:05:21.832Z
-    updated_at: 2026-03-24T10:05:21.832Z
+  originalLink: https://www3.animeflv.net/ver/solo-leveling-15
+  image: https://api.ejemplo.com/api/image/ZXhhbXBsZS1lcGlzb2RlLXRva2Vu
+  episode: 15
+  title: Solo Leveling - Episodio 15
+  episodeId: solo-leveling-15
+  animeId: solo-leveling
+  created_at: 2026-03-24T10:05:21.832Z
+  updated_at: 2026-03-24T10:05:21.832Z
 ---
 ## Descripcion
 
-Devuelve el episodio que coincida con el `episodeId`. Aunque el endpoint devuelve un arreglo, en la practica normalmente sera un solo elemento. Si no hay coincidencias se retorna `404`.
+Devuelve el episodio que coincida con el `episodeId` como objeto. Si no hay coincidencias se retorna `404`.
 
 ## Parametros de ruta
 
@@ -35,18 +35,16 @@ curl -X GET "https://tu-dominio/api/episodes/solo-leveling-15"
 ## Ejemplo de respuesta
 
 ```json
-[
-  {
-    "originalLink": "https://www3.animeflv.net/ver/solo-leveling-15",
-    "image": "https://tu-dominio/api/image/solo-leveling-15?width=350&height=250",
-    "episode": 15,
-    "title": "Solo Leveling - Episodio 15",
-    "episodeId": "solo-leveling-15",
-    "animeId": "solo-leveling",
-    "created_at": "2026-03-24T10:05:21.832Z",
-    "updated_at": "2026-03-24T10:05:21.832Z"
-  }
-]
+{
+  "originalLink": "https://www3.animeflv.net/ver/solo-leveling-15",
+  "image": "https://tu-dominio/api/image/ZXhhbXBsZS1lcGlzb2RlLXRva2Vu",
+  "episode": 15,
+  "title": "Solo Leveling - Episodio 15",
+  "episodeId": "solo-leveling-15",
+  "animeId": "solo-leveling",
+  "created_at": "2026-03-24T10:05:21.832Z",
+  "updated_at": "2026-03-24T10:05:21.832Z"
+}
 ```
 
 ## Errores comunes
@@ -56,4 +54,4 @@ curl -X GET "https://tu-dominio/api/episodes/solo-leveling-15"
 | `404` | Episodio no encontrado. |
 | `500` | Error al obtener el episodio. |
 
-> Nota: El campo `image` ya viene preparado para consumir la imagen optimizada desde este API. Puedes agregar parametros como `width`, `height`, `format` o `quality`.
+> Nota: El campo `image` apunta al endpoint de proxy firmado (`/api/image/:token`).

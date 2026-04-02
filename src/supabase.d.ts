@@ -33,6 +33,8 @@ export interface Database {
 			animes: {
 				Row: {
 					animeId: string
+					cover_image_key: string | null
+					carousel_image_keys: Json | null
 					description: string | null
 					genres: string[] | null
 					images: AnimeImages | null
@@ -48,6 +50,8 @@ export interface Database {
 				}
 				Insert: {
 					animeId: string
+					cover_image_key?: string | null
+					carousel_image_keys?: Json | null
 					description?: string | null
 					genres?: string[] | null
 					images?: AnimeImages | null
@@ -63,6 +67,8 @@ export interface Database {
 				}
 				Update: {
 					animeId?: string
+					cover_image_key?: string | null
+					carousel_image_keys?: Json | null
 					description?: string | null
 					genres?: string[] | null
 					images?: AnimeImages | null
@@ -122,6 +128,7 @@ export interface Database {
 					episode: number | null
 					episodeId: string
 					image: string | null
+					image_key: string | null
 					originalLink: string | null
 					title: string | null
 					created_at: string
@@ -133,6 +140,7 @@ export interface Database {
 					episode?: number | null
 					episodeId: string
 					image?: string | null
+					image_key?: string | null
 					originalLink?: string | null
 					title?: string | null
 					created_at?: string | null
@@ -144,6 +152,7 @@ export interface Database {
 					episode?: number | null
 					episodeId?: string
 					image?: string | null
+					image_key?: string | null
 					originalLink?: string | null
 					title?: string | null
 					created_at?: string | null
@@ -157,6 +166,162 @@ export interface Database {
 						referencedColumns: ['animeId']
 					},
 				]
+			}
+			anime_feed_items: {
+				Row: {
+					id: number
+					feed_type: string
+					anime_id: string
+					page: number
+					position: number
+					feed_fetched_at: string
+					created_at: string
+					updated_at: string
+				}
+				Insert: {
+					id?: number
+					feed_type: string
+					anime_id: string
+					page?: number
+					position: number
+					feed_fetched_at?: string
+					created_at?: string
+					updated_at?: string
+				}
+				Update: {
+					id?: number
+					feed_type?: string
+					anime_id?: string
+					page?: number
+					position?: number
+					feed_fetched_at?: string
+					created_at?: string
+					updated_at?: string
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'anime_feed_items_anime_id_fkey'
+						columns: ['anime_id']
+						referencedRelation: 'animes'
+						referencedColumns: ['animeId']
+					},
+				]
+			}
+			episode_feed_items: {
+				Row: {
+					id: number
+					feed_type: string
+					episode_id: string
+					position: number
+					feed_fetched_at: string
+					created_at: string
+					updated_at: string
+				}
+				Insert: {
+					id?: number
+					feed_type: string
+					episode_id: string
+					position: number
+					feed_fetched_at?: string
+					created_at?: string
+					updated_at?: string
+				}
+				Update: {
+					id?: number
+					feed_type?: string
+					episode_id?: string
+					position?: number
+					feed_fetched_at?: string
+					created_at?: string
+					updated_at?: string
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'episode_feed_items_episode_id_fkey'
+						columns: ['episode_id']
+						referencedRelation: 'episodes'
+						referencedColumns: ['episodeId']
+					},
+				]
+			}
+			episode_sources: {
+				Row: {
+					id: number
+					episode_id: string
+					episode: number
+					videos: Json
+					scraped_at: string
+					expires_at: string | null
+					created_at: string
+					updated_at: string
+				}
+				Insert: {
+					id?: number
+					episode_id: string
+					episode?: number
+					videos?: Json
+					scraped_at?: string
+					expires_at?: string | null
+					created_at?: string
+					updated_at?: string
+				}
+				Update: {
+					id?: number
+					episode_id?: string
+					episode?: number
+					videos?: Json
+					scraped_at?: string
+					expires_at?: string | null
+					created_at?: string
+					updated_at?: string
+				}
+				Relationships: [
+					{
+						foreignKeyName: 'episode_sources_episode_id_fkey'
+						columns: ['episode_id']
+						referencedRelation: 'episodes'
+						referencedColumns: ['episodeId']
+					},
+				]
+			}
+			sync_state: {
+				Row: {
+					resource_type: string
+					resource_id: string
+					status: string
+					last_success_at: string | null
+					last_error_at: string | null
+					error_count: number
+					error_message: string | null
+					next_run_at: string | null
+					created_at: string
+					updated_at: string
+				}
+				Insert: {
+					resource_type: string
+					resource_id: string
+					status?: string
+					last_success_at?: string | null
+					last_error_at?: string | null
+					error_count?: number
+					error_message?: string | null
+					next_run_at?: string | null
+					created_at?: string
+					updated_at?: string
+				}
+				Update: {
+					resource_type?: string
+					resource_id?: string
+					status?: string
+					last_success_at?: string | null
+					last_error_at?: string | null
+					error_count?: number
+					error_message?: string | null
+					next_run_at?: string | null
+					created_at?: string
+					updated_at?: string
+				}
+				Relationships: []
 			}
 		}
 		Views: {

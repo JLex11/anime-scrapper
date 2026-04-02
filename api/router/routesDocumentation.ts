@@ -16,13 +16,23 @@ const routesDocumentation = [
 		category: 'episodes'
 	},
 	{
-		route: `/episodes${endPoints.EPISODE_SOURCES}`,
-		description: 'Obtiene las fuentes de streaming del episodio. Requiere el ID del episodio como parámetro',
+		route: `/episodes${endPoints.EPISODE_SOURCES_BY_EPISODE_ID}`,
+		description: 'Obtiene las fuentes de streaming precalculadas del episodio. Requiere el ID del episodio como parámetro',
 		category: 'episodes'
 	},
 	{
+		route: `/episodes${endPoints.EPISODE_SOURCES}`,
+		description: 'Alias legado del endpoint de fuentes. Se mantiene por compatibilidad temporal',
+		category: 'episodes'
+	},
+	{
+		route: `/image${endPoints.IMAGES}`,
+		description: 'Redirige (302) a una URL firmada temporal en Cloudflare R2',
+		category: 'images'
+	},
+	{
 		route: '/animes',
-		description: 'Obtiene todos los animes. Se puede paginar usando el parámetro de consulta page',
+		description: 'Obtiene animes del feed directory. Se puede paginar con page y pageSize',
 		category: 'animes'
 	},
 	{
@@ -54,11 +64,6 @@ const routesDocumentation = [
 		route: `/animes${endPoints.ANIME_EPISODES}`,
 		description: 'Episodios de un anime específico. Se puede paginar usando los parámetros de consulta offset y limit',
 		category: 'animes'
-	},
-	{
-		route: `/image${endPoints.IMAGES}`,
-		description: 'Obtiene la imagen de un anime. Requiere el nombre del archivo como parámetro. Se puede optimizar con los parámetros de consulta width, height, format y quality',
-		category: 'images'
 	}
 ]
 

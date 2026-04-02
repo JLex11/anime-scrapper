@@ -13,8 +13,8 @@ responseExample:
   - route: https://tu-dominio/api/animes/latest
     description: Obtiene los ultimos animes anadidos
     category: animes
-  - route: https://tu-dominio/api/image/:imgFilename
-    description: Obtiene la imagen de un anime. Requiere el nombre del archivo como parametro. Se puede optimizar con los parametros de consulta width, height, format y quality
+  - route: https://tu-dominio/api/image/:imageToken
+    description: Redirige a una URL firmada temporal de Cloudflare R2
     category: images
 ---
 ## Descripcion

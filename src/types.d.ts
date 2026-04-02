@@ -29,7 +29,12 @@ export interface VideoList {
 export interface EpisodeSources {
 	episode: number
 	videos: VideoList | EpisodeVideo[] | []
+	scraped_at?: string | null
+	expires_at?: string | null
+	updated_at?: string | null
 }
+
+export type FeedType = 'directory' | 'latest' | 'broadcast' | 'rating'
 
 type CarouselImage = {
 	link: string | null

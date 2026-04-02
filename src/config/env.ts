@@ -33,6 +33,7 @@ export const R2_ACCOUNT_ID = getEnvVar('R2_ACCOUNT_ID')
 export const R2_ACCESS_KEY_ID = getEnvVar('R2_ACCESS_KEY_ID')
 export const R2_SECRET_ACCESS_KEY = getEnvVar('R2_SECRET_ACCESS_KEY')
 export const R2_BUCKET = getEnvVar('R2_BUCKET', false) || 'anime-app'
+export const R2_SIGNED_URL_TTL_SECONDS = Number(getEnvVar('R2_SIGNED_URL_TTL_SECONDS', false) || '300')
 
 // Server Configuration
 export const PORT = process.env.PORT || '3000'

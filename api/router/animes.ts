@@ -1,10 +1,7 @@
 import { Router as RouterApp } from 'express'
-import { animeStatus, endPoints } from '../../src/enums'
-import { scrapeAllAnimes } from '../../src/scrapers/animes/scrapeAllAnimes'
-import { scrapeEmisionAnimes } from '../../src/scrapers/animes/scrapeEmisionAnimes'
-import { scrapeLastAnimes } from '../../src/scrapers/animes/scrapeLastAnimes'
-import { scrapeRatingAnimes } from '../../src/scrapers/animes/scrapeRatingAnimes'
+import { endPoints } from '../../src/enums'
 import { logger } from '../../src/utils/logger'
+import { getAnimesFeed } from '../controllers/animes/getAnimesFeed'
 import { getAnimeInfo } from '../controllers/animes/getAnimeInfo'
 import { getRelatedAnimes } from '../controllers/animes/getRelatedAnimes'
 import { searchAnimes } from '../controllers/animes/searchAnimes'
@@ -13,10 +10,11 @@ import { getEpisodesByAnimeId } from '../controllers/episodes/getEpisodesBy'
 const router = RouterApp()
 
 router.get('/', async (req, res) => {
-	const { page } = req.query
+	const page = Number(req.query.page) || 1
+	const pageSize = Number(req.query.pageSize) || 24
 
 	try {
-		const foundAnimes = await scrapeAllAnimes(Number(page) || 1)
+		const foundAnimes = await getAnimesFeed('directory', { page, pageSize })
 
 		if (foundAnimes.length === 0) {
 			res.status(404).send('No se encontraron animes')
@@ -30,12 +28,12 @@ router.get('/', async (req, res) => {
 	}
 })
 
-// Ruta para obtener los últimos animes (con caché corto)
+// Ruta para obtener los últimos animes precalculados.
 router.get(endPoints.LATEST_ANIMES, async (req, res) => {
-	const { limit } = req.query
+	const limit = Number(req.query.limit) || 15
 
 	try {
-		const latestAnimes = await scrapeLastAnimes(Number(limit))
+		const latestAnimes = await getAnimesFeed('latest', { limit })
 
 		if (latestAnimes.length === 0) {
 			res.status(404).send('No se encontraron animes')
@@ -49,12 +47,12 @@ router.get(endPoints.LATEST_ANIMES, async (req, res) => {
 	}
 })
 
-// Ruta para obtener animes en emisión (con caché medio)
+// Ruta para obtener animes en emisión precalculados.
 router.get(endPoints.BROADCAST_ANIMES, async (req, res) => {
-	const { limit } = req.query
+	const limit = Number(req.query.limit) || 20
 
 	try {
-		const emisionAnimes = await scrapeEmisionAnimes(Number(limit))
+		const emisionAnimes = await getAnimesFeed('broadcast', { limit })
 
 		if (emisionAnimes.length === 0) {
 			res.status(404).send('No se encontraron animes')
@@ -69,15 +67,20 @@ router.get(endPoints.BROADCAST_ANIMES, async (req, res) => {
 })
 
 router.get(endPoints.RATING_ANIMES, async (req, res) => {
-	const { limit } = req.query
+	const limit = Number(req.query.limit) || 10
 
-	const ratingAnimes = await scrapeRatingAnimes(animeStatus.BROADCAST, Number(limit))
-	if (ratingAnimes.length === 0) {
-		res.status(404).send('No se encontraron animes')
-		return
+	try {
+		const ratingAnimes = await getAnimesFeed('rating', { limit })
+		if (ratingAnimes.length === 0) {
+			res.status(404).send('No se encontraron animes')
+			return
+		}
+
+		res.send(ratingAnimes)
+	} catch (error) {
+		logger.error(`Error al obtener animes mejor valorados: ${error}`)
+		res.status(500).send('Error al obtener los animes')
 	}
-
-	res.send(ratingAnimes)
 })
 
 router.get(endPoints.SEARCH_ANIMES, async (req, res) => {

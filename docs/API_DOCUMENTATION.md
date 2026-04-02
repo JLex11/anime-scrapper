@@ -1,196 +1,98 @@
-# Anime Scrapper API Documentation
+# Anime Scrapper API (Read-only)
 
-## Introducción
+## Introduccion
 
-Esta documentación describe los endpoints y la arquitectura del servicio `anime-scrapper`.
-La API es un wrapper sobre scraping de animeflv.net + Supabase (Postgres) + Cloudflare R2 (imágenes).
+Esta API ahora es **solo lectura** sobre Supabase.
+No ejecuta scraping ni optimizacion de imagenes durante una request publica.
 
-Base URL (ejemplo):
+Base URL (ejemplo local):
 - `http://localhost:3000/api`
 
 ---
 
-## Arquitectura general
+## Arquitectura actual
 
-1. Express HTTP server (`api/index.ts`)
-   - Middlewares:
-     - `compression` para GZIP.
-     - `cors` con configuración liberal.
-     - `express.json` body parser.
-     - `expressCacheMiddleware` (cache en memoria para GETs sin Authorization).
-   - Rutas:
-     - `/api/api-routes` (JSON y redirect a docs).
-     - `/api/animes` (animes + alternativos).
-     - `/api/episodes` (episodios y fuentes).
-     - `/api/image` (servicio de imágenes optimizadas/Cloudflare R2).
+1. API HTTP (Express)
+   - Expone rutas de lectura para animes, episodios y fuentes.
+   - No hace fallback a scraping cuando faltan datos.
+   - Si un recurso no existe en base de datos, responde `404`.
 
-2. Cache local (`src/services/cacheService.ts`)
-   - `defaultCache`: 1 hora
-   - `longTermCache`: 24 horas
-   - `searchCache`: 30 minutos
-   - + `expressCacheMiddleware` con `X-Cache` (HIT/MISS) y key = URL completa.
+2. Supabase (fuente unica de verdad)
+   - Tablas principales:
+     - `animes`
+     - `episodes`
+     - `related_animes`
+   - Tablas de feed precalculado:
+     - `anime_feed_items`
+     - `episode_feed_items`
+   - Tabla de fuentes precalculadas:
+     - `episode_sources`
+   - Tabla de estado operativo del worker:
+     - `sync_state`
 
-3. Persistencia y búsqueda (Supabase)
-   - Tablas principales (ver `src/supabase.d.ts`):
-     - `animes`: animeId, metadata, imágenes, `full_anime_search` (generated).
-     - `related_animes`: relaciones many-to-many.
-     - `episodes`: episodios y miniaturas.
-   - RPC:
-     - `search_animes` (full text + paging).
-     - `update_anime_images_json`.
-
-4. Scrapers (happy-dom + html parsing)
-   - Enlaces base `https://www3.animeflv.net`.
-   - Scrapes:
-     - `scrapeAllAnimes` (browse?) with `page`.
-     - `scrapeLastAnimes` (top `ul.ListAnimes`).
-     - `scrapeEmisionAnimes` (section `.Emision .ListSdbr`).
-     - `scrapeRatingAnimes` (browse/status={status}/order=rating).
-     - `scrapeFullAnimeInfo` (detalle anime + llamadas a imagenes).
-     - `scrapeAnimeEpisodes` (parse script `anime_info` y `episodes` en page anime).
-     - `scrapeLastEpisodes` (home page `ul.ListEpisodios`).
-
-5. Optimización y CDN de imágenes
-   - `src/services/getOptimizeImage.ts`:
-     - Busca en Cloudflare R2 Imagen ya optimizada con `s3HeadOperation`.
-     - Si no existe: `fetch` original -> `sharp` (`optimizeImage`) -> `s3PutOperation`.
-   - `src/services/cloudflareR2.ts`: operaciones S3 (head/get/put).
-   - `src/services/getCarouselImages.ts`: usa Google Image API (`getGoogleImage`) + validación + optimización.
+3. Worker de scraping (separado)
+   - Vive fuera de la API publica.
+   - Escribe con `service_role`.
+   - Alimenta feeds, detalles, episodios, fuentes e imagenes CDN.
 
 ---
 
-## Flujo de datos (ejemplo `/api/animes/{animeId}`)
+## Contrato de imagenes
 
-1. Requiere `GET /api/animes/:animeId`.
-2. `animesRouter` llama `getAnimeInfo(animeId)`.
-3. `getAnimeInfo` consulta DB `getAnimeBy('animeId', animeId)`.
-   - Si hay `images.carouselImages`, retorna mapeo con `mapAnimeImages`.
-   - Sino, hace scraping completo `scrapeFullAnimeInfo`.
-4. `scrapeFullAnimeInfo`:
-   - fetch `https://www3.animeflv.net/anime/{animeId}` / cache 1h.
-   - parsea con `animeGetter(...)` datos (title, genres, related, etc).
-   - extrae imágenes `getOptimizedImage` y `getCarouselImages` si `extractImages`.
-5. Upsert en DB (`UpsertAnimes`) y retorna el objeto mapeado.
-6. Respuesta final se devuelve con JSON.
-
-### ßcache y DB
-- `getAnimeInfo` refresca DB si no hay data ó está incompleta.
-- `searchAnimes` adicional usa `searchCache` local 5 minutos.
+- La API devuelve URLs de proxy: `/api/image/{imageToken}`.
+- Ese endpoint responde `302` con una URL firmada temporal hacia Cloudflare R2.
+- No hay optimizacion de imagen on-demand en runtime.
 
 ---
 
-## Capa de caché y idempotencia
+## Endpoints
 
-- `expressCacheMiddleware` captura respuestas exitosas (status 2xx) y se devuelve con X-Cache=HIT.
-- Babel de request con `requestTextWithCache`/`requestJsonWithCache` usa `defaultCache`.
-- `scrapeLastEpisodes` almacena respuesta final en un key `latestEpisodes:{limit}`.
+### Animes
+- `GET /api/animes?page=1&pageSize=24`
+- `GET /api/animes/latest?limit=15`
+- `GET /api/animes/broadcast?limit=20`
+- `GET /api/animes/latest/rating?limit=10`
+- `GET /api/animes/search/{query}?page=1&pageSize=10`
+- `GET /api/animes/{animeId}`
+- `GET /api/animes/{animeId}/related`
+- `GET /api/animes/{animeId}/episodes?offset=0&limit=10`
 
----
+### Episodios
+- `GET /api/episodes/latest?limit=30`
+- `GET /api/episodes/{episodeId}`
+- `GET /api/episodes/{episodeId}/sources` (ruta canonica)
+- `GET /api/episodes/sources/{id}` (alias legado, deprecado)
 
-## Conexión con Supabase
-
-- `src/services/database/supabaseClient.ts` crea cliente mediante claves de env.
-- `src/services/database/animes.ts` y `episodes.ts` encapsulan CRUD, búsqueda, upsert.
-- Funciones importantes:
-  - `getAnimesByQuery` con `rpc('search_animes')`.
-  - `UpsertAnimes` (inserta + related trailing).
-  - `getEpisodeBy`, `UpsertEpisodes`.
-
----
-
-## Eventos de error / logging
-
-- `logger` centralizado en `src/utils/logger.ts` (console + niveles).
-- Catch blocks en controladores describen errores puntuales.
-- Rutas 404 definidas para resultados vacíos.
-- Catch global en `api/index.ts` devuelve 500 y mensaje en prod/dev.
+### Imagenes
+- `GET /api/image/{imageToken}` (redirect firmado a R2)
 
 ---
 
-## Endpoints (resumen)
+## Cambios de comportamiento clave
 
-### 1. GET `/api/animes`
-- Descripción: Lista de animes paginada.
-- Query params:
-  - `page` (integer, opcional, default: 1)
-- Respuestas:
-  - `200`: array `Anime`
-  - `404`: no se encontraron animes
-  - `500`: error
-
-### 2. GET `/api/animes/latest`
-- Descripción: Últimos animes añadidos.
-- Query params:
-  - `limit` (integer, opcional)
-
-### 3. GET `/api/animes/broadcast`
-- Animes en emisión.
-
-### 4. GET `/api/animes/latest/rating`
-- Animes mejor valorados.
-
-### 5. GET `/api/animes/search/{query}`
-- Path: `query`.
-- Query: `page`, `pageSize`.
-- Retorna `Anime[]`.
-
-### 6. GET `/api/animes/{animeId}`
-- Detalle de anime.
-
-### 7. GET `/api/animes/{animeId}/related`
-- Animes relacionados.
-
-### 8. GET `/api/animes/{animeId}/episodes`
-- Path: `animeId`.
-- Query: `offset`, `limit`.
-
-### 9. GET `/api/episodes/latest`
-- Últimos episodios.
-
-### 10. GET `/api/episodes/{episodeId}`
-- Episodio por ID.
-
-### 11. GET `/api/episodes/sources/{id}`
-- Fuentes de episodios.
-
-### 12. GET `/api/image/{imgFilename}`
-- Path: `imgFilename`.
-- Query:
-  - `width`, `height`, `format`, `quality`.
-- Retorna imagen binaria.
+- Sin scraping on-demand:
+  - antes: algunas rutas scrapeaban al vuelo y luego persistian.
+  - ahora: solo se consulta Supabase.
+- Sin refresco implicito:
+  - la API no dispara recrawl ni jobs.
+- Semantica de latencia:
+  - el tiempo de respuesta depende de DB/cache HTTP, no de scraping remoto.
 
 ---
 
-## Esquemas de datos
+## Seguridad y permisos
 
-### Anime
-- `animeId`: string
-- `title`: string
-- `images`: { coverImage?, carouselImages? }
-- `type`, `rank`, `genres`, `description`, `originalLink`, `status`, `otherTitles`, `relatedAnimes`, `created_at`, `updated_at`.
-
-### RelatedAnime
-- `animeId`, `title`, `relation`.
-
-### Episode
-- `episodeId`, `animeId`, `episode`, `title`, `originalLink`, `image`, `created_at`, `updated_at`.
-
-### EpisodeSources
-- `episode`, `videos` (puede ser object con `SUB`/`DUB` o array `EpisodeVideo[]`).
+- RLS orientado a consumo read-only para clientes publicos.
+- Escrituras reservadas a `service_role` para el worker de ingesta.
 
 ---
 
-## Cómo correr localmente
+## Desarrollo local
 
-1. Configurar variables de entorno (ver `src/config/env.ts` y `.env.local`)
-2. `bun install` (o `npm install` si procede)
-3. `bun run dev` o `bun run start`
-4. Abrir `http://localhost:3000/api` -> será redirigido a `/api/api-docs` si se ha hecho build.
-
----
-
-## Consejos de mantenimiento
-
-- Agregar instrumentación para métricas y tiempos en endpoints críticos.
-- Implementar límite de rate-limiting si se expone públicamente.
-- Extraer `getAnimeInfo` a un servicio independiente de cache/DB para pruebas unitarias.
+1. Configurar variables de entorno de Supabase.
+2. Aplicar migraciones:
+   - `supabase db push`
+3. Iniciar API:
+   - `bun run dev`
+4. Abrir docs:
+   - `http://localhost:3000/api/api-docs/`
