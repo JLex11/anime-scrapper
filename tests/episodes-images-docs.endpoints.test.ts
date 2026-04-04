@@ -183,7 +183,7 @@ test('GET /api/image/:imageToken returns a signed redirect', async () => {
 	expect(response.headers.get('location')).toBe(
 		'https://r2.example.invalid/signed/proxy-image.jpg?X-Amz-Signature=fake',
 	)
-	expect(response.headers.get('cache-control')).toBe('no-store')
+	expect(response.headers.get('cache-control')).toBe('public, max-age=240, s-maxage=240, stale-while-revalidate=60')
 })
 
 test('GET /api/api-routes returns the documented routes with local origin', async () => {

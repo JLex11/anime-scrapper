@@ -1,6 +1,7 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_SIGNED_URL_TTL_SECONDS } from '../config/env'
+import { signedUrlCache } from './cacheService'
 import { decodeImageToken } from '../utils/imageToken'
 
 const MY_R2_API_URL = `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`
@@ -50,7 +51,11 @@ export async function s3GetOperation({ filename }: S3HeadOrGetOperation) {
 }
 
 export const createSignedR2GetUrlByKey = async (objectKey: string, ttlSeconds = R2_SIGNED_URL_TTL_SECONDS) => {
-	return getSignedUrl(
+	const cacheKey = `r2:signed:${objectKey}`
+	const cached = signedUrlCache.get<string>(cacheKey)
+	if (cached) return cached
+
+	const url = await getSignedUrl(
 		client,
 		new GetObjectCommand({
 			Bucket: R2_BUCKET,
@@ -58,6 +63,9 @@ export const createSignedR2GetUrlByKey = async (objectKey: string, ttlSeconds = 
 		}),
 		{ expiresIn: ttlSeconds },
 	)
+
+	signedUrlCache.set(cacheKey, url)
+	return url
 }
 
 export const createSignedR2GetUrlByToken = async (imageToken: string, ttlSeconds = R2_SIGNED_URL_TTL_SECONDS) => {

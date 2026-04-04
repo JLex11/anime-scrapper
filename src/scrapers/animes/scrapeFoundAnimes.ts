@@ -1,3 +1,4 @@
+/** @deprecated Scraping logic migrated to a separate repository. This file is unused and will be removed. */
 import { Window } from 'happy-dom'
 import { getAnimeInfo } from '../../../api/controllers/animes/getAnimeInfo'
 import { animeFLVPages } from '../../enums'

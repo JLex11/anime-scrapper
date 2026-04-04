@@ -68,9 +68,13 @@ export const mapAnimeImages = <T extends AnimeWithMappedImages>(anime: T) => {
 }
 
 export const getAnimeInfo = async (animeId: string): Promise<Anime | null> => {
-	const { data: animeFromDb } = await getAnimeBy('animeId', animeId)
+	const [animeResult, relatedAnimes] = await Promise.all([
+		getAnimeBy('animeId', animeId),
+		getRelatedAnimesFromDb(animeId),
+	])
+
+	const animeFromDb = animeResult.data
 	if (!animeFromDb) return null
 
-	const relatedAnimes = await getRelatedAnimesFromDb(animeId)
 	return mapAnimeImages({ ...animeFromDb, relatedAnimes })
 }

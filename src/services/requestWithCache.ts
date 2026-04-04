@@ -1,3 +1,4 @@
+/** @deprecated Only used by scrapers, which have been migrated to a separate repository. This file will be removed. */
 import { ResponseType } from '../enums'
 import { logger } from '../utils/logger'
 import { defaultCache } from './cacheService'

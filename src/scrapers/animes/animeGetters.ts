@@ -1,3 +1,4 @@
+/** @deprecated Scraping logic migrated to a separate repository. This file is unused and will be removed. */
 import type { Element, Document } from 'happy-dom'
 import { animeFLVPages } from '../../enums'
 

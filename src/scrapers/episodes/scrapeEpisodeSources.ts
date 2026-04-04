@@ -1,3 +1,4 @@
+/** @deprecated Scraping logic migrated to a separate repository. This file is unused and will be removed. */
 import { Window } from 'happy-dom'
 import { animeFLVPages } from '../../enums'
 import { requestTextWithCache } from '../../services/requestWithCache'

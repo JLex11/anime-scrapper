@@ -1,5 +1,5 @@
 {
-  "bunVersion": "1",
+  "bunVersion": "1.x",
   "outputDirectory": "public",
   "buildCommand": "bun run docs:build",
   "framework": null,

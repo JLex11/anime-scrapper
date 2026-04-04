@@ -15,7 +15,7 @@ router.get(endPoints.IMAGES, async (req, res) => {
 			return
 		}
 
-		res.setHeader('Cache-Control', 'no-store')
+		res.setHeader('Cache-Control', 'public, max-age=240, s-maxage=240, stale-while-revalidate=60')
 		res.redirect(302, signedUrl)
 	} catch (error) {
 		logger.error(`Error creating signed URL for image token ${imageToken}: ${error}`)

@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient'
 
 /* Get Anime */
 export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(column: Column, value: ColumnType<AnimeColumns>[Column]) => {
-	const anime = await supabase.from('animes').select().eq(column, value).limit(1).single()
+	const anime = await supabase.from('animes').select('animeId, title, type, rank, otherTitles, description, originalLink, status, genres, images, cover_image_key, carousel_image_keys, created_at, updated_at').eq(column, value).limit(1).single()
 	return anime
 }
 
@@ -37,7 +37,7 @@ export const getAnimeFeed = async (feedType: FeedType, options?: { page?: number
 	const from = limit == null ? (page - 1) * pageSize : 0
 	const to = limit == null ? from + pageSize - 1 : Math.max(0, limit - 1)
 
-	let query = supabase.from('animes').select()
+	let query = supabase.from('animes').select('animeId, title, type, rank, status, genres, images, cover_image_key, carousel_image_keys, updated_at')
 
 	if (feedType === 'broadcast') {
 		query = query.eq('status', 'En emision')
@@ -85,31 +85,31 @@ export const UpsertAnimes = async (animes: AnimeWithRelated[] | AnimeWithRelated
 	// Remove generated/non-writable fields before writing to Postgres.
 	const animesData = animesToUpsert.map(anime => stripGeneratedAnimeFields(anime))
 
-	const { data: upsertedAnimes, error } = await supabase.from('animes').upsert(animesData).select()
+	const { data: upsertedAnimes, error } = await supabase.from('animes').upsert(animesData).select('animeId, title')
 
 	if (error) {
 		console.error('Error upserting animes:', error)
 		return { data: null, error }
 	}
 
-	// Upsert related animes
-	for (const anime of animesToUpsert) {
-		if (anime.relatedAnimes && anime.relatedAnimes.length > 0) {
-			const relatedData = anime.relatedAnimes.map(rel => ({
-				anime_id: anime.animeId,
-				related_id: rel.animeId,
-				title: rel.title,
-				relation: rel.relation,
-			}))
+	// Batch upsert all related animes in a single query
+	const allRelatedData = animesToUpsert.flatMap(anime =>
+		(anime.relatedAnimes ?? []).map(rel => ({
+			anime_id: anime.animeId,
+			related_id: rel.animeId,
+			title: rel.title,
+			relation: rel.relation,
+		}))
+	)
 
-			// @ts-ignore - Supabase types might not be updated yet
-			const { error: relError } = await supabase.from('related_animes').upsert(relatedData, {
-				onConflict: 'anime_id,related_id,relation',
-			})
+	if (allRelatedData.length > 0) {
+		// @ts-ignore - Supabase types might not be updated yet
+		const { error: relError } = await supabase.from('related_animes').upsert(allRelatedData, {
+			onConflict: 'anime_id,related_id,relation',
+		})
 
-			if (relError) {
-				console.error(`Error upserting related animes for ${anime.animeId}:`, relError)
-			}
+		if (relError) {
+			console.error('Error upserting related animes:', relError)
 		}
 	}
 

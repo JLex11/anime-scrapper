@@ -87,4 +87,8 @@ export const searchCache = new CacheService({
 	enableLogs: process.env.NODE_ENV === 'development' || process.env.DEBUG === 'true',
 })
 
+export const signedUrlCache = new CacheService({
+	stdTTL: 240, // 80% de 300s (TTL del signed URL de R2)
+})
+
 export default CacheService

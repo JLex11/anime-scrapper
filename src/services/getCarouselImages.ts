@@ -1,3 +1,4 @@
+/** @deprecated Only used by scrapers, which have been migrated to a separate repository. This file will be removed. */
 import { IMG_POSITIONS, LANDSCAPE_DIMENSIONS } from '../enums'
 import type { GoogleImage } from '../googleTypes'
 import type { CarouselImage } from '../types'
@@ -67,49 +68,56 @@ export const getCarouselImage = async (keywords: string[] | string, maxAttempts 
 			return null
 		}
 
-		for (let i = 0; i < googleImageItems.length; i++) {
-			const item = googleImageItems[i]
-			if (!item.link) {
-				logger.warn(`Imagen ${i + 1} sin enlace`)
-				continue
-			}
+		// Validate all candidate images in parallel
+		const candidates = googleImageItems
+			.map((item, i) => {
+				if (!item.link) {
+					logger.warn(`Imagen ${i + 1} sin enlace`)
+					return null
+				}
+				const image = buildImageObject(item.link, item.image)
+				if (!image.link) {
+					logger.warn(`Imagen ${i + 1} sin enlace después de construir el objeto`)
+					return null
+				}
+				return { image, index: i }
+			})
+			.filter((c): c is NonNullable<typeof c> => c !== null)
 
-			const image = buildImageObject(item.link, item.image)
+		const validationResults = await Promise.all(
+			candidates.map(async ({ image, index }) => {
+				logger.info(`Verificando validez de imagen ${index + 1} de ${googleImageItems.length}`)
+				const isValid = await isValidImage(image.link!)
+				return isValid ? { image, index } : null
+			})
+		)
 
-			if (!image.link) {
-				logger.warn(`Imagen ${i + 1} sin enlace después de construir el objeto`)
-				continue
-			}
+		// Pick the first valid image (preserving original order)
+		const firstValid = validationResults.find((r): r is NonNullable<typeof r> => r !== null)
 
-			logger.info(`Verificando validez de imagen ${i + 1} de ${googleImageItems.length}`)
-			const isValid = await isValidImage(image.link)
-			if (!isValid) {
-				logger.warn(`Imagen ${i + 1} inválida, probando con la siguiente`)
-				continue
-			}
-
-			const imageName = `${keywordsString}-carouselImage`
-			const options = {
-				width: LANDSCAPE_DIMENSIONS.WIDTH,
-				height: LANDSCAPE_DIMENSIONS.HEIGHT,
-				effort: 6,
-			}
-
-			if (!image.link) continue
-
-			logger.info(`Optimizando imagen ${i + 1}`)
-			const optimizedImageUrl = await getOptimizedImage(image.link, imageName, options)
-
-			if (optimizedImageUrl) {
-				image.link = optimizedImageUrl
-				logger.info(`Imagen ${i + 1} procesada correctamente`)
-				return image
-			}
-
-			logger.warn(`No se pudo optimizar la imagen ${i + 1}`)
+		if (!firstValid) {
+			logger.error(`Ninguna de las ${googleImageItems.length} imágenes resultó válida`)
+			return null
 		}
 
-		logger.error(`Ninguna de las ${googleImageItems.length} imágenes resultó válida`)
+		const { image, index } = firstValid
+		const imageName = `${keywordsString}-carouselImage`
+		const options = {
+			width: LANDSCAPE_DIMENSIONS.WIDTH,
+			height: LANDSCAPE_DIMENSIONS.HEIGHT,
+			effort: 6,
+		}
+
+		logger.info(`Optimizando imagen ${index + 1}`)
+		const optimizedImageUrl = await getOptimizedImage(image.link!, imageName, options)
+
+		if (optimizedImageUrl) {
+			image.link = optimizedImageUrl
+			logger.info(`Imagen ${index + 1} procesada correctamente`)
+			return image
+		}
+
+		logger.warn(`No se pudo optimizar la imagen ${index + 1}`)
 		return null
 	} catch (error) {
 		logger.error(`Error al procesar imágenes: ${error}`)

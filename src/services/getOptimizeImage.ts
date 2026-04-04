@@ -1,3 +1,4 @@
+/** @deprecated Only used by scrapers, which have been migrated to a separate repository. This file will be removed. */
 import NodeCache from 'node-cache'
 import type { FitEnum } from 'sharp'
 import logger from '../utils/logger'
