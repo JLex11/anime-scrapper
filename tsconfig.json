@@ -100,5 +100,25 @@
 		// "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
 		"skipLibCheck": true /* Skip type checking all .d.ts files. */
 	},
-	"exclude": ["public", "anime-scraper-engine"]
+	"exclude": [
+		"public",
+		"anime-scraper-engine",
+		"tests",
+		"docs",
+		"src/scrapers/animes/animeGetters.ts",
+		"src/scrapers/animes/scrapeAllAnimes.ts",
+		"src/scrapers/animes/scrapeAnimeEpisodes.ts",
+		"src/scrapers/animes/scrapeEmisionAnimes.ts",
+		"src/scrapers/animes/scrapeFoundAnimes.ts",
+		"src/scrapers/animes/scrapeFullAnimeInfo.ts",
+		"src/scrapers/animes/scrapeLastAnimes.ts",
+		"src/scrapers/animes/scrapeRatingAnimes.ts",
+		"src/scrapers/episodes/scrapeEpisodeSources.ts",
+		"src/scrapers/episodes/scrapeLastEpisodes.ts",
+		"src/services/getCarouselImages.ts",
+		"src/services/getGoogleImage.ts",
+		"src/services/getOptimizeImage.ts",
+		"src/services/imageOptimizer.ts",
+		"src/services/requestWithCache.ts"
+	]
 }

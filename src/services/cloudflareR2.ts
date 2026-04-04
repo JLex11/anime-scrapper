@@ -55,14 +55,9 @@ export const createSignedR2GetUrlByKey = async (objectKey: string, ttlSeconds = 
 	const cached = signedUrlCache.get<string>(cacheKey)
 	if (cached) return cached
 
-	const url = await getSignedUrl(
-		client,
-		new GetObjectCommand({
-			Bucket: R2_BUCKET,
-			Key: objectKey,
-		}),
-		{ expiresIn: ttlSeconds },
-	)
+	const command = new GetObjectCommand({ Bucket: R2_BUCKET, Key: objectKey })
+	// Duplicate @smithy/types across @aws-sdk/client-s3 and @aws-sdk/s3-request-presigner cause type conflicts
+	const url = await getSignedUrl(client as any, command as any, { expiresIn: ttlSeconds })
 
 	signedUrlCache.set(cacheKey, url)
 	return url

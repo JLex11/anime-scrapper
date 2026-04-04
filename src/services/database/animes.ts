@@ -54,7 +54,7 @@ export const getAnimeFeed = async (feedType: FeedType, options?: { page?: number
 	}
 
 	const { data, error } = await query.range(from, to)
-	return { data: (data ?? []) as Anime[], error }
+	return { data: (data ?? []) as Omit<Anime, 'created_at'>[], error }
 }
 
 /* Create Anime */
