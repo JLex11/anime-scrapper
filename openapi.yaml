@@ -328,6 +328,9 @@ paths:
   /api/image/{imageToken}:
     get:
       summary: Redirecciona a una URL firmada temporal de Cloudflare R2
+      description: >
+        El token proviene del contrato publico de imagenes (`animes.images.*` y `episodes.image`).
+        Las columnas internas `*_key` del pipeline de ingesta no forman parte del contrato de lectura.
       parameters:
         - name: imageToken
           in: path
@@ -363,6 +366,9 @@ components:
         images:
           type: object
           nullable: true
+          description: >
+            Fuente publica para construir URLs proxy de imagen en la API.
+            Puede contener valores legacy como `image/<archivo>`.
           properties:
             coverImage: { type: string, format: uri, nullable: true }
             carouselImages:
@@ -412,6 +418,7 @@ components:
       properties:
         originalLink: { type: string, format: uri, nullable: true }
         title: { type: string, nullable: true }
+        # Campo publico de imagen usado para construir /api/image/{imageToken}
         image: { type: string, nullable: true, format: uri }
         episode: { type: integer, nullable: true }
         episodeId: { type: string }

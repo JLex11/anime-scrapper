@@ -15,8 +15,6 @@ export type AnimeWithMappedImages = {
 	genres?: string[] | null
 	images?: Anime['images'] | null
 	relatedAnimes?: Anime['relatedAnimes'] | null
-	cover_image_key?: string | null
-	carousel_image_keys?: unknown
 	created_at?: string
 	updated_at?: string
 }
@@ -36,17 +34,14 @@ const normalizeMediaUrl = (url: string | null | undefined) => {
 
 export const mapAnimeImages = <T extends AnimeWithMappedImages>(anime: T) => {
 	const animeImages = anime.images as Anime['images']
-	const coverKey = anime.cover_image_key ?? getLegacyImageKey(animeImages?.coverImage)
-	const carouselKeys = Array.isArray(anime.carousel_image_keys)
-		? anime.carousel_image_keys.filter((item): item is string => typeof item === 'string' && item.length > 0)
-		: []
+	const coverKey = getLegacyImageKey(animeImages?.coverImage)
 
 	const mappedAnimeImages = animeImages
 		? {
 				coverImage: toImageProxyUrl(coverKey) ?? normalizeMediaUrl(animeImages.coverImage),
 				carouselImages:
 					animeImages.carouselImages?.map((image, index) => {
-						const carouselKey = carouselKeys[index] ?? getLegacyImageKey(image.link)
+						const carouselKey = getLegacyImageKey(image.link)
 
 						return {
 							...image,
@@ -56,13 +51,8 @@ export const mapAnimeImages = <T extends AnimeWithMappedImages>(anime: T) => {
 			}
 		: null
 
-	const { cover_image_key, carousel_image_keys, ...restAnime } = anime as T & {
-		cover_image_key?: string | null
-		carousel_image_keys?: unknown
-	}
-
 	return {
-		...restAnime,
+		...anime,
 		images: mappedAnimeImages,
 	}
 }

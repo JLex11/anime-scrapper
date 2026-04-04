@@ -9,14 +9,13 @@ interface EpisodeInput {
 	episode: number | null
 	title: string | null
 	image: string | null
-	image_key?: string | null
 	originalLink: string | null
 	created_at?: string | null
 	updated_at?: string | null
 }
 
 export const mapEpisodeImage = (episode: EpisodeInput) => {
-	const imageKey = ('image_key' in episode ? episode.image_key : null) ?? getLegacyImageKey(episode.image)
+	const imageKey = getLegacyImageKey(episode.image)
 	const imageUrl = imageKey
 		? mapOriginPath(`api/image/${encodeImageKey(imageKey)}`)
 		: episode.image

@@ -44,6 +44,20 @@ Base URL (ejemplo local):
 - Ese endpoint responde `302` con una URL firmada temporal hacia Cloudflare R2.
 - No hay optimizacion de imagen on-demand en runtime.
 
+### Fuente de datos publica (vigente)
+
+- En `animes`, la API publica construye URLs de imagen desde `images` (JSONB):
+  - `images.coverImage`
+  - `images.carouselImages[].link`
+- En `episodes`, la API publica construye URLs desde `image`.
+- Las columnas `cover_image_key`, `carousel_image_keys` e `image_key` se consideran **internas del pipeline de ingesta** (scraper engine) y no forman parte del contrato publico de lectura.
+
+### Compatibilidad legacy
+
+- Se mantienen valores legacy como `image/<archivo>.webp` en `images`/`image`.
+- La API normaliza esos valores para exponer siempre rutas proxy `/api/image/{imageToken}`.
+- Tambien se aceptan rutas con slash inicial o prefijos legacy durante la decodificacion del token de imagen.
+
 ---
 
 ## Endpoints

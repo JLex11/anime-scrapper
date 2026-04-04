@@ -4,7 +4,7 @@ import { supabase } from './supabaseClient'
 
 /* Get Anime */
 export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(column: Column, value: ColumnType<AnimeColumns>[Column]) => {
-	const anime = await supabase.from('animes').select('animeId, title, type, rank, otherTitles, description, originalLink, status, genres, images, cover_image_key, carousel_image_keys, created_at, updated_at').eq(column, value).limit(1).single()
+	const anime = await supabase.from('animes').select('animeId, title, type, rank, otherTitles, description, originalLink, status, genres, images, created_at, updated_at').eq(column, value).limit(1).single()
 	return anime
 }
 
@@ -37,7 +37,7 @@ export const getAnimeFeed = async (feedType: FeedType, options?: { page?: number
 	const from = limit == null ? (page - 1) * pageSize : 0
 	const to = limit == null ? from + pageSize - 1 : Math.max(0, limit - 1)
 
-	let query = supabase.from('animes').select('animeId, title, type, rank, status, genres, images, cover_image_key, carousel_image_keys, updated_at')
+	let query = supabase.from('animes').select('animeId, title, type, rank, status, genres, images, updated_at')
 
 	if (feedType === 'broadcast') {
 		query = query.eq('status', 'En emision')
