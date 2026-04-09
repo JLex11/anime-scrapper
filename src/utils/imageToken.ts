@@ -6,6 +6,22 @@ const normalizeObjectKey = (objectKey: string) => {
 	return withoutLegacyPrefix
 }
 
+const getUrlPathname = (value: string) => {
+	try {
+		if (value.startsWith('http://') || value.startsWith('https://')) {
+			return new URL(value).pathname
+		}
+
+		if (value.startsWith('//')) {
+			return new URL(`https:${value}`).pathname
+		}
+	} catch {
+		return value
+	}
+
+	return value
+}
+
 export const encodeImageKey = (objectKey: string) => {
 	return Buffer.from(objectKey, 'utf8').toString('base64url')
 }
@@ -25,20 +41,25 @@ export const decodeImageToken = (token: string) => {
 export const getLegacyImageKey = (value: string | null | undefined) => {
 	if (!value) return null
 
-	if (value.startsWith('image/')) {
-		return value.replace(/^image\//, '')
+	const normalizedValue = getUrlPathname(value)
+	const objectKeyCandidate = normalizeObjectKey(normalizedValue)
+	if (/^\/?(?:image|uploads)\//.test(normalizedValue) && objectKeyCandidate.length > 0) {
+		return objectKeyCandidate
 	}
 
 	const marker = '/api/image/'
-	const markerIndex = value.indexOf(marker)
+	const markerIndex = normalizedValue.indexOf(marker)
 	if (markerIndex < 0) return null
 
-	const rawKey = value.slice(markerIndex + marker.length).split('?')[0]
+	const rawKey = normalizedValue.slice(markerIndex + marker.length).split('?')[0]
 	if (!rawKey) return null
 
+	const decodedToken = decodeImageToken(rawKey)
+	if (decodedToken) return decodedToken
+
 	try {
-		return decodeURIComponent(rawKey)
+		return normalizeObjectKey(decodeURIComponent(rawKey))
 	} catch {
-		return rawKey
+		return normalizeObjectKey(rawKey)
 	}
 }
