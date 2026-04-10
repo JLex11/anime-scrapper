@@ -46,11 +46,17 @@ Base URL (ejemplo local):
 
 ### Fuente de datos publica (vigente)
 
-- En `animes`, la API publica construye URLs de imagen desde `images` (JSONB):
-  - `images.coverImage`
-  - `images.carouselImages[].link`
-- En `episodes`, la API publica construye URLs desde `image`.
-- Las columnas `cover_image_key`, `carousel_image_keys` e `image_key` se consideran **internas del pipeline de ingesta** (scraper engine) y no forman parte del contrato publico de lectura.
+- En `animes`, la API publica construye URLs con precedencia:
+  - `cover_image_key`
+  - `carousel_image_keys[]`
+  - fallback legacy a `images.coverImage` y `images.carouselImages[].link`
+- En `episodes`, la API publica construye URLs con precedencia:
+  - `image_key`
+  - fallback legacy a `image`
+- Las columnas `cover_image_key`, `carousel_image_keys` e `image_key` son la **fuente canonica interna** entre engine y API.
+- Los campos `images` e `image` se mantienen como compatibilidad legacy y metadata de origen, no como fuente primaria del proxy publico.
+- Las respuestas publicas **no exponen** `cover_image_key`, `carousel_image_keys` ni `image_key`; esos campos solo se usan internamente para construir `/api/image/{imageToken}`.
+- Si `images` llega `null` pero existen keys canonicas, la API reconstruye un objeto `images` publico usando esas keys para no perder acceso a los assets.
 
 ### Compatibilidad legacy
 

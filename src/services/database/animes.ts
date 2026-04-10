@@ -2,9 +2,22 @@ import type { Database } from '../../supabase'
 import type { Anime, AnimeColumns, CarouselImage, ColumnType, FeedType } from '../../types'
 import { supabase } from './supabaseClient'
 
+type AnimeSearchRow = Database['public']['Functions']['search_animes']['Returns'][number]
+type AnimeSearchWithImages = AnimeSearchRow & {
+	cover_image_key: string | null
+	carousel_image_keys: unknown
+}
+
+const animeImageSelect = 'animeId, images, cover_image_key, carousel_image_keys'
+
 /* Get Anime */
 export const getAnimeBy = async <Column extends keyof ColumnType<AnimeColumns>>(column: Column, value: ColumnType<AnimeColumns>[Column]) => {
-	const anime = await supabase.from('animes').select('animeId, title, type, rank, otherTitles, description, originalLink, status, genres, images, created_at, updated_at').eq(column, value).limit(1).single()
+	const anime = await supabase
+		.from('animes')
+		.select(`animeId, title, type, rank, otherTitles, description, originalLink, status, genres, images, cover_image_key, carousel_image_keys, created_at, updated_at`)
+		.eq(column, value)
+		.limit(1)
+		.single()
 	return anime
 }
 
@@ -29,7 +42,36 @@ export const getAnimesByQuery = async (query: string, page?: number, pageSize?: 
 		result_offset: offset,
 	})
 
-	return animes
+	if (animes.error || !animes.data?.length) {
+		return animes
+	}
+
+	const animeIds = animes.data.map(anime => anime.animeId)
+	const imageMetadataResponse = await supabase.from('animes').select(animeImageSelect).in('animeId', animeIds)
+
+	if (imageMetadataResponse.error || !imageMetadataResponse.data) {
+		if (imageMetadataResponse.error) {
+			console.error('Error fetching anime image metadata for search:', imageMetadataResponse.error)
+		}
+		return animes
+	}
+
+	const imageMetadataById = new Map(imageMetadataResponse.data.map(anime => [anime.animeId, anime]))
+	const mergedData: AnimeSearchWithImages[] = animes.data.map(anime => {
+		const imageMetadata = imageMetadataById.get(anime.animeId)
+
+		return {
+			...anime,
+			images: imageMetadata?.images ?? anime.images ?? null,
+			cover_image_key: imageMetadata?.cover_image_key ?? null,
+			carousel_image_keys: imageMetadata?.carousel_image_keys ?? [],
+		}
+	})
+
+	return {
+		...animes,
+		data: mergedData,
+	}
 }
 
 export const getAnimeFeed = async (feedType: FeedType, options?: { page?: number; pageSize?: number; limit?: number }) => {
@@ -37,7 +79,9 @@ export const getAnimeFeed = async (feedType: FeedType, options?: { page?: number
 	const from = limit == null ? (page - 1) * pageSize : 0
 	const to = limit == null ? from + pageSize - 1 : Math.max(0, limit - 1)
 
-	let query = supabase.from('animes').select('animeId, title, type, rank, status, genres, images, updated_at')
+	let query = supabase
+		.from('animes')
+		.select(`animeId, title, type, rank, status, genres, images, cover_image_key, carousel_image_keys, updated_at`)
 
 	if (feedType === 'broadcast') {
 		query = query.eq('status', 'En emision')

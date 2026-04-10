@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, jest, mock, test } from 'bun:test'
+import { encodeImageKey } from '../src/utils/imageToken'
 
 process.env.VERCEL_ENV = 'test'
 process.env.NODE_ENV = 'test'
@@ -14,6 +15,8 @@ const feedDirectory = [
 	{
 		animeId: 'naruto',
 		title: 'Naruto',
+		cover_image_key: 'animes/naruto/cover.webp',
+		carousel_image_keys: ['animes/naruto/banner-1.webp'],
 		images: null,
 	},
 	{
@@ -27,7 +30,11 @@ const feedLatest = [
 	{
 		animeId: 'frieren',
 		title: 'Frieren',
-		images: null,
+		cover_image_key: 'animes/frieren/cover.webp',
+		images: {
+			coverImage: 'https://cdn.example.invalid/frieren-cover.jpg',
+			carouselImages: [],
+		},
 	},
 ]
 
@@ -52,6 +59,8 @@ const animeInfo = {
 	animeId: 'naruto',
 	title: 'Naruto',
 	description: 'A ninja story',
+	cover_image_key: 'animes/naruto/cover.webp',
+	carousel_image_keys: ['animes/naruto/banner-1.webp', 'animes/naruto/banner-2.webp'],
 	images: null,
 }
 
@@ -123,6 +132,8 @@ const getAnimesByQuery = jest.fn(async (query: string) => {
 			{
 				animeId: 'one-piece',
 				title: 'One Piece',
+				cover_image_key: 'animes/one-piece/cover.webp',
+				carousel_image_keys: ['animes/one-piece/banner-1.webp'],
 				images: null,
 			},
 		],
@@ -206,7 +217,30 @@ describe('animes endpoints', () => {
 		const { response, body } = await requestJson('/api/animes')
 
 		expect(response.status).toBe(200)
-		expect(body).toEqual(feedDirectory)
+		expect(body).toEqual([
+			{
+				animeId: 'naruto',
+				title: 'Naruto',
+				images: {
+					coverImage: `${baseUrl}/api/image/${encodeImageKey('animes/naruto/cover.webp')}`,
+					carouselImages: [
+						{
+							link: `${baseUrl}/api/image/${encodeImageKey('animes/naruto/banner-1.webp')}`,
+							position: '1',
+							width: 0,
+							height: 0,
+						},
+					],
+				},
+			},
+			{
+				animeId: 'bleach',
+				title: 'Bleach',
+				images: null,
+			},
+		])
+		expect(body[0].cover_image_key).toBeUndefined()
+		expect(body[0].carousel_image_keys).toBeUndefined()
 		expect(getAnimeFeed).toHaveBeenCalledWith('directory', { page: 1, pageSize: 24 })
 	})
 
@@ -214,7 +248,16 @@ describe('animes endpoints', () => {
 		const { response, body } = await requestJson('/api/animes/latest?limit=2')
 
 		expect(response.status).toBe(200)
-		expect(body).toEqual(feedLatest)
+		expect(body).toEqual([
+			{
+				animeId: 'frieren',
+				title: 'Frieren',
+				images: {
+					coverImage: `${baseUrl}/api/image/${encodeImageKey('animes/frieren/cover.webp')}`,
+					carouselImages: [],
+				},
+			},
+		])
 		expect(getAnimeFeed).toHaveBeenCalledWith('latest', { limit: 2 })
 	})
 
@@ -242,9 +285,21 @@ describe('animes endpoints', () => {
 			{
 				animeId: 'one-piece',
 				title: 'One Piece',
-				images: null,
+				images: {
+					coverImage: `${baseUrl}/api/image/${encodeImageKey('animes/one-piece/cover.webp')}`,
+					carouselImages: [
+						{
+							link: `${baseUrl}/api/image/${encodeImageKey('animes/one-piece/banner-1.webp')}`,
+							position: '1',
+							width: 0,
+							height: 0,
+						},
+					],
+				},
 			},
 		])
+		expect(body[0].cover_image_key).toBeUndefined()
+		expect(body[0].carousel_image_keys).toBeUndefined()
 		expect(getAnimesByQuery).toHaveBeenCalledWith('one-piece', 2, 3)
 	})
 
@@ -253,9 +308,30 @@ describe('animes endpoints', () => {
 
 		expect(response.status).toBe(200)
 		expect(body).toEqual({
-			...animeInfo,
+			animeId: 'naruto',
+			title: 'Naruto',
+			description: 'A ninja story',
+			images: {
+				coverImage: `${baseUrl}/api/image/${encodeImageKey('animes/naruto/cover.webp')}`,
+				carouselImages: [
+					{
+						link: `${baseUrl}/api/image/${encodeImageKey('animes/naruto/banner-1.webp')}`,
+						position: '1',
+						width: 0,
+						height: 0,
+					},
+					{
+						link: `${baseUrl}/api/image/${encodeImageKey('animes/naruto/banner-2.webp')}`,
+						position: '2',
+						width: 0,
+						height: 0,
+					},
+				],
+			},
 			relatedAnimes,
 		})
+		expect(body.cover_image_key).toBeUndefined()
+		expect(body.carousel_image_keys).toBeUndefined()
 		expect(getAnimeBy).toHaveBeenCalledWith('animeId', 'naruto')
 		expect(getRelatedAnimesFromDb).toHaveBeenCalledWith('naruto')
 	})

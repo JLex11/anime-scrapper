@@ -14,7 +14,8 @@ const episodeImageKey = 'covers/episode-detail.jpg'
 const latestEpisode = {
 	originalLink: 'https://example.com/anime/latest-episode',
 	title: 'Latest episode',
-	image: `image/${latestEpisodeImageKey}`,
+	image: 'https://cdn.example.invalid/latest-episode.jpg',
+	image_key: latestEpisodeImageKey,
 	episode: 42,
 	episodeId: 'latest-episode-42',
 	animeId: 'anime-1',
@@ -25,7 +26,8 @@ const latestEpisode = {
 const episodeDetail = {
 	originalLink: 'https://example.com/anime/episode-detail',
 	title: 'Episode detail',
-	image: `image/${episodeImageKey}`,
+	image: null,
+	image_key: episodeImageKey,
 	episode: 7,
 	episodeId: 'episode-7',
 	animeId: 'anime-2',

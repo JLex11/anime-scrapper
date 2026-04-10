@@ -14,7 +14,7 @@ export const getEpisodeBy = async <Column extends keyof ColumnType<EpisodeColumn
 
 	const episode = await supabase
 		.from('episodes')
-		.select('episodeId, animeId, episode, title, image, originalLink, created_at, updated_at')
+		.select('episodeId, animeId, episode, title, image, image_key, originalLink, created_at, updated_at')
 		.eq(column, value)
 		.range(from, to)
 	.order('episode', { ascending: false })
@@ -28,7 +28,7 @@ export const getEpisodesByQuery = async (query: string, limit?: number) => {
 
 	const episodes = await supabase
 		.from('episodes')
-		.select('episodeId, animeId, episode, title, image, originalLink, created_at, updated_at')
+		.select('episodeId, animeId, episode, title, image, image_key, originalLink, created_at, updated_at')
 		.or(orQuery)
 		.limit(limit || 30)
 
@@ -54,7 +54,7 @@ export const UpsertEpisodes = async (episodes: EpisodeInsert[] | EpisodeInsert) 
 export const getLatestEpisodesFeed = async (limit = 30) => {
 	const { data: episodes, error } = await supabase
 		.from('episodes')
-		.select('episodeId, animeId, episode, title, image, originalLink, created_at, updated_at')
+		.select('episodeId, animeId, episode, title, image, image_key, originalLink, created_at, updated_at')
 		.order('created_at', { ascending: false })
 		.range(0, Math.max(0, limit - 1))
 
